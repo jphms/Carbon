@@ -1,6 +1,6 @@
 <?php
 
-/*
+/**
  * This file is part of the Carbon package.
  *
  * (c) Brian Nesbitt <brian@nesbot.com>
@@ -8,7 +8,6 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
-
 namespace Tests\Carbon;
 
 use Carbon\Carbon;
@@ -59,7 +58,9 @@ class StrictModeTest extends AbstractTestCase
      */
     public function testSetWithStrictMode()
     {
-        Carbon::now()->foobar = 'biz';
+        /** @var mixed $date */
+        $date = Carbon::now();
+        $date->foobar = 'biz';
     }
 
     /**
@@ -68,15 +69,18 @@ class StrictModeTest extends AbstractTestCase
      */
     public function testGetWithStrictMode()
     {
-        Carbon::now()->foobar;
+        /** @var mixed $date */
+        $date = Carbon::now();
+        $date->foobar;
     }
 
     public function testSetAndGetWithoutStrictMode()
     {
         Carbon::useStrictMode(false);
-        $d = Carbon::now();
-        $d->foobar = 'biz';
-        $this->assertSame('biz', $d->foobar);
+        /** @var mixed $date */
+        $date = Carbon::now();
+        $date->foobar = 'biz';
+        $this->assertSame('biz', $date->foobar);
     }
 
     /**
@@ -116,13 +120,17 @@ class StrictModeTest extends AbstractTestCase
      */
     public function testCallWithStrictMode()
     {
-        Carbon::now()->foobar();
+        /** @var mixed $date */
+        $date = Carbon::now();
+        $date->foobar();
     }
 
     public function testCallWithoutStrictMode()
     {
         Carbon::useStrictMode(false);
-        $this->assertNull(Carbon::now()->foobar());
+        /** @var mixed $date */
+        $date = Carbon::now();
+        $this->assertNull($date->foobar());
     }
 
     /**

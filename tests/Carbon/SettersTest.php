@@ -1,6 +1,6 @@
 <?php
 
-/*
+/**
  * This file is part of the Carbon package.
  *
  * (c) Brian Nesbitt <brian@nesbot.com>
@@ -8,7 +8,6 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
-
 namespace Tests\Carbon;
 
 use Carbon\Carbon;
@@ -196,7 +195,7 @@ class SettersTest extends AbstractTestCase
         $d->micro = -4;
         $this->assertSame(999996, $d->micro);
         $this->assertSame((Carbon::now()->second + 59) % 60, $d->second);
-        $d->micro = 3123456;
+        $d->microsecond = 3123456;
         $this->assertSame(123456, $d->micro);
         $this->assertSame((Carbon::now()->second + 2) % 60, $d->second);
         $d->micro -= 12123400;
@@ -205,9 +204,22 @@ class SettersTest extends AbstractTestCase
         $d->micro = -12600000;
         $this->assertSame(400000, $d->micro);
         $this->assertSame((Carbon::now()->second + 37) % 60, $d->second);
-        $d->milliseconds = 123;
+        $d->millisecond = 123;
         $this->assertSame(123, $d->milli);
         $this->assertSame(123000, $d->micro);
+        $d->milli = 456;
+        $this->assertSame(456, $d->millisecond);
+        $this->assertSame(456000, $d->microsecond);
+        $d->microseconds(567);
+        $this->assertSame(567, $d->microsecond);
+        $d->setMicroseconds(678);
+        $this->assertSame(678, $d->microsecond);
+        $d->milliseconds(567);
+        $this->assertSame(567, $d->millisecond);
+        $this->assertSame(567000, $d->microsecond);
+        $d->setMilliseconds(678);
+        $this->assertSame(678, $d->millisecond);
+        $this->assertSame(678000, $d->microsecond);
     }
 
     public function testTimestampSetter()
@@ -235,6 +247,7 @@ class SettersTest extends AbstractTestCase
      */
     public function testTimezoneWithInvalidTimezone()
     {
+        /** @var mixed $d */
         $d = Carbon::now();
         $d->timezone = 'sdf';
     }
@@ -255,6 +268,7 @@ class SettersTest extends AbstractTestCase
      */
     public function testTzWithInvalidTimezone()
     {
+        /** @var mixed $d */
         $d = Carbon::now();
         $d->tz = 'sdf';
     }
@@ -283,15 +297,16 @@ class SettersTest extends AbstractTestCase
         $this->assertSame(0, $d2->getTimestamp() - $d->getTimestamp());
         $this->assertSame('04:53:12', $d2->format('H:i:s'));
 
-        $d = Carbon::parse('2018-08-13 10:53:12', 'Europe/Paris');
+        $d = Carbon::parse('2018-08-13 10:53:12.321654', 'Europe/Paris');
         $d2 = $d->copy()->shiftTimezone('America/Toronto');
         $this->assertSame(21600, $d2->getTimestamp() - $d->getTimestamp());
         $this->assertSame('America/Toronto', $d2->tzName);
-        $this->assertSame('10:53:12', $d2->format('H:i:s'));
+        $this->assertSame('10:53:12.321654', $d2->format('H:i:s.u'));
     }
 
     public function testTimezoneUsingString()
     {
+        /** @var mixed $d */
         $d = Carbon::now();
         $d->timezone = 'America/Toronto';
         $this->assertSame('America/Toronto', $d->tzName);
@@ -302,6 +317,7 @@ class SettersTest extends AbstractTestCase
 
     public function testTzUsingString()
     {
+        /** @var mixed $d */
         $d = Carbon::now();
         $d->tz = 'America/Toronto';
         $this->assertSame('America/Toronto', $d->tzName);
@@ -349,6 +365,7 @@ class SettersTest extends AbstractTestCase
 
     public function testTimezoneUsingDateTimeZone()
     {
+        /** @var mixed $d */
         $d = Carbon::now();
         $d->timezone = new DateTimeZone('America/Toronto');
         $this->assertSame('America/Toronto', $d->tzName);
@@ -359,6 +376,7 @@ class SettersTest extends AbstractTestCase
 
     public function testTzUsingDateTimeZone()
     {
+        /** @var mixed $d */
         $d = Carbon::now();
         $d->tz = new DateTimeZone('America/Toronto');
         $this->assertSame('America/Toronto', $d->tzName);
@@ -372,8 +390,9 @@ class SettersTest extends AbstractTestCase
      */
     public function testInvalidSetter()
     {
-        $d = Carbon::now();
-        $d->doesNotExit = 'bb';
+        /** @var mixed $date */
+        $date = Carbon::now();
+        $date->doesNotExit = 'bb';
     }
 
     /**

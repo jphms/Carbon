@@ -1,6 +1,6 @@
 <?php
 
-/*
+/**
  * This file is part of the Carbon package.
  *
  * (c) Brian Nesbitt <brian@nesbot.com>
@@ -8,8 +8,9 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
-
 namespace Tests\Carbon\Fixtures;
+
+use Carbon\CarbonInterface;
 
 class Mixin
 {
@@ -29,11 +30,14 @@ class Mixin
         $mixin = $this;
 
         return function ($format) use ($mixin) {
+            /** @var CarbonInterface $date */
+            $date = $this;
+
             if ($mixin->timezone) {
-                $this->setTimezone($mixin->timezone);
+                $date->setTimezone($mixin->timezone);
             }
 
-            return $this->format($format);
+            return $date->format($format);
         };
     }
 }

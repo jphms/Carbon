@@ -1,6 +1,6 @@
 <?php
 
-/*
+/**
  * This file is part of the Carbon package.
  *
  * (c) Brian Nesbitt <brian@nesbot.com>
@@ -8,7 +8,6 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
-
 namespace Tests\CarbonImmutable;
 
 use Carbon\CarbonImmutable as Carbon;
@@ -195,43 +194,106 @@ class SubTest extends AbstractTestCase
         $this->assertSame(59, Carbon::createFromTime(0, 0, 0)->subSecond()->second);
     }
 
+    public function testSubMillisecondsPositive()
+    {
+        $this->assertSame(999, Carbon::createFromTime(0, 0, 0)->subMilliseconds(1)->millisecond);
+    }
+
+    public function testSubMillisecondsZero()
+    {
+        $this->assertSame(100, Carbon::createFromTime(0, 0, 0.1)->subMilliseconds(0)->millisecond);
+    }
+
+    public function testSubMillisecondsNegative()
+    {
+        $this->assertSame(1, Carbon::createFromTime(0, 0, 0)->subMilliseconds(-1)->millisecond);
+        $this->assertSame(101, Carbon::createFromTime(0, 0, 0.1)->subMilliseconds(-1)->millisecond);
+    }
+
+    public function testSubMillisecond()
+    {
+        $this->assertSame(99, Carbon::createFromTime(0, 0, 0.1)->subMillisecond()->millisecond);
+    }
+
+    public function testSubMicrosecondsPositive()
+    {
+        $this->assertSame(999999, Carbon::createFromTime(0, 0, 0)->subMicroseconds(1)->microsecond);
+    }
+
+    public function testSubMicrosecondsZero()
+    {
+        $this->assertSame(100000, Carbon::createFromTime(0, 0, 0.1)->subMicroseconds(0)->microsecond);
+    }
+
+    public function testSubMicrosecondsNegative()
+    {
+        $this->assertSame(1, Carbon::createFromTime(0, 0, 0)->subMicroseconds(-1)->microsecond);
+        $this->assertSame(100001, Carbon::createFromTime(0, 0, 0.1)->subMicroseconds(-1)->microsecond);
+    }
+
+    public function testSubMicrosecond()
+    {
+        $this->assertSame(99999, Carbon::createFromTime(0, 0, 0.1)->subMicrosecond()->microsecond);
+    }
+
     /**
      * Test non plural methods with non default args.
      */
     public function testSubYearPassingArg()
     {
-        $this->assertSame(1973, Carbon::createFromDate(1975)->subYear(2)->year);
+        /** @var mixed $date */
+        $date = Carbon::createFromDate(1975);
+
+        $this->assertSame(1973, $date->subYear(2)->year);
     }
 
     public function testSubMonthPassingArg()
     {
-        $this->assertSame(3, Carbon::createFromDate(1975, 5, 1)->subMonth(2)->month);
+        /** @var mixed $date */
+        $date = Carbon::createFromDate(1975, 5, 1);
+
+        $this->assertSame(3, $date->subMonth(2)->month);
     }
 
     public function testSubMonthNoOverflowPassingArg()
     {
-        $dt = Carbon::createFromDate(2011, 4, 30)->subMonthNoOverflow(2);
-        $this->assertSame(2, $dt->month);
-        $this->assertSame(28, $dt->day);
+        /** @var mixed $date */
+        $date = Carbon::createFromDate(2011, 4, 30);
+        $date = $date->subMonthNoOverflow(2);
+
+        $this->assertSame(2, $date->month);
+        $this->assertSame(28, $date->day);
     }
 
     public function testSubDayPassingArg()
     {
-        $this->assertSame(8, Carbon::createFromDate(1975, 5, 10)->subDay(2)->day);
+        /** @var mixed $date */
+        $date = Carbon::createFromDate(1975, 5, 10);
+
+        $this->assertSame(8, $date->subDay(2)->day);
     }
 
     public function testSubHourPassingArg()
     {
-        $this->assertSame(22, Carbon::createFromTime(0)->subHour(2)->hour);
+        /** @var mixed $date */
+        $date = Carbon::createFromTime(0);
+
+        $this->assertSame(22, $date->subHour(2)->hour);
     }
 
     public function testSubMinutePassingArg()
     {
-        $this->assertSame(58, Carbon::createFromTime(0)->subMinute(2)->minute);
+        /** @var mixed $date */
+        $date = Carbon::createFromTime(0);
+
+        $this->assertSame(58, $date->subMinute(2)->minute);
     }
 
     public function testSubSecondPassingArg()
     {
-        $this->assertSame(58, Carbon::createFromTime(0)->subSecond(2)->second);
+        /** @var mixed $date */
+        $date = Carbon::createFromTime(0);
+
+        $this->assertSame(58, $date->subSecond(2)->second);
     }
 }

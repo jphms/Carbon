@@ -1,6 +1,6 @@
 <?php
 
-/*
+/**
  * This file is part of the Carbon package.
  *
  * (c) Brian Nesbitt <brian@nesbot.com>
@@ -8,7 +8,6 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
-
 namespace Tests\CarbonInterval;
 
 use Carbon\Carbon;
@@ -77,6 +76,55 @@ class AddTest extends AbstractTestCase
         $diff = $date->diff((clone $date)->modify('-3 weeks'));
         $ci = CarbonInterval::create(4, 3, 6, 7, 8, 10, 11)->add($diff);
         $this->assertCarbonInterval($ci, 4, 3, 28, 8, 10, 11);
+    }
+
+    public function provideAddsResults()
+    {
+        return [
+            [5, 2, 7],
+            [-5, -2, -7],
+            [-5, 2, -3],
+            [5, -2, 3],
+            [2, 5, 7],
+            [-2, -5, -7],
+            [-2, 5, 3],
+            [2, -5, -3],
+        ];
+    }
+
+    /**
+     * @dataProvider provideAddsResults
+     *
+     * @param int $base
+     * @param int $increment
+     * @param int $expectedResult
+     */
+    public function testAddSign($base, $increment, $expectedResult)
+    {
+        $interval = new CarbonInterval();
+        $interval->hours(abs($base));
+        if ($base < 0) {
+            $interval->invert();
+        }
+        $add = new CarbonInterval();
+        $add->hours(abs($increment));
+        if ($increment < 0) {
+            $add->invert();
+        }
+        $interval->add($add);
+
+        if ($interval->hours < 0) {
+            echo "\n\n";
+            var_dump($base, $increment, $expectedResult);
+            echo "\n\n";
+            var_dump($interval->hours, $interval->h, $interval->invert);
+            exit;
+        }
+        $this->assertGreaterThanOrEqual(0, $interval->hours);
+
+        $actualResult = ($interval->invert ? -1 : 1) * $interval->hours;
+
+        $this->assertSame($expectedResult, $actualResult);
     }
 
     public function testAddAndSubMultipleFormats()

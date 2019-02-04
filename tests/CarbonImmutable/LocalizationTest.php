@@ -1,6 +1,6 @@
 <?php
 
-/*
+/**
  * This file is part of the Carbon package.
  *
  * (c) Brian Nesbitt <brian@nesbot.com>
@@ -8,10 +8,10 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
-
 namespace Tests\CarbonImmutable;
 
 use Carbon\CarbonImmutable as Carbon;
+use Carbon\Language;
 use Carbon\Translator;
 use Symfony\Component\Translation\IdentityTranslator;
 use Symfony\Component\Translation\Loader\ArrayLoader;
@@ -375,7 +375,7 @@ class LocalizationTest extends AbstractTestCase
         /** @var MessageCatalogue $messages */
         $messages = $translator->getCatalogue('en');
         $resources = $messages->all('messages');
-        $resources['day'] = '1 boring day|:count boring days';
+        $resources['day'] = '1 boring day|%count% boring days';
         $translator->addResource('array', $resources, 'en');
 
         $diff = Carbon::create(2018, 1, 1, 0, 0, 0)
@@ -389,7 +389,7 @@ class LocalizationTest extends AbstractTestCase
     public function testAddCustomTranslation()
     {
         $enBoring = [
-            'day' => '1 boring day|:count boring days',
+            'day' => '1 boring day|%count% boring days',
         ];
 
         $this->assertTrue(Carbon::setLocale('en'));
@@ -610,7 +610,7 @@ class LocalizationTest extends AbstractTestCase
     {
         $withPeriodSyntax = [
             'year' => 'foo',
-            'period_recurrences' => 'once|:count times',
+            'period_recurrences' => 'once|%count% times',
             'period_interval' => 'every :interval',
             'period_start_date' => 'from :date',
             'period_end_date' => 'to :date',
@@ -641,6 +641,15 @@ class LocalizationTest extends AbstractTestCase
 
         Carbon::setTranslator(new \Symfony\Component\Translation\Translator('en'));
         $this->assertSame(['en'], Carbon::getAvailableLocales());
+    }
+
+    public function testGetAvailableLocalesInfo()
+    {
+        $infos = Carbon::getAvailableLocalesInfo();
+        $this->assertCount(count(Carbon::getAvailableLocales()), Carbon::getAvailableLocalesInfo());
+        $this->assertArrayHasKey('en', $infos);
+        $this->assertInstanceOf(Language::class, $infos['en']);
+        $this->assertSame('English', $infos['en']->getIsoName());
     }
 
     public function testGeorgianSpecialFromNowTranslation()

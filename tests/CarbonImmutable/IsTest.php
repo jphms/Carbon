@@ -1,6 +1,6 @@
 <?php
 
-/*
+/**
  * This file is part of the Carbon package.
  *
  * (c) Brian Nesbitt <brian@nesbot.com>
@@ -8,7 +8,6 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
-
 namespace Tests\CarbonImmutable;
 
 use \DateTime;
@@ -57,6 +56,25 @@ class IsTest extends AbstractTestCase
         $this->assertTrue(Carbon::now()->isToday());
     }
 
+    public function testIsCurrentWeek()
+    {
+        $this->assertFalse(Carbon::now()->subWeek()->isCurrentWeek());
+        $this->assertFalse(Carbon::now()->addWeek()->isCurrentWeek());
+        $this->assertTrue(Carbon::now()->isCurrentWeek());
+        $this->assertTrue(Carbon::now()->startOfWeek()->isCurrentWeek());
+        $this->assertTrue(Carbon::now()->endOfWeek()->isCurrentWeek());
+    }
+
+    public function testIsSameWeek()
+    {
+        $this->assertFalse(Carbon::now()->subWeek()->isSameWeek(Carbon::now()));
+        $this->assertFalse(Carbon::now()->addWeek()->isSameWeek(Carbon::now()));
+        $this->assertTrue(Carbon::now()->isSameWeek(Carbon::now()));
+        $this->assertTrue(Carbon::now()->startOfWeek()->isSameWeek(Carbon::now()));
+        $this->assertTrue(Carbon::now()->endOfWeek()->isSameWeek(Carbon::now()));
+        $this->assertTrue(Carbon::parse('2019-01-01')->isSameWeek(Carbon::parse('2018-12-31')));
+    }
+
     public function testIsNextWeekTrue()
     {
         $this->assertTrue(Carbon::now()->addWeek()->isNextWeek());
@@ -69,12 +87,16 @@ class IsTest extends AbstractTestCase
 
     public function testIsNextWeekFalse()
     {
-        $this->assertFalse(Carbon::now()->addWeek(2)->isNextWeek());
+        /** @var mixed $date */
+        $date = Carbon::now();
+        $this->assertFalse($date->addWeek(2)->isNextWeek());
     }
 
     public function testIsLastWeekFalse()
     {
-        $this->assertFalse(Carbon::now()->subWeek(2)->isLastWeek());
+        /** @var mixed $date */
+        $date = Carbon::now();
+        $this->assertFalse($date->subWeek(2)->isLastWeek());
     }
 
     public function testIsNextQuarterTrue()
@@ -129,12 +151,16 @@ class IsTest extends AbstractTestCase
 
     public function testIsNextYearFalse()
     {
-        $this->assertFalse(Carbon::now()->addYear(2)->isNextYear());
+        /** @var mixed $date */
+        $date = Carbon::now();
+        $this->assertFalse($date->addYear(2)->isNextYear());
     }
 
     public function testIsLastYearFalse()
     {
-        $this->assertFalse(Carbon::now()->subYear(2)->isLastYear());
+        /** @var mixed $date */
+        $date = Carbon::now();
+        $this->assertFalse($date->subYear(2)->isLastYear());
     }
 
     public function testIsTodayFalseWithYesterday()

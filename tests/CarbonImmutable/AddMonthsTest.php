@@ -1,6 +1,6 @@
 <?php
 
-/*
+/**
  * This file is part of the Carbon package.
  *
  * (c) Brian Nesbitt <brian@nesbot.com>
@@ -8,7 +8,6 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
-
 namespace Tests\CarbonImmutable;
 
 use Carbon\CarbonImmutable as Carbon;
@@ -25,7 +24,10 @@ class AddMonthsTest extends AbstractTestCase
     {
         parent::setUp();
 
-        $this->carbon = Carbon::create(2016, 1, 31);
+        /** @var Carbon $date */
+        $date = Carbon::create(2016, 1, 31);
+
+        $this->carbon = $date;
     }
 
     public function providerTestAddMonthNoOverflow()

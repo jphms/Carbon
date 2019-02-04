@@ -1,6 +1,6 @@
 <?php
 
-/*
+/**
  * This file is part of the Carbon package.
  *
  * (c) Brian Nesbitt <brian@nesbot.com>
@@ -8,7 +8,6 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
-
 namespace Tests\Carbon;
 
 use Carbon\Carbon;
@@ -5302,8 +5301,7 @@ class WeekTest extends AbstractTestCase
 
     public function testWeekUtils()
     {
-        foreach (static::SAMPLE as $date => $data) {
-            list($weekYear, $isoWeekYear, $week, $isoWeek, $weeksInYear, $isoWeeksInYear) = $data;
+        foreach (static::SAMPLE as $date => [$weekYear, $isoWeekYear, $week, $isoWeek, $weeksInYear, $isoWeeksInYear]) {
             $date = Carbon::parse("$date 00:00:00");
 
             $this->assertSame($weekYear, $date->weekYear(), "Carbon::parse(\"$date 00:00:00\")->weekYear() should return $weekYear");

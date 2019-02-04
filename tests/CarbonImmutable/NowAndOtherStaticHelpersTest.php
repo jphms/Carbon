@@ -1,6 +1,6 @@
 <?php
 
-/*
+/**
  * This file is part of the Carbon package.
  *
  * (c) Brian Nesbitt <brian@nesbot.com>
@@ -8,7 +8,6 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
-
 namespace Tests\CarbonImmutable;
 
 use Carbon\CarbonImmutable as Carbon;
@@ -21,12 +20,12 @@ class NowAndOtherStaticHelpersTest extends AbstractTestCase
     public function testNow()
     {
         $dt = Carbon::now();
-        $this->assertSame($this->now->getTimestamp(), $dt->timestamp);
+        $this->assertSame($this->immutableNow->getTimestamp(), $dt->timestamp);
 
         Carbon::setTestNow();
-        $before = time();
+        $before = $this->getTimestamp();
         $dt = Carbon::now();
-        $after = time();
+        $after = $this->getTimestamp();
         $this->assertGreaterThanOrEqual($before, $dt->timestamp);
         $this->assertLessThanOrEqual($after, $dt->timestamp);
     }
@@ -50,12 +49,12 @@ class NowAndOtherStaticHelpersTest extends AbstractTestCase
     public function testNowWithTimezone()
     {
         $dt = Carbon::now('Europe/London');
-        $this->assertSame($this->now->getTimestamp(), $dt->timestamp);
+        $this->assertSame($this->immutableNow->getTimestamp(), $dt->timestamp);
 
         Carbon::setTestNow();
-        $before = time();
+        $before = $this->getTimestamp();
         $dt = Carbon::now('Europe/London');
-        $after = time();
+        $after = $this->getTimestamp();
         $this->assertGreaterThanOrEqual($before, $dt->timestamp);
         $this->assertLessThanOrEqual($after, $dt->timestamp);
         $this->assertSame('Europe/London', $dt->tzName);

@@ -1,6 +1,6 @@
 <?php
 
-/*
+/**
  * This file is part of the Carbon package.
  *
  * (c) Brian Nesbitt <brian@nesbot.com>
@@ -8,7 +8,6 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
-
 namespace Tests\CarbonPeriod;
 
 use Carbon\Carbon;
@@ -34,11 +33,15 @@ class MacroTest extends AbstractTestCase
     public function testCallMacro()
     {
         CarbonPeriod::macro('onlyWeekdays', function () {
-            return $this->addFilter(function ($date) {
+            /** @var CarbonPeriod $period */
+            $period = $this;
+
+            return $period->addFilter(function ($date) {
                 return !in_array($date->dayOfWeek, [Carbon::SATURDAY, Carbon::SUNDAY]);
             });
         });
 
+        /** @var mixed $period */
         $period = CarbonPeriod::create('2018-05-10', '2018-05-14');
 
         $this->assertSame($period, $period->onlyWeekdays());
@@ -55,18 +58,27 @@ class MacroTest extends AbstractTestCase
             return $param;
         });
 
-        $this->assertSame(123, CarbonPeriod::create()->foobar());
+        /** @var mixed $period */
+        $period = CarbonPeriod::create();
+
+        $this->assertSame(123, $period->foobar());
     }
 
     public function testPassPeriodInstanceAfterOptionalParameters()
     {
         CarbonPeriod::macro('formatStartDate', function ($format = 'l, j F Y') {
-            return $this->getStartDate()->format($format);
+            /** @var CarbonPeriod $period */
+            $period = $this;
+
+            return $period->getStartDate()->format($format);
         });
+
+        /** @var mixed $period */
+        $period = CarbonPeriod::start('2016-09-11');
 
         $this->assertSame(
             'Sunday, 11 September 2016',
-            CarbonPeriod::start('2016-09-11')->formatStartDate()
+            $period->formatStartDate()
         );
     }
 
@@ -76,6 +88,7 @@ class MacroTest extends AbstractTestCase
             return $this;
         });
 
+        /** @var mixed $period */
         $period = new CarbonPeriod;
 
         $this->assertInstanceOf('Carbon\CarbonPeriod', $period->myself());
@@ -111,6 +124,7 @@ class MacroTest extends AbstractTestCase
     {
         CarbonPeriod::macro('lower', 'strtolower');
 
+        /** @var mixed $period */
         $period = new CarbonPeriod;
 
         $this->assertSame('abc', $period->lower('ABC'));
@@ -133,7 +147,10 @@ class MacroTest extends AbstractTestCase
      */
     public function testCallNonExistingMacro()
     {
-        CarbonPeriod::create()->nonExistingMacro();
+        /** @var mixed $period */
+        $period = CarbonPeriod::create();
+
+        $period->nonExistingMacro();
     }
 
     /**
@@ -157,7 +174,10 @@ class MacroTest extends AbstractTestCase
     public function testInstatiateViaStaticMacroCall()
     {
         CarbonPeriod::macro('fromTomorrow', function () {
-            return $this->setStartDate(Carbon::tomorrow());
+            /** @var CarbonPeriod $period */
+            $period = $this;
+
+            return $period->setStartDate(Carbon::tomorrow());
         });
 
         $period = CarbonPeriod::fromTomorrow();

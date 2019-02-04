@@ -1,6 +1,6 @@
 <?php
 
-/*
+/**
  * This file is part of the Carbon package.
  *
  * (c) Brian Nesbitt <brian@nesbot.com>
@@ -8,7 +8,6 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
-
 namespace Tests\CarbonPeriod;
 
 use Carbon\Carbon;
@@ -35,13 +34,16 @@ class StrictModeTest extends AbstractTestCase
      */
     public function testCallWithStrictMode()
     {
-        CarbonPeriod::create()->foobar();
+        /** @var mixed $period */
+        $period = CarbonPeriod::create();
+        $period->foobar();
     }
 
     public function testCallWithoutStrictMode()
     {
         Carbon::useStrictMode(false);
-        $d = CarbonPeriod::create();
-        $this->assertSame($d, $d->foobar());
+        /** @var mixed $period */
+        $period = CarbonPeriod::create();
+        $this->assertSame($period, $period->foobar());
     }
 }

@@ -1,6 +1,6 @@
 <?php
 
-/*
+/**
  * This file is part of the Carbon package.
  *
  * (c) Brian Nesbitt <brian@nesbot.com>
@@ -8,7 +8,6 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
-
 namespace Tests\CarbonInterval;
 
 use Carbon\CarbonInterval;
@@ -157,6 +156,7 @@ class SettersTest extends AbstractTestCase
      */
     public function testInvalidSetter()
     {
+        /** @var mixed $ci */
         $ci = new CarbonInterval;
         $ci->doesNotExit = 123;
     }
@@ -167,6 +167,7 @@ class SettersTest extends AbstractTestCase
      */
     public function testInvalidFluentSetter()
     {
+        /** @var mixed $ci */
         $ci = new CarbonInterval;
         $ci->doesNotExit(123);
     }
@@ -182,7 +183,7 @@ class SettersTest extends AbstractTestCase
 
     public function testLocale()
     {
-        /** @var CarbonInterval $period */
+        /** @var CarbonInterval $interval */
         $interval = CarbonInterval::hour()->locale('de');
 
         $this->assertSame('de', $interval->locale);

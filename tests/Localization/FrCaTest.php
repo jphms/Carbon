@@ -1,6 +1,6 @@
 <?php
 
-/*
+/**
  * This file is part of the Carbon package.
  *
  * (c) Brian Nesbitt <brian@nesbot.com>
@@ -8,7 +8,6 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
-
 namespace Tests\Localization;
 
 class FrCaTest extends LocalizationTestCase
@@ -151,7 +150,7 @@ class FrCaTest extends LocalizationTestCase
         // Carbon::now()->subDays(2)->diffForHumans(null, false, true)
         'il y a 2 j.',
         // Carbon::now()->subWeeks(1)->diffForHumans()
-        'il y a 1 semaine',
+        'il y a une semaine',
         // Carbon::now()->subWeeks(1)->diffForHumans(null, false, true)
         'il y a 1 sem.',
         // Carbon::now()->subWeeks(2)->diffForHumans()
@@ -207,11 +206,11 @@ class FrCaTest extends LocalizationTestCase
         // Carbon::now()->subYears(2)->subMonths(3)->subDay()->subSecond()->diffForHumans(null, null, true, 4)
         'il y a 2 ans 3 mois 1 j. 1 sec.',
         // Carbon::now()->addWeek()->addHours(10)->diffForHumans(null, true, false, 2)
-        '1 semaine 10 heures',
+        'une semaine 10 heures',
         // Carbon::now()->addWeek()->addDays(6)->diffForHumans(null, true, false, 2)
-        '1 semaine 6 jours',
+        'une semaine 6 jours',
         // Carbon::now()->addWeek()->addDays(6)->diffForHumans(null, true, false, 2)
-        '1 semaine 6 jours',
+        'une semaine 6 jours',
         // Carbon::now()->addWeeks(2)->addHour()->diffForHumans(null, true, false, 2)
         '2 semaines une heure',
         // CarbonInterval::days(2)->forHumans()

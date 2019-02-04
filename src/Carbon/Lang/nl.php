@@ -1,6 +1,6 @@
 <?php
 
-/*
+/**
  * This file is part of the Carbon package.
  *
  * (c) Brian Nesbitt <brian@nesbot.com>
@@ -33,6 +33,19 @@ return [
     'diff_tomorrow' => 'morgen',
     'diff_after_tomorrow' => 'overmorgen',
     'diff_before_yesterday' => 'eergisteren',
+    'period_recurrences' => ':count keer',
+    'period_interval' => function ($interval) {
+        /** @var string $output */
+        $output = preg_replace('/^(één|1)\s+/', '', $interval);
+
+        if (preg_match('/^(één|1)( jaar|j| uur|u)/', $interval)) {
+            return "elk $output";
+        }
+
+        return "elke $output";
+    },
+    'period_start_date' => 'van :date',
+    'period_end_date' => 'tot :date',
     'formats' => [
         'LT' => 'HH:mm',
         'LTS' => 'HH:mm:ss',
@@ -60,4 +73,5 @@ return [
     'weekdays_min' => ['zo', 'ma', 'di', 'wo', 'do', 'vr', 'za'],
     'first_day_of_week' => 1,
     'day_of_first_week_of_year' => 4,
+    'list' => [', ', ' en '],
 ];

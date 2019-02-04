@@ -1,6 +1,6 @@
 <?php
 
-/*
+/**
  * This file is part of the Carbon package.
  *
  * (c) Brian Nesbitt <brian@nesbot.com>
@@ -8,7 +8,6 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
-
 namespace Tests\Carbon;
 
 use Carbon\Carbon;
@@ -905,6 +904,13 @@ class DiffTest extends AbstractTestCase
         });
     }
 
+    public function testDiffForHumansOverWeekWithMicrosecondsBuggyGap()
+    {
+        $this->wrapWithTestNow(function () {
+            $this->assertSame('23 hours 59 minutes 59 seconds after', Carbon::parse('2018-12-03 12:34:45.123456')->diffForHumans('2018-12-02 12:34:45.123476', ['parts' => 3]));
+        });
+    }
+
     public function testDiffForHumansOtherAndWeek()
     {
         $this->wrapWithTestNow(function () {
@@ -1323,6 +1329,57 @@ class DiffTest extends AbstractTestCase
         $this->assertSame(7, Carbon::getHumanDiffOptions());
 
         Carbon::setHumanDiffOptions($options);
+    }
+
+    public function testDiffForHumansArrayParameter()
+    {
+        Carbon::setTestNow('2000-01-01 00:00:00');
+        $date = Carbon::now()->subtract('2 days, 3 hours and 40 minutes');
+        $this->assertSame('2 days ago', $date->diffForHumans([
+            'parts' => 1,
+            'join' => true,
+        ]));
+        $this->assertSame('2 days and 3 hours ago', $date->diffForHumans([
+            'parts' => 2,
+            'join' => true,
+        ]));
+        $this->assertSame('hace 2 días y 3 horas', $date->copy()->locale('es')->diffForHumans([
+            'parts' => 2,
+            'join' => true,
+        ]));
+        $this->assertSame('2 days, 3 hours and 40 minutes ago', $date->diffForHumans([
+            'parts' => -1,
+            'join' => true,
+        ]));
+        $this->assertSame('3 days, 3 hours and 40 minutes before', $date->diffForHumans(Carbon::now()->addDay(), [
+            'parts' => -1,
+            'join' => true,
+        ]));
+        $this->assertSame('3 days, 3 hours and 40 minutes before', $date->diffForHumans([
+            'other' => Carbon::now()->addDay(),
+            'parts' => -1,
+            'join' => true,
+        ]));
+        $this->assertSame('2 days, 3 hours ago', $date->diffForHumans([
+            'parts' => 2,
+            'join' => ', ',
+        ]));
+        $this->assertSame('2d, 3h ago', $date->diffForHumans([
+            'parts' => 2,
+            'join' => ', ',
+            'short' => true,
+        ]));
+        $this->assertSame('2 days, 3 hours before', $date->diffForHumans([
+            'parts' => 2,
+            'join' => ', ',
+            'syntax' => CarbonInterface::DIFF_RELATIVE_TO_OTHER,
+        ]));
+        $this->assertSame('yesterday', Carbon::yesterday()->diffForHumans([
+            'options' => CarbonInterface::ONE_DAY_WORDS,
+        ]));
+        $this->assertSame('1 day ago', Carbon::yesterday()->diffForHumans([
+            'options' => 0,
+        ]));
     }
 
     public function testFromNow()

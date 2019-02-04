@@ -1,6 +1,6 @@
 <?php
 
-/*
+/**
  * This file is part of the Carbon package.
  *
  * (c) Brian Nesbitt <brian@nesbot.com>
@@ -8,7 +8,6 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
-
 namespace Tests\CarbonImmutable;
 
 use Carbon\CarbonImmutable as Carbon;
@@ -214,6 +213,7 @@ class SettersTest extends AbstractTestCase
      */
     public function testTimezoneWithInvalidTimezone()
     {
+        /** @var mixed $d */
         $d = Carbon::now();
         $d->timezone = 'sdf';
     }
@@ -234,6 +234,7 @@ class SettersTest extends AbstractTestCase
      */
     public function testTzWithInvalidTimezone()
     {
+        /** @var mixed $d */
         $d = Carbon::now();
         $d->tz = 'sdf';
     }
@@ -275,6 +276,7 @@ class SettersTest extends AbstractTestCase
      */
     public function testTimezoneUsingString()
     {
+        /** @var mixed $d */
         $d = Carbon::now();
         $d->timezone = 'America/Toronto';
     }
@@ -285,6 +287,7 @@ class SettersTest extends AbstractTestCase
      */
     public function testTzUsingString()
     {
+        /** @var mixed $d */
         $d = Carbon::now();
         $d->tz = 'America/Toronto';
     }
@@ -302,6 +305,7 @@ class SettersTest extends AbstractTestCase
      */
     public function testTimezoneUsingDateTimeZone()
     {
+        /** @var mixed $d */
         $d = Carbon::now();
         $d->timezone = new DateTimeZone('America/Toronto');
     }
@@ -312,6 +316,7 @@ class SettersTest extends AbstractTestCase
      */
     public function testTzUsingDateTimeZone()
     {
+        /** @var mixed $d */
         $d = Carbon::now();
         $d->tz = new DateTimeZone('America/Toronto');
     }
@@ -322,6 +327,7 @@ class SettersTest extends AbstractTestCase
      */
     public function testInvalidSetter()
     {
+        /** @var mixed $d */
         $d = Carbon::now();
         $d->doesNotExit = 'bb';
     }
@@ -363,6 +369,15 @@ class SettersTest extends AbstractTestCase
     }
 
     public function testMidDayAtSetter()
+    {
+        $d = Carbon::now();
+        $d->setMidDayAt(11);
+        $this->assertSame(11, $d->getMidDayAt());
+        $d->setMidDayAt(12);
+        $this->assertSame(12, $d->getMidDayAt());
+    }
+
+    public function testSetter()
     {
         $d = Carbon::now();
         $d->setMidDayAt(11);

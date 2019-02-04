@@ -1,6 +1,6 @@
 <?php
 
-/*
+/**
  * This file is part of the Carbon package.
  *
  * (c) Brian Nesbitt <brian@nesbot.com>
@@ -8,7 +8,6 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
-
 namespace Tests\CarbonPeriod;
 
 use Carbon\Carbon;
@@ -25,7 +24,7 @@ class CreateTest extends AbstractTestCase
      */
     public function testCreateFromIso8601String($arguments, $expected)
     {
-        list($iso, $options) = array_pad($arguments, 2, null);
+        [$iso, $options] = array_pad($arguments, 2, null);
 
         $period = CarbonPeriod::create($iso, $options);
 
@@ -119,7 +118,7 @@ class CreateTest extends AbstractTestCase
      */
     public function testCreateFromStartDateAndEndDate($arguments, $expected)
     {
-        list($start, $end, $options) = array_pad($arguments, 3, null);
+        [$start, $end, $options] = array_pad($arguments, 3, null);
 
         $start = Carbon::parse($start);
         $end = Carbon::parse($end);
@@ -175,7 +174,7 @@ class CreateTest extends AbstractTestCase
      */
     public function testCreateFromStartDateAndIntervalAndEndDate($arguments, $expected)
     {
-        list($start, $interval, $end, $options) = array_pad($arguments, 4, null);
+        [$start, $interval, $end, $options] = array_pad($arguments, 4, null);
 
         $start = Carbon::parse($start);
         $interval = CarbonInterval::create($interval);
@@ -232,7 +231,7 @@ class CreateTest extends AbstractTestCase
      */
     public function testCreateFromStartDateAndIntervalAndRecurrences($arguments, $expected)
     {
-        list($start, $interval, $recurrences, $options) = array_pad($arguments, 4, null);
+        [$start, $interval, $recurrences, $options] = array_pad($arguments, 4, null);
 
         $start = Carbon::parse($start);
         $interval = CarbonInterval::create($interval);
@@ -264,7 +263,7 @@ class CreateTest extends AbstractTestCase
      */
     public function testCreateFromStartDateAndRecurrences($arguments, $expected)
     {
-        list($start, $recurrences, $options) = array_pad($arguments, 4, null);
+        [$start, $recurrences, $options] = array_pad($arguments, 4, null);
 
         $start = Carbon::parse($start);
 

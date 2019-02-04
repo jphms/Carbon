@@ -1,6 +1,6 @@
 <?php
 
-/*
+/**
  * This file is part of the Carbon package.
  *
  * (c) Brian Nesbitt <brian@nesbot.com>
@@ -8,7 +8,6 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
-
 namespace Tests;
 
 use Carbon\Carbon;
@@ -33,9 +32,24 @@ abstract class AbstractTestCase extends TestCase
     protected $immutableNow;
 
     /**
+     * @var bool
+     */
+    protected $oldNow = false;
+
+    /**
+     * @var bool
+     */
+    protected $oldImmutableNow = false;
+
+    /**
      * @var string
      */
     private $saveTz;
+
+    protected function getTimestamp()
+    {
+        return (new DateTime())->getTimestamp();
+    }
 
     protected function setUp()
     {
@@ -44,8 +58,18 @@ abstract class AbstractTestCase extends TestCase
 
         date_default_timezone_set('America/Toronto');
 
-        Carbon::setTestNow($this->now = Carbon::now());
-        CarbonImmutable::setTestNow($this->immutableNow = CarbonImmutable::now());
+        /** @var Carbon $now */
+        $now = $this->oldNow
+            ? Carbon::create(2017, 6, 27, 13, 14, 15, 'UTC')
+            : Carbon::now();
+
+        /** @var CarbonImmutable $immutableNow */
+        $immutableNow = $this->oldImmutableNow
+            ? CarbonImmutable::create(2017, 6, 27, 13, 14, 15, 'UTC')
+            : CarbonImmutable::now();
+
+        Carbon::setTestNow($this->now = $now);
+        CarbonImmutable::setTestNow($this->immutableNow = $immutableNow);
     }
 
     protected function tearDown()
@@ -187,14 +211,45 @@ abstract class AbstractTestCase extends TestCase
     public function wrapWithTestNow(Closure $func, CarbonInterface $dt = null)
     {
         $test = Carbon::getTestNow();
-        Carbon::setTestNow($dt ?: Carbon::now());
+        $immutableTest = CarbonImmutable::getTestNow();
+        $dt = $dt ?: Carbon::now();
+        Carbon::setTestNow($dt);
+        CarbonImmutable::setTestNow($dt);
         $func();
         Carbon::setTestNow($test);
+        CarbonImmutable::setTestNow($immutableTest);
     }
 
     public function wrapWithNonDstDate(Closure $func)
     {
         $this->wrapWithTestNow($func, Carbon::now()->startOfYear());
+    }
+
+    public function wrapWithUtf8LcTimeLocale($locale, Closure $func)
+    {
+        $currentLocale = setlocale(LC_TIME, '0');
+        $locales = ["$locale.UTF-8"];
+        $mapping = [
+            'fr_FR' => 'French_France',
+        ];
+        $windowsLocale = $mapping[$locale] ?? null;
+        if ($windowsLocale) {
+            $locales[] = "$windowsLocale.UTF8";
+        }
+        if (setlocale(LC_TIME, ...$locales) === false) {
+            $this->markTestSkipped("UTF-8 test need $locale.UTF-8 (a locale with accents).");
+        }
+        $exception = null;
+        try {
+            $func();
+        } catch (\Throwable $e) {
+            $exception = $e;
+        }
+        setlocale(LC_TIME, $currentLocale);
+
+        if ($exception) {
+            throw $exception;
+        }
     }
 
     /**

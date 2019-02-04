@@ -1,6 +1,6 @@
 <?php
 
-/*
+/**
  * This file is part of the Carbon package.
  *
  * (c) Brian Nesbitt <brian@nesbot.com>
@@ -8,7 +8,6 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
-
 namespace Tests\CarbonInterval;
 
 use Carbon\Carbon;
@@ -35,7 +34,9 @@ class StrictModeTest extends AbstractTestCase
      */
     public function testSetWithStrictMode()
     {
-        CarbonInterval::day()->foobar = 'biz';
+        /** @var mixed $interval */
+        $interval = CarbonInterval::day();
+        $interval->foobar = 'biz';
     }
 
     /**
@@ -44,15 +45,18 @@ class StrictModeTest extends AbstractTestCase
      */
     public function testGetWithStrictMode()
     {
-        CarbonInterval::day()->foobar;
+        /** @var mixed $interval */
+        $interval = CarbonInterval::day();
+        $interval->foobar;
     }
 
     public function testSetAndGetWithoutStrictMode()
     {
         Carbon::useStrictMode(false);
-        $d = CarbonInterval::day();
-        $d->foobar = 'biz';
-        $this->assertSame('biz', $d->foobar);
+        /** @var mixed $interval */
+        $interval = CarbonInterval::day();
+        $interval->foobar = 'biz';
+        $this->assertSame('biz', $interval->foobar);
     }
 
     /**

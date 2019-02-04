@@ -1,6 +1,6 @@
 <?php
 
-/*
+/**
  * This file is part of the Carbon package.
  *
  * (c) Brian Nesbitt <brian@nesbot.com>
@@ -8,7 +8,6 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
-
 namespace Tests\CarbonImmutable;
 
 use Carbon\CarbonImmutable as Carbon;
@@ -179,6 +178,27 @@ class AddTest extends AbstractTestCase
         $this->assertSame(1, Carbon::createFromTime(0, 0, 0)->addSecond()->second);
     }
 
+    public function testAddMillisecondsPositive()
+    {
+        $this->assertSame(1, Carbon::createFromTime(0, 0, 0)->addMilliseconds(1)->millisecond);
+    }
+
+    public function testAddMillisecondsZero()
+    {
+        $this->assertSame(100, Carbon::createFromTime(0, 0, 0.1)->addMilliseconds(0)->millisecond);
+    }
+
+    public function testAddMillisecondsNegative()
+    {
+        $this->assertSame(999, Carbon::createFromTime(0, 0, 0)->addMilliseconds(-1)->millisecond);
+        $this->assertSame(99, Carbon::createFromTime(0, 0, 0.1)->addMilliseconds(-1)->millisecond);
+    }
+
+    public function testAddMillisecond()
+    {
+        $this->assertSame(101, Carbon::createFromTime(0, 0, 0.1)->addMillisecond()->millisecond);
+    }
+
     public function testAddMicrosecondsPositive()
     {
         $this->assertSame(1, Carbon::createFromTime(0, 0, 0)->addMicroseconds(1)->microsecond);
@@ -205,27 +225,37 @@ class AddTest extends AbstractTestCase
      */
     public function testAddYearPassingArg()
     {
-        $this->assertSame(1977, Carbon::createFromDate(1975)->addYear(2)->year);
+        /** @var mixed $date */
+        $date = Carbon::createFromDate(1975);
+        $this->assertSame(1977, $date->addYear(2)->year);
     }
 
     public function testAddDayPassingArg()
     {
-        $this->assertSame(12, Carbon::createFromDate(1975, 5, 10)->addDay(2)->day);
+        /** @var mixed $date */
+        $date = Carbon::createFromDate(1975, 5, 10);
+        $this->assertSame(12, $date->addDay(2)->day);
     }
 
     public function testAddHourPassingArg()
     {
-        $this->assertSame(12, Carbon::createFromTime(10)->addHour(2)->hour);
+        /** @var mixed $date */
+        $date = Carbon::createFromTime(10);
+        $this->assertSame(12, $date->addHour(2)->hour);
     }
 
     public function testAddMinutePassingArg()
     {
-        $this->assertSame(2, Carbon::createFromTime(0)->addMinute(2)->minute);
+        /** @var mixed $date */
+        $date = Carbon::createFromTime(0);
+        $this->assertSame(2, $date->addMinute(2)->minute);
     }
 
     public function testAddSecondPassingArg()
     {
-        $this->assertSame(2, Carbon::createFromTime(0)->addSecond(2)->second);
+        /** @var mixed $date */
+        $date = Carbon::createFromTime(0);
+        $this->assertSame(2, $date->addSecond(2)->second);
     }
 
     public function testAddQuarter()
@@ -235,7 +265,9 @@ class AddTest extends AbstractTestCase
 
     public function testAddQuarterNegative()
     {
-        $this->assertSame(2, Carbon::createFromDate(1975, 5, 6)->addQuarter(-1)->month);
+        /** @var mixed $date */
+        $date = Carbon::createFromDate(1975, 5, 6);
+        $this->assertSame(2, $date->addQuarter(-1)->month);
     }
 
     public function testSubQuarter()
@@ -251,14 +283,22 @@ class AddTest extends AbstractTestCase
     public function testAddCentury()
     {
         $this->assertSame(2075, Carbon::createFromDate(1975)->addCentury()->year);
-        $this->assertSame(2075, Carbon::createFromDate(1975)->addCentury(1)->year);
-        $this->assertSame(2175, Carbon::createFromDate(1975)->addCentury(2)->year);
+        /** @var mixed $date */
+        $date = Carbon::createFromDate(1975);
+        $this->assertSame(2075, $date->addCentury(1)->year);
+        /** @var mixed $date */
+        $date = Carbon::createFromDate(1975);
+        $this->assertSame(2175, $date->addCentury(2)->year);
     }
 
     public function testAddCenturyNegative()
     {
-        $this->assertSame(1875, Carbon::createFromDate(1975)->addCentury(-1)->year);
-        $this->assertSame(1775, Carbon::createFromDate(1975)->addCentury(-2)->year);
+        /** @var mixed $date */
+        $date = Carbon::createFromDate(1975);
+        $this->assertSame(1875, $date->addCentury(-1)->year);
+        /** @var mixed $date */
+        $date = Carbon::createFromDate(1975);
+        $this->assertSame(1775, $date->addCentury(-2)->year);
     }
 
     public function testAddCenturies()
@@ -276,14 +316,22 @@ class AddTest extends AbstractTestCase
     public function testSubCentury()
     {
         $this->assertSame(1875, Carbon::createFromDate(1975)->subCentury()->year);
-        $this->assertSame(1875, Carbon::createFromDate(1975)->subCentury(1)->year);
-        $this->assertSame(1775, Carbon::createFromDate(1975)->subCentury(2)->year);
+        /** @var mixed $date */
+        $date = Carbon::createFromDate(1975);
+        $this->assertSame(1875, $date->subCentury(1)->year);
+        /** @var mixed $date */
+        $date = Carbon::createFromDate(1975);
+        $this->assertSame(1775, $date->subCentury(2)->year);
     }
 
     public function testSubCenturyNegative()
     {
-        $this->assertSame(2075, Carbon::createFromDate(1975)->subCentury(-1)->year);
-        $this->assertSame(2175, Carbon::createFromDate(1975)->subCentury(-2)->year);
+        /** @var mixed $date */
+        $date = Carbon::createFromDate(1975);
+        $this->assertSame(2075, $date->subCentury(-1)->year);
+        /** @var mixed $date */
+        $date = Carbon::createFromDate(1975);
+        $this->assertSame(2175, $date->subCentury(-2)->year);
     }
 
     public function testSubCenturies()

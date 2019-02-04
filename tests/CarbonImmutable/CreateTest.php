@@ -1,6 +1,6 @@
 <?php
 
-/*
+/**
  * This file is part of the Carbon package.
  *
  * (c) Brian Nesbitt <brian@nesbot.com>
@@ -8,7 +8,6 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
-
 namespace Tests\CarbonImmutable;
 
 use Carbon\CarbonImmutable as Carbon;
@@ -195,5 +194,8 @@ class CreateTest extends AbstractTestCase
     {
         $dt = Carbon::createFromDate(2000, 1, 1, -4);
         $this->assertSame('America/New_York', $dt->tzName);
+
+        $dt = Carbon::createFromDate(2000, 1, 1, '-4');
+        $this->assertSame('-04:00', $dt->tzName);
     }
 }

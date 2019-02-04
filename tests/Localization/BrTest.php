@@ -1,6 +1,6 @@
 <?php
 
-/*
+/**
  * This file is part of the Carbon package.
  *
  * (c) Brian Nesbitt <brian@nesbot.com>
@@ -8,7 +8,6 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
-
 namespace Tests\Localization;
 
 class BrTest extends LocalizationTestCase
@@ -167,9 +166,9 @@ class BrTest extends LocalizationTestCase
         // Carbon::now()->subMonths(2)->diffForHumans(null, false, true)
         '2 viz \'zo',
         // Carbon::now()->subYears(1)->diffForHumans()
-        '1 bloaz \'zo',
+        'ur bloaz \'zo',
         // Carbon::now()->subYears(1)->diffForHumans(null, false, true)
-        '1 bloaz \'zo',
+        'ur bloaz \'zo',
         // Carbon::now()->subYears(2)->diffForHumans()
         '2 vloaz \'zo',
         // Carbon::now()->subYears(2)->diffForHumans(null, false, true)

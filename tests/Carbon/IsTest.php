@@ -1,6 +1,6 @@
 <?php
 
-/*
+/**
  * This file is part of the Carbon package.
  *
  * (c) Brian Nesbitt <brian@nesbot.com>
@@ -8,7 +8,6 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
-
 namespace Tests\Carbon;
 
 use \DateTime;
@@ -73,6 +72,7 @@ class IsTest extends AbstractTestCase
         $this->assertTrue(Carbon::now()->isSameWeek(Carbon::now()));
         $this->assertTrue(Carbon::now()->startOfWeek()->isSameWeek(Carbon::now()));
         $this->assertTrue(Carbon::now()->endOfWeek()->isSameWeek(Carbon::now()));
+        $this->assertTrue(Carbon::parse('2019-01-01')->isSameWeek(Carbon::parse('2018-12-31')));
     }
 
     public function testIsNextWeekTrue()
@@ -87,12 +87,16 @@ class IsTest extends AbstractTestCase
 
     public function testIsNextWeekFalse()
     {
-        $this->assertFalse(Carbon::now()->addWeek(2)->isNextWeek());
+        /** @var mixed $date */
+        $date = Carbon::now();
+        $this->assertFalse($date->addWeek(2)->isNextWeek());
     }
 
     public function testIsLastWeekFalse()
     {
-        $this->assertFalse(Carbon::now()->subWeek(2)->isLastWeek());
+        /** @var mixed $date */
+        $date = Carbon::now();
+        $this->assertFalse($date->subWeek(2)->isLastWeek());
     }
 
     public function testIsNextQuarterTrue()
@@ -148,12 +152,16 @@ class IsTest extends AbstractTestCase
 
     public function testIsNextYearFalse()
     {
-        $this->assertFalse(Carbon::now()->addYear(2)->isNextYear());
+        /** @var mixed $date */
+        $date = Carbon::now();
+        $this->assertFalse($date->addYear(2)->isNextYear());
     }
 
     public function testIsLastYearFalse()
     {
-        $this->assertFalse(Carbon::now()->subYear(2)->isLastYear());
+        /** @var mixed $date */
+        $date = Carbon::now();
+        $this->assertFalse($date->subYear(2)->isLastYear());
     }
 
     public function testIsTodayFalseWithYesterday()
@@ -844,6 +852,9 @@ class IsTest extends AbstractTestCase
         $this->assertTrue(Carbon::hasFormat('1975-05-01', 'Y-m-d'));
         $this->assertTrue(Carbon::hasFormat('Sun 21st', 'D jS'));
 
+        $this->assertTrue(Carbon::hasFormat('2000-07-01T00:00:00+00:00', Carbon::ATOM));
+        $this->assertTrue(Carbon::hasFormat('Y-01-30\\', '\\Y-m-d\\\\'));
+
         // Format failure
         $this->assertFalse(Carbon::hasFormat('1975-05-01', 'd m Y'));
         $this->assertFalse(Carbon::hasFormat('Foo 21st', 'D jS'));
@@ -861,7 +872,9 @@ class IsTest extends AbstractTestCase
      */
     public function testIsSameFoobar()
     {
-        Carbon::parse('12:00:00')->isSameFoobar(Carbon::parse('15:30:45'));
+        /** @var mixed $date */
+        $date = Carbon::parse('12:00:00');
+        $date->isSameFoobar(Carbon::parse('15:30:45'));
     }
 
     /**
@@ -870,6 +883,8 @@ class IsTest extends AbstractTestCase
      */
     public function testIsCurrentFoobar()
     {
-        Carbon::parse('12:00:00')->isCurrentFoobar();
+        /** @var mixed $date */
+        $date = Carbon::parse('12:00:00');
+        $date->isCurrentFoobar();
     }
 }
