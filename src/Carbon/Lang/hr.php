@@ -9,6 +9,24 @@
  * file that was distributed with this source code.
  */
 
+/**
+ * Authors:
+ * - Josh Soref
+ * - François B
+ * - Tim Fish
+ * - shaishavgandhi05
+ * - Serhan Apaydın
+ * - JD Isaacks
+ * - tomhorvat
+ * - Josh Soref
+ * - François B
+ * - shaishavgandhi05
+ * - Serhan Apaydın
+ * - JD Isaacks
+ * - tomhorvat
+ * - Stjepan
+ * - Vanja Retkovac (vr00)
+ */
 return [
     'year' => ':count godinu|:count godine|:count godina',
     'y' => ':count god.|:count god.|:count god.',
@@ -23,11 +41,13 @@ return [
     'minute' => ':count minutu|:count minute|:count minuta',
     'min' => ':count min.|:count min.|:count min.',
     'second' => ':count sekundu|:count sekunde|:count sekundi',
+    'a_second' => 'nekoliko sekundi|:count sekunde|:count sekundi',
     's' => ':count sek.|:count sek.|:count sek.',
     'ago' => 'prije :time',
     'from_now' => 'za :time',
-    'after' => 'za :time',
-    'before' => 'prije :time',
+    'after' => ':time poslije',
+    'before' => ':time prije',
+    'diff_now' => 'sad',
     'diff_yesterday' => 'jučer',
     'diff_tomorrow' => 'sutra',
     'diff_before_yesterday' => 'prekjučer',

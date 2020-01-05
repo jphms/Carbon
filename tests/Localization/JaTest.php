@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 /**
  * This file is part of the Carbon package.
@@ -9,6 +10,8 @@
  * file that was distributed with this source code.
  */
 namespace Tests\Localization;
+
+use Carbon\Carbon;
 
 class JaTest extends LocalizationTestCase
 {
@@ -96,7 +99,7 @@ class JaTest extends LocalizationTestCase
         // Carbon::parse('2018-04-10 00:00:00')->isoFormat('DDDo')
         '100日',
         // Carbon::parse('2018-02-10 00:00:00', 'Europe/Paris')->isoFormat('h:mm a z')
-        '12:00 午前 cet',
+        '12:00 午前 CET',
         // Carbon::parse('2018-02-10 00:00:00')->isoFormat('h:mm A, h:mm a')
         '12:00 午前, 12:00 午前',
         // Carbon::parse('2018-02-10 01:30:00')->isoFormat('h:mm A, h:mm a')
@@ -118,7 +121,7 @@ class JaTest extends LocalizationTestCase
         // Carbon::parse('2018-01-01 00:00:00')->ordinal('hour')
         '0',
         // Carbon::now()->subSeconds(1)->diffForHumans()
-        '数秒前',
+        '1秒前',
         // Carbon::now()->subSeconds(1)->diffForHumans(null, false, true)
         '1秒前',
         // Carbon::now()->subSeconds(2)->diffForHumans()
@@ -174,19 +177,19 @@ class JaTest extends LocalizationTestCase
         // Carbon::now()->subYears(2)->diffForHumans(null, false, true)
         '2年前',
         // Carbon::now()->addSecond()->diffForHumans()
-        '数秒後',
+        '1秒後',
         // Carbon::now()->addSecond()->diffForHumans(null, false, true)
         '1秒後',
         // Carbon::now()->addSecond()->diffForHumans(Carbon::now())
-        '数秒後',
+        '1秒後',
         // Carbon::now()->addSecond()->diffForHumans(Carbon::now(), false, true)
         '1秒後',
         // Carbon::now()->diffForHumans(Carbon::now()->addSecond())
-        '数秒前',
+        '1秒前',
         // Carbon::now()->diffForHumans(Carbon::now()->addSecond(), false, true)
         '1秒前',
         // Carbon::now()->addSecond()->diffForHumans(Carbon::now(), true)
-        '数秒',
+        '1秒',
         // Carbon::now()->addSecond()->diffForHumans(Carbon::now(), true, true)
         '1秒',
         // Carbon::now()->diffForHumans(Carbon::now()->addSecond()->addSecond(), true)
@@ -196,7 +199,7 @@ class JaTest extends LocalizationTestCase
         // Carbon::now()->addSecond()->diffForHumans(null, false, true, 1)
         '1秒後',
         // Carbon::now()->addMinute()->addSecond()->diffForHumans(null, true, false, 2)
-        '1分 数秒',
+        '1分 1秒',
         // Carbon::now()->addYears(2)->addMonths(3)->addDay()->addSecond()->diffForHumans(null, true, true, 4)
         '2年 3ヶ月 1日 1秒',
         // Carbon::now()->addYears(3)->diffForHumans(null, null, false, 4)
@@ -211,11 +214,20 @@ class JaTest extends LocalizationTestCase
         '1週間 6日',
         // Carbon::now()->addWeek()->addDays(6)->diffForHumans(null, true, false, 2)
         '1週間 6日',
+        // Carbon::now()->addWeek()->addDays(6)->diffForHumans(["join" => true, "parts" => 2])
+        '1週間、6日後',
         // Carbon::now()->addWeeks(2)->addHour()->diffForHumans(null, true, false, 2)
         '2週間 1時間',
+        // Carbon::now()->addHour()->diffForHumans(["aUnit" => true])
+        '1時間後',
         // CarbonInterval::days(2)->forHumans()
         '2日',
         // CarbonInterval::create('P1DT3H')->forHumans(true)
         '1日 3時間',
     ];
+
+    public function testYearWithJapaneseNumbers()
+    {
+        self::assertSame('二千十五', Carbon::parse('2015-12-23 00:00:00')->locale('ja')->getAltNumber('year'));
+    }
 }

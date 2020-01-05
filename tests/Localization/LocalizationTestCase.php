@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 /**
  * This file is part of the Carbon package.
@@ -197,7 +198,7 @@ abstract class LocalizationTestCase extends AbstractTestCase
         'ur' => 'Urdu',
         'uz' => 'Uzbek',
         've' => 'Venda',
-        'vi' => 'VietNamese',
+        'vi' => 'Vietnamese',
         'vo' => 'Volapuk',
         'wa' => 'Walloon',
         'wo' => 'Wolof',
@@ -309,12 +310,31 @@ abstract class LocalizationTestCase extends AbstractTestCase
         '{class}::now()->addWeek()->addHours(10)->diffForHumans(null, true, false, 2)',
         '{class}::now()->addWeek()->addDays(6)->diffForHumans(null, true, false, 2)',
         '{class}::now()->addWeek()->addDays(6)->diffForHumans(null, true, false, 2)',
+        '{class}::now()->addWeek()->addDays(6)->diffForHumans(["join" => true, "parts" => 2])',
         '{class}::now()->addWeeks(2)->addHour()->diffForHumans(null, true, false, 2)',
+        '{class}::now()->addHour()->diffForHumans(["aUnit" => true])',
         'CarbonInterval::days(2)->forHumans()',
         'CarbonInterval::create(\'P1DT3H\')->forHumans(true)',
     ];
 
     const CASES = [];
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        if (!Carbon::setLocale(static::LOCALE) || !$this->areSameLocales(Carbon::getLocale(), static::LOCALE)) {
+            throw new \InvalidArgumentException('Locale '.static::LOCALE.' not found');
+        }
+
+        if (!CarbonImmutable::setLocale(static::LOCALE) || !$this->areSameLocales(CarbonImmutable::getLocale(), static::LOCALE)) {
+            throw new \InvalidArgumentException('Locale '.static::LOCALE.' not found');
+        }
+
+        if (!CarbonInterval::setLocale(static::LOCALE) || !$this->areSameLocales(CarbonInterval::getLocale(), static::LOCALE)) {
+            throw new \InvalidArgumentException('Locale '.static::LOCALE.' not found');
+        }
+    }
 
     /**
      * @group language
@@ -329,16 +349,6 @@ abstract class LocalizationTestCase extends AbstractTestCase
             $date = CarbonImmutable::parse('2018-05-15 20:49:13.881726');
             CarbonImmutable::setTestNow($this->immutableNow = $date);
 
-            if (!Carbon::setLocale(static::LOCALE) || Carbon::getLocale() !== static::LOCALE) {
-                throw new \InvalidArgumentException('Locale '.static::LOCALE.' not found');
-            }
-            if (!CarbonImmutable::setLocale(static::LOCALE) || CarbonImmutable::getLocale() !== static::LOCALE) {
-                throw new \InvalidArgumentException('Locale '.static::LOCALE.' not found');
-            }
-            if (!CarbonInterval::setLocale(static::LOCALE) || CarbonInterval::getLocale() !== static::LOCALE) {
-                throw new \InvalidArgumentException('Locale '.static::LOCALE.' not found');
-            }
-
             foreach (static::TESTS as $index => $test) {
                 foreach ([Carbon::class, CarbonImmutable::class] as $class) {
                     $test = str_replace('{class}', $class, $test);
@@ -350,7 +360,7 @@ abstract class LocalizationTestCase extends AbstractTestCase
                         $locale = static::LOCALES[$key].' ('.$locale.')';
                     }
 
-                    $this->assertSame($expected, $result, 'In '.$locale.', '.$test.' should return '.$expected);
+                    $this->assertSame($expected, $result, 'In '.$locale.', '.str_replace('Carbon\\', '', $test).' should return '.$expected);
                 }
             }
         });

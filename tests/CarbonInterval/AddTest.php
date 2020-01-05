@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 /**
  * This file is part of the Carbon package.
@@ -113,13 +114,6 @@ class AddTest extends AbstractTestCase
         }
         $interval->add($add);
 
-        if ($interval->hours < 0) {
-            echo "\n\n";
-            var_dump($base, $increment, $expectedResult);
-            echo "\n\n";
-            var_dump($interval->hours, $interval->h, $interval->invert);
-            exit;
-        }
         $this->assertGreaterThanOrEqual(0, $interval->hours);
 
         $actualResult = ($interval->invert ? -1 : 1) * $interval->hours;
@@ -145,12 +139,13 @@ class AddTest extends AbstractTestCase
         $this->assertCarbonInterval(CarbonInterval::hours(4)->sub(CarbonInterval::minutes(30)), 0, 0, 0, 4, -30, 0);
     }
 
-    /**
-     * @expectedException \InvalidArgumentException
-     * @expectedExceptionMessage This type of data cannot be added/subtracted.
-     */
     public function testAddWrongFormat()
     {
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage(
+            'This type of data cannot be added/subtracted.'
+        );
+
         CarbonInterval::day()->add(Carbon::now());
     }
 }

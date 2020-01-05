@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 /**
  * This file is part of the Carbon package.
@@ -26,7 +27,7 @@ class LastErrorTest extends AbstractTestCase
      */
     protected $noErrors;
 
-    public function setUp()
+    protected function setUp(): void
     {
         parent::setUp();
 

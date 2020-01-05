@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 /**
  * This file is part of the Carbon package.
@@ -122,12 +123,13 @@ class RoundTest extends AbstractTestCase
         Carbon::setWeekEndsAt(Carbon::SUNDAY);
     }
 
-    /**
-     * @expectedException \InvalidArgumentException
-     * @expectedExceptionMessage Unknown unit 'foobar' to floor
-     */
     public function testRoundInvalidArgument()
     {
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage(
+            'Unknown unit \'foobar\' to floor'
+        );
+
         Carbon::now()->roundUnit('foobar');
     }
 }

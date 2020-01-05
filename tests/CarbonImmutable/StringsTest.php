@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 /**
  * This file is part of the Carbon package.
@@ -36,10 +37,11 @@ class StringsTest extends AbstractTestCase
     public function testSetToStringFormatClosure()
     {
         Carbon::setToStringFormat(function (CarbonInterface $d) {
-            return $d->format($d->year === 1976 ?
+            $format = $d->year === 1976 ?
                 'jS \o\f F g:i:s a' :
-                'jS \o\f F, Y g:i:s a'
-            );
+                'jS \o\f F, Y g:i:s a';
+
+            return $d->format($format);
         });
 
         $d = Carbon::create(1976, 12, 25, 14, 15, 16);
@@ -236,7 +238,19 @@ class StringsTest extends AbstractTestCase
 
         $d = Carbon::parse('2017-01-01');
         $this->assertSame('2017', $d->isoFormat('g'));
+        $this->assertSame('2017', $d->locale('en_US')->isoFormat('g'));
+        $this->assertSame('2016', $d->locale('fr')->isoFormat('g'));
         $this->assertSame('2016', $d->isoFormat('G'));
+        $this->assertSame('2016', $d->locale('en_US')->isoFormat('G'));
+        $this->assertSame('2016', $d->locale('fr')->isoFormat('G'));
+
+        $d = Carbon::parse('2015-12-31');
+        $this->assertSame('2016', $d->isoFormat('g'));
+        $this->assertSame('2016', $d->locale('en_US')->isoFormat('g'));
+        $this->assertSame('2015', $d->locale('fr')->isoFormat('g'));
+        $this->assertSame('2015', $d->isoFormat('G'));
+        $this->assertSame('2015', $d->locale('en_US')->isoFormat('G'));
+        $this->assertSame('2015', $d->locale('fr')->isoFormat('G'));
 
         $d = Carbon::parse('2017-01-01 22:25:24.182937');
         $this->assertSame('1 18 182 1829 18293 182937', $d->isoFormat('S SS SSS SSSS SSSSS SSSSSS'));
@@ -259,5 +273,13 @@ class StringsTest extends AbstractTestCase
         $d = BadIsoCarbon::parse('midnight');
 
         $this->assertSame('', $d->isoFormat('MMM'));
+    }
+
+    public function testTranslatedFormat()
+    {
+        $this->assertSame('1st', Carbon::parse('01-01-01')->translatedFormat('jS'));
+        $this->assertSame('1er', Carbon::parse('01-01-01')->locale('fr')->translatedFormat('jS'));
+        $this->assertSame('31 мая', Carbon::parse('2019-05-15')->locale('ru')->translatedFormat('t F'));
+        $this->assertSame('5 май', Carbon::parse('2019-05-15')->locale('ru')->translatedFormat('n F'));
     }
 }

@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 /**
  * This file is part of the Carbon package.
@@ -15,11 +16,10 @@ use Tests\AbstractTestCase;
 
 class GettersTest extends AbstractTestCase
 {
-    /**
-     * @expectedException \InvalidArgumentException
-     */
     public function testGettersThrowExceptionOnUnknownGetter()
     {
+        $this->expectException(\InvalidArgumentException::class);
+
         /** @var mixed $d */
         $d = Carbon::create(1234, 5, 6, 7, 8, 9);
         $d->doesNotExit;
@@ -195,11 +195,11 @@ class GettersTest extends AbstractTestCase
         if (setlocale(LC_ALL, 'fr_FR.UTF-8', 'fr_FR.utf8', 'fr_FR', 'fr') === false) {
             $this->markTestSkipped('testSetLocaleToAuto test need fr_FR.UTF-8.');
         }
-        $d = Carbon::create(2012, 2, 6, 7, 8, 9);
+        $d = Carbon::create(2019, 7, 15, 7, 8, 9);
         $this->assertSame('lundi', $d->localeDayOfWeek);
         $this->assertSame('lun.', $d->shortLocaleDayOfWeek);
-        $this->assertSame('février', $d->localeMonth);
-        $this->assertSame('févr.', $d->shortLocaleMonth);
+        $this->assertSame('juillet', $d->localeMonth);
+        $this->assertSame('juil.', $d->shortLocaleMonth);
         setlocale(LC_ALL, $currentLocale);
     }
 
@@ -231,7 +231,7 @@ class GettersTest extends AbstractTestCase
     public function testGetAgeWithRealAge()
     {
         $d = Carbon::createFromDate(1975, 5, 21);
-        $age = intval(substr(intval(date('Ymd')) - intval(date('Ymd', $d->timestamp)), 0, -4));
+        $age = intval(substr((string) (intval(date('Ymd')) - intval(date('Ymd', $d->timestamp))), 0, -4));
 
         $this->assertSame($age, $d->age);
     }
@@ -312,10 +312,14 @@ class GettersTest extends AbstractTestCase
     {
         $this->assertFalse(Carbon::createFromDate(2013, 1, 1, 'America/Toronto')->utc);
         $this->assertFalse(Carbon::createFromDate(2013, 1, 1, 'America/Toronto')->isUtc());
-        $this->assertFalse(Carbon::createFromDate(2013, 1, 1, 'America/Toronto')->isUTC());
+        /** @var object $date */
+        $date = Carbon::createFromDate(2013, 1, 1, 'America/Toronto');
+        $this->assertFalse($date->isUTC());
         $this->assertFalse(Carbon::createFromDate(2013, 1, 1, 'Europe/Paris')->utc);
         $this->assertFalse(Carbon::createFromDate(2013, 1, 1, 'Europe/Paris')->isUtc());
-        $this->assertFalse(Carbon::createFromDate(2013, 1, 1, 'Europe/Paris')->isUTC());
+        /** @var object $date */
+        $date = Carbon::createFromDate(2013, 1, 1, 'Europe/Paris');
+        $this->assertFalse($date->isUTC());
     }
 
     public function testGetUtcTrue()

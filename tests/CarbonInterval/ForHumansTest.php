@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 /**
  * This file is part of the Carbon package.
@@ -19,7 +20,7 @@ use Tests\CarbonInterval\Fixtures\MyCarbonInterval;
 
 class ForHumansTest extends AbstractTestCase
 {
-    protected function tearDown()
+    protected function tearDown(): void
     {
         parent::tearDown();
         CarbonInterval::setLocale('en');
@@ -27,6 +28,7 @@ class ForHumansTest extends AbstractTestCase
 
     public function testGetTranslator()
     {
+        /** @var \Carbon\Translator $t */
         $t = CarbonInterval::getTranslator();
         $this->assertNotNull($t);
         $this->assertSame('en', $t->getLocale());
@@ -35,6 +37,7 @@ class ForHumansTest extends AbstractTestCase
 
     public function testResetTranslator()
     {
+        /** @var \Carbon\Translator $t */
         $t = MyCarbonInterval::getTranslator();
         $this->assertNotNull($t);
         $this->assertSame('en', $t->getLocale());
@@ -43,15 +46,25 @@ class ForHumansTest extends AbstractTestCase
 
     public function testSetTranslator()
     {
+        /** @var \Carbon\Translator $t */
         $ori = CarbonInterval::getTranslator();
         $t = new Translator('fr');
         $t->addLoader('array', new ArrayLoader());
         CarbonInterval::setTranslator($t);
 
+        /** @var \Carbon\Translator $t */
         $t = CarbonInterval::getTranslator();
         $this->assertNotNull($t);
         $this->assertSame('fr', $t->getLocale());
         CarbonInterval::setTranslator($ori);
+    }
+
+    public function testDumpTranslator()
+    {
+        $t = new \Carbon\Translator('tr_CY');
+        $this->assertSame([
+            'locale' => 'tr_CY',
+        ], $t->__debugInfo());
     }
 
     public function testGetLocale()
@@ -109,7 +122,7 @@ class ForHumansTest extends AbstractTestCase
     public function testYearsAndMonthInFrench()
     {
         CarbonInterval::setLocale('fr');
-        $this->assertSame('2 ans un mois', CarbonInterval::create(2, 1)->forHumans());
+        $this->assertSame('2 ans 1 mois', CarbonInterval::create(2, 1)->forHumans());
     }
 
     public function testYearsAndMonthInGerman()
@@ -122,15 +135,15 @@ class ForHumansTest extends AbstractTestCase
     public function testYearsAndMonthInBulgarian()
     {
         CarbonInterval::setLocale('bg');
-        $this->assertSame('година месец', CarbonInterval::create(1, 1)->forHumans());
-        $this->assertSame('2 години месец', CarbonInterval::create(2, 1)->forHumans());
+        $this->assertSame('1 година 1 месец', CarbonInterval::create(1, 1)->forHumans());
+        $this->assertSame('2 години 1 месец', CarbonInterval::create(2, 1)->forHumans());
     }
 
     public function testYearsAndMonthInCatalan()
     {
         CarbonInterval::setLocale('ca');
-        $this->assertSame('un any un mes', CarbonInterval::create(1, 1)->forHumans());
-        $this->assertSame('2 anys un mes', CarbonInterval::create(2, 1)->forHumans());
+        $this->assertSame('1 any 1 mes', CarbonInterval::create(1, 1)->forHumans());
+        $this->assertSame('2 anys 1 mes', CarbonInterval::create(2, 1)->forHumans());
     }
 
     public function testYearsAndMonthInCzech()
@@ -143,22 +156,22 @@ class ForHumansTest extends AbstractTestCase
     public function testYearsAndMonthInGreek()
     {
         CarbonInterval::setLocale('el');
-        $this->assertSame('ένας χρόνος ένας μήνας', CarbonInterval::create(1, 1)->forHumans());
-        $this->assertSame('2 χρόνια ένας μήνας', CarbonInterval::create(2, 1)->forHumans());
+        $this->assertSame('1 χρόνος 1 μήνας', CarbonInterval::create(1, 1)->forHumans());
+        $this->assertSame('2 χρόνια 1 μήνας', CarbonInterval::create(2, 1)->forHumans());
     }
 
     public function testYearsAndMonthsInDanish()
     {
         CarbonInterval::setLocale('da');
-        $this->assertSame('et år en måned', CarbonInterval::create(1, 1)->forHumans());
-        $this->assertSame('2 år en måned', CarbonInterval::create(2, 1)->forHumans());
+        $this->assertSame('1 år 1 måned', CarbonInterval::create(1, 1)->forHumans());
+        $this->assertSame('2 år 1 måned', CarbonInterval::create(2, 1)->forHumans());
     }
 
     public function testCustomJoin()
     {
         $interval = CarbonInterval::create(1, 1, 0, 1, 1)->locale('fr');
-        $this->assertSame('un an un mois un jour une heure', $interval->forHumans());
-        $this->assertSame('un an, un mois, un jour et une heure', $interval->forHumans([
+        $this->assertSame('1 an 1 mois 1 jour 1 heure', $interval->forHumans());
+        $this->assertSame('1 an, 1 mois, 1 jour et 1 heure', $interval->forHumans([
             'join' => true,
         ]));
         $this->assertSame('တစ်နှစ် တစ်လ တစ်ရက် တစ်နာရီ', $interval->copy()->locale('my')->forHumans([
@@ -166,9 +179,11 @@ class ForHumansTest extends AbstractTestCase
         ]));
         $this->assertSame('un an, un mois, un jour, une heure', $interval->forHumans([
             'join' => ', ',
+            'aUnit' => true,
         ]));
         $this->assertSame('un an et un mois et un jour et aussi une heure', $interval->forHumans([
             'join' => [' et ', ' et aussi '],
+            'aUnit' => true,
         ]));
         $interval = CarbonInterval::create(1, 1, 0, 1, 1)->locale('en');
         $this->assertSame('1 year 1 month 1 day 1 hour', $interval->forHumans());
@@ -178,8 +193,9 @@ class ForHumansTest extends AbstractTestCase
         $this->assertSame('1 year, 1 month, 1 day, 1 hour', $interval->forHumans([
             'join' => ', ',
         ]));
-        $this->assertSame('1 year and 1 month and 1 day and also 1 hour', $interval->forHumans([
+        $this->assertSame('a year and a month and a day and also an hour', $interval->forHumans([
             'join' => [' and ', ' and also '],
+            'aUnit' => true,
         ]));
         $this->assertSame('[1 year;1 month;1 day;1 hour]', $interval->forHumans([
             'join' => function ($list) {
@@ -188,15 +204,37 @@ class ForHumansTest extends AbstractTestCase
         ]));
     }
 
+    public function testChineseJoin()
+    {
+        $interval = CarbonInterval::create(1, 1, 0, 1, 1)->locale('zh_Hans');
+        $this->assertSame('1年1个月1天1小时', $interval->forHumans());
+        $this->assertSame('1年1个月1天1小时', $interval->forHumans([
+            'join' => true,
+        ]));
+        $this->assertSame('1 年 1 个月 1 天 1 小时', $interval->forHumans([
+            'join' => false,
+        ]));
+        $this->assertSame('1年1个月1天1小时', $interval->forHumans([
+            'join' => '',
+        ]));
+        $this->assertSame('1 年 1 个月 1 天 1 小时', $interval->forHumans([
+            'join' => ' ',
+        ]));
+        $this->assertSame('1年-1个月-1天-1小时', $interval->forHumans([
+            'join' => '-',
+        ]));
+    }
+
     public function testOptionsAsArray()
     {
         $interval = CarbonInterval::create(1, 1, 0, 1, 1)->locale('fr');
-        $this->assertSame('un an', $interval->forHumans([
+        $this->assertSame('1 an', $interval->forHumans([
             'join' => 'foo',
             'parts' => 1,
         ]));
         $this->assertSame('il y a un an', $interval->forHumans([
             'join' => 'foo',
+            'aUnit' => true,
             'parts' => 1,
             'syntax' => CarbonInterface::DIFF_RELATIVE_TO_NOW,
         ]));
@@ -210,5 +248,124 @@ class ForHumansTest extends AbstractTestCase
             'syntax' => CarbonInterface::DIFF_RELATIVE_TO_NOW,
             'options' => CarbonInterface::ONE_DAY_WORDS,
         ]));
+    }
+
+    public function testRoundYears()
+    {
+        CarbonInterval::setLocale('en');
+        $interval = CarbonInterval::years(2)->months(11);
+        $this->assertEquals('3 years', $interval->forHumans(['parts' => 1, 'options' => CarbonInterface::ROUND]));
+        $interval = CarbonInterval::years(2)->months(5)->days(70);
+        $this->assertEquals('3 years', $interval->forHumans(['parts' => 1, 'options' => CarbonInterface::ROUND]));
+    }
+
+    public function testRoundMonths()
+    {
+        CarbonInterval::setLocale('en');
+        $interval = CarbonInterval::months(2)->weeks(3);
+        $this->assertEquals('3 months', $interval->forHumans(['parts' => 1, 'options' => CarbonInterface::ROUND]));
+    }
+
+    public function testRoundUp()
+    {
+        CarbonInterval::setLocale('en');
+        $interval = CarbonInterval::days(2)->hours(23);
+        $this->assertEquals('3 days', $interval->forHumans(['parts' => 1, 'options' => CarbonInterface::ROUND]));
+    }
+
+    public function testRoundDown()
+    {
+        CarbonInterval::setLocale('en');
+        $interval = CarbonInterval::days(2)->hours(11);
+        $this->assertEquals('2 days', $interval->forHumans(['parts' => 1, 'options' => CarbonInterface::ROUND]));
+    }
+
+    public function testRoundMinutes()
+    {
+        CarbonInterval::setLocale('en');
+        $interval = CarbonInterval::days(2)->hours(11)->minutes(15);
+        $this->assertEquals('2 days 11 hours', $interval->forHumans(['parts' => 2, 'options' => CarbonInterface::ROUND]));
+    }
+
+    public function testRoundDownWhenNextIntervalIsNonSequential()
+    {
+        CarbonInterval::setLocale('en');
+        $interval = CarbonInterval::days(2)->minutes(59);
+        $this->assertEquals('2 days', $interval->forHumans(['parts' => 1, 'options' => CarbonInterface::ROUND]));
+    }
+
+    public function testRoundMultipleParts()
+    {
+        CarbonInterval::setLocale('en');
+        $interval = CarbonInterval::days(2)->minutes(45)->seconds(59);
+        $this->assertEquals('2 days 46 minutes', $interval->forHumans(['parts' => 2, 'options' => CarbonInterface::ROUND]));
+    }
+
+    public function testRoundMultiplePartsGap()
+    {
+        CarbonInterval::setLocale('en');
+        $interval = CarbonInterval::days(2)->seconds(59);
+        $this->assertEquals('2 days 59 seconds', $interval->forHumans(['parts' => 2]));
+        $this->assertEquals('2 days 59 seconds', $interval->forHumans(['parts' => 2, 'options' => CarbonInterface::ROUND]));
+        $this->assertEquals('2 days', $interval->forHumans(['parts' => 1, 'options' => CarbonInterface::ROUND]));
+    }
+
+    public function testRoundWeeks()
+    {
+        CarbonInterval::setLocale('en');
+        $interval = CarbonInterval::days(13);
+        $this->assertEquals('2 weeks', $interval->forHumans(['parts' => 1, 'options' => CarbonInterface::ROUND]));
+    }
+
+    public function testRoundWeeksWithMultipleParts()
+    {
+        CarbonInterval::setLocale('en');
+        $interval = CarbonInterval::days(13);
+        $this->assertEquals('1 week 6 days', $interval->forHumans(['parts' => 2, 'options' => CarbonInterface::ROUND]));
+    }
+
+    public function testRoundOverflowNonSequentialRoundUp()
+    {
+        CarbonInterval::setLocale('en');
+        $interval = CarbonInterval::years(2)->months(35);
+        $this->assertEquals('5 years', $interval->forHumans(['parts' => 1, 'options' => CarbonInterface::ROUND]));
+    }
+
+    public function testRoundOverflowNonSequentialRoundDown()
+    {
+        CarbonInterval::setLocale('en');
+        $interval = CarbonInterval::years(2)->months(37);
+        $this->assertEquals('5 years', $interval->forHumans(['parts' => 1, 'options' => CarbonInterface::ROUND]));
+    }
+
+    public function testRoundCarryOverDoesntMatter()
+    {
+        CarbonInterval::setLocale('en');
+        $interval = CarbonInterval::days(2)->hours(11)->minutes(59);
+        $this->assertEquals('2 days', $interval->forHumans(['parts' => 1, 'options' => CarbonInterface::ROUND]));
+
+        $interval = CarbonInterval::days(2)->minutes(780);
+        $this->assertEquals('3 days', $interval->forHumans(['parts' => 1, 'options' => CarbonInterface::ROUND]));
+
+        $interval = CarbonInterval::days(2)->minutes(59)->seconds(58);
+        $this->assertEquals('2 days 1 hour', $interval->forHumans(['parts' => 2, 'options' => CarbonInterface::ROUND]));
+
+        $interval = CarbonInterval::days(2)->minutes(59)->seconds(1);
+        $this->assertEquals('2 days 1 hour', $interval->forHumans(['parts' => 2, 'options' => CarbonInterface::CEIL]));
+
+        $interval = CarbonInterval::days(2)->minutes(59)->seconds(58);
+        $this->assertEquals('2 days 59 minutes', $interval->forHumans(['parts' => 2, 'options' => CarbonInterface::FLOOR]));
+
+        // Floor is not the default behavior, see the difference below:
+        $interval = CarbonInterval::days(2)->minutes(59)->seconds(62);
+        $this->assertEquals('2 days 1 hour', $interval->forHumans(['parts' => 2, 'options' => CarbonInterface::FLOOR]));
+
+        $interval = CarbonInterval::days(2)->minutes(59)->seconds(62);
+        $this->assertEquals('2 days 59 minutes', $interval->forHumans(['parts' => 2]));
+    }
+
+    public function testGetValuesSequence()
+    {
+        $this->assertSame([], CarbonInterval::days(0)->getValuesSequence());
     }
 }

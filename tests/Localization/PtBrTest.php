@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 /**
  * This file is part of the Carbon package.
@@ -18,31 +19,31 @@ class PtBrTest extends LocalizationTestCase
         // Carbon::parse('2018-01-04 00:00:00')->addDays(1)->calendar(Carbon::parse('2018-01-04 00:00:00'))
         'Amanhã às 00:00',
         // Carbon::parse('2018-01-04 00:00:00')->addDays(2)->calendar(Carbon::parse('2018-01-04 00:00:00'))
-        'Sábado às 00:00',
+        'sábado às 00:00',
         // Carbon::parse('2018-01-04 00:00:00')->addDays(3)->calendar(Carbon::parse('2018-01-04 00:00:00'))
-        'Domingo às 00:00',
+        'domingo às 00:00',
         // Carbon::parse('2018-01-04 00:00:00')->addDays(4)->calendar(Carbon::parse('2018-01-04 00:00:00'))
-        'Segunda-feira às 00:00',
+        'segunda-feira às 00:00',
         // Carbon::parse('2018-01-04 00:00:00')->addDays(5)->calendar(Carbon::parse('2018-01-04 00:00:00'))
-        'Terça-feira às 00:00',
+        'terça-feira às 00:00',
         // Carbon::parse('2018-01-04 00:00:00')->addDays(6)->calendar(Carbon::parse('2018-01-04 00:00:00'))
-        'Quarta-feira às 00:00',
+        'quarta-feira às 00:00',
         // Carbon::parse('2018-01-05 00:00:00')->addDays(6)->calendar(Carbon::parse('2018-01-05 00:00:00'))
-        'Quinta-feira às 00:00',
+        'quinta-feira às 00:00',
         // Carbon::parse('2018-01-06 00:00:00')->addDays(6)->calendar(Carbon::parse('2018-01-06 00:00:00'))
-        'Sexta-feira às 00:00',
+        'sexta-feira às 00:00',
         // Carbon::parse('2018-01-07 00:00:00')->addDays(2)->calendar(Carbon::parse('2018-01-07 00:00:00'))
-        'Terça-feira às 00:00',
+        'terça-feira às 00:00',
         // Carbon::parse('2018-01-07 00:00:00')->addDays(3)->calendar(Carbon::parse('2018-01-07 00:00:00'))
-        'Quarta-feira às 00:00',
+        'quarta-feira às 00:00',
         // Carbon::parse('2018-01-07 00:00:00')->addDays(4)->calendar(Carbon::parse('2018-01-07 00:00:00'))
-        'Quinta-feira às 00:00',
+        'quinta-feira às 00:00',
         // Carbon::parse('2018-01-07 00:00:00')->addDays(5)->calendar(Carbon::parse('2018-01-07 00:00:00'))
-        'Sexta-feira às 00:00',
+        'sexta-feira às 00:00',
         // Carbon::parse('2018-01-07 00:00:00')->addDays(6)->calendar(Carbon::parse('2018-01-07 00:00:00'))
-        'Sábado às 00:00',
+        'sábado às 00:00',
         // Carbon::now()->subDays(2)->calendar()
-        'Último Domingo às 20:49',
+        'Último domingo às 20:49',
         // Carbon::parse('2018-01-04 00:00:00')->subHours(2)->calendar(Carbon::parse('2018-01-04 00:00:00'))
         'Ontem às 22:00',
         // Carbon::parse('2018-01-04 12:00:00')->subHours(2)->calendar(Carbon::parse('2018-01-04 12:00:00'))
@@ -52,27 +53,27 @@ class PtBrTest extends LocalizationTestCase
         // Carbon::parse('2018-01-04 23:00:00')->addHours(2)->calendar(Carbon::parse('2018-01-04 23:00:00'))
         'Amanhã às 01:00',
         // Carbon::parse('2018-01-07 00:00:00')->addDays(2)->calendar(Carbon::parse('2018-01-07 00:00:00'))
-        'Terça-feira às 00:00',
+        'terça-feira às 00:00',
         // Carbon::parse('2018-01-08 00:00:00')->subDay()->calendar(Carbon::parse('2018-01-08 00:00:00'))
         'Ontem às 00:00',
         // Carbon::parse('2018-01-04 00:00:00')->subDays(1)->calendar(Carbon::parse('2018-01-04 00:00:00'))
         'Ontem às 00:00',
         // Carbon::parse('2018-01-04 00:00:00')->subDays(2)->calendar(Carbon::parse('2018-01-04 00:00:00'))
-        'Última Terça-feira às 00:00',
+        'Última terça-feira às 00:00',
         // Carbon::parse('2018-01-04 00:00:00')->subDays(3)->calendar(Carbon::parse('2018-01-04 00:00:00'))
-        'Última Segunda-feira às 00:00',
+        'Última segunda-feira às 00:00',
         // Carbon::parse('2018-01-04 00:00:00')->subDays(4)->calendar(Carbon::parse('2018-01-04 00:00:00'))
-        'Último Domingo às 00:00',
+        'Último domingo às 00:00',
         // Carbon::parse('2018-01-04 00:00:00')->subDays(5)->calendar(Carbon::parse('2018-01-04 00:00:00'))
-        'Último Sábado às 00:00',
+        'Último sábado às 00:00',
         // Carbon::parse('2018-01-04 00:00:00')->subDays(6)->calendar(Carbon::parse('2018-01-04 00:00:00'))
-        'Última Sexta-feira às 00:00',
+        'Última sexta-feira às 00:00',
         // Carbon::parse('2018-01-03 00:00:00')->subDays(6)->calendar(Carbon::parse('2018-01-03 00:00:00'))
-        'Última Quinta-feira às 00:00',
+        'Última quinta-feira às 00:00',
         // Carbon::parse('2018-01-02 00:00:00')->subDays(6)->calendar(Carbon::parse('2018-01-02 00:00:00'))
-        'Última Quarta-feira às 00:00',
+        'Última quarta-feira às 00:00',
         // Carbon::parse('2018-01-07 00:00:00')->subDays(2)->calendar(Carbon::parse('2018-01-07 00:00:00'))
-        'Última Sexta-feira às 00:00',
+        'Última sexta-feira às 00:00',
         // Carbon::parse('2018-01-01 00:00:00')->isoFormat('Qo Mo Do Wo wo')
         '1º 1º 1º 1º 1º',
         // Carbon::parse('2018-01-02 00:00:00')->isoFormat('Do wo')
@@ -86,7 +87,7 @@ class PtBrTest extends LocalizationTestCase
         // Carbon::parse('2018-01-06 00:00:00')->isoFormat('Do wo')
         '6º 1º',
         // Carbon::parse('2018-01-07 00:00:00')->isoFormat('Do wo')
-        '7º 1º',
+        '7º 2º',
         // Carbon::parse('2018-01-11 00:00:00')->isoFormat('Do wo')
         '11º 2º',
         // Carbon::parse('2018-02-09 00:00:00')->isoFormat('DDDo')
@@ -96,7 +97,7 @@ class PtBrTest extends LocalizationTestCase
         // Carbon::parse('2018-04-10 00:00:00')->isoFormat('DDDo')
         '100º',
         // Carbon::parse('2018-02-10 00:00:00', 'Europe/Paris')->isoFormat('h:mm a z')
-        '12:00 am cet',
+        '12:00 am CET',
         // Carbon::parse('2018-02-10 00:00:00')->isoFormat('h:mm A, h:mm a')
         '12:00 AM, 12:00 am',
         // Carbon::parse('2018-02-10 01:30:00')->isoFormat('h:mm A, h:mm a')
@@ -118,7 +119,7 @@ class PtBrTest extends LocalizationTestCase
         // Carbon::parse('2018-01-01 00:00:00')->ordinal('hour')
         '0º',
         // Carbon::now()->subSeconds(1)->diffForHumans()
-        'há poucos segundos',
+        'há 1 segundo',
         // Carbon::now()->subSeconds(1)->diffForHumans(null, false, true)
         'há 1s',
         // Carbon::now()->subSeconds(2)->diffForHumans()
@@ -126,7 +127,7 @@ class PtBrTest extends LocalizationTestCase
         // Carbon::now()->subSeconds(2)->diffForHumans(null, false, true)
         'há 2s',
         // Carbon::now()->subMinutes(1)->diffForHumans()
-        'há um minuto',
+        'há 1 minuto',
         // Carbon::now()->subMinutes(1)->diffForHumans(null, false, true)
         'há 1min',
         // Carbon::now()->subMinutes(2)->diffForHumans()
@@ -134,7 +135,7 @@ class PtBrTest extends LocalizationTestCase
         // Carbon::now()->subMinutes(2)->diffForHumans(null, false, true)
         'há 2min',
         // Carbon::now()->subHours(1)->diffForHumans()
-        'há uma hora',
+        'há 1 hora',
         // Carbon::now()->subHours(1)->diffForHumans(null, false, true)
         'há 1h',
         // Carbon::now()->subHours(2)->diffForHumans()
@@ -142,7 +143,7 @@ class PtBrTest extends LocalizationTestCase
         // Carbon::now()->subHours(2)->diffForHumans(null, false, true)
         'há 2h',
         // Carbon::now()->subDays(1)->diffForHumans()
-        'há um dia',
+        'há 1 dia',
         // Carbon::now()->subDays(1)->diffForHumans(null, false, true)
         'há 1d',
         // Carbon::now()->subDays(2)->diffForHumans()
@@ -158,7 +159,7 @@ class PtBrTest extends LocalizationTestCase
         // Carbon::now()->subWeeks(2)->diffForHumans(null, false, true)
         'há 2sem',
         // Carbon::now()->subMonths(1)->diffForHumans()
-        'há um mês',
+        'há 1 mês',
         // Carbon::now()->subMonths(1)->diffForHumans(null, false, true)
         'há 1m',
         // Carbon::now()->subMonths(2)->diffForHumans()
@@ -166,7 +167,7 @@ class PtBrTest extends LocalizationTestCase
         // Carbon::now()->subMonths(2)->diffForHumans(null, false, true)
         'há 2m',
         // Carbon::now()->subYears(1)->diffForHumans()
-        'há um ano',
+        'há 1 ano',
         // Carbon::now()->subYears(1)->diffForHumans(null, false, true)
         'há 1a',
         // Carbon::now()->subYears(2)->diffForHumans()
@@ -174,19 +175,19 @@ class PtBrTest extends LocalizationTestCase
         // Carbon::now()->subYears(2)->diffForHumans(null, false, true)
         'há 2a',
         // Carbon::now()->addSecond()->diffForHumans()
-        'em poucos segundos',
+        'em 1 segundo',
         // Carbon::now()->addSecond()->diffForHumans(null, false, true)
         'em 1s',
         // Carbon::now()->addSecond()->diffForHumans(Carbon::now())
-        'após poucos segundos',
+        '1 segundo depois',
         // Carbon::now()->addSecond()->diffForHumans(Carbon::now(), false, true)
-        'após 1s',
+        '1s depois',
         // Carbon::now()->diffForHumans(Carbon::now()->addSecond())
-        'poucos segundos atrás',
+        '1 segundo antes',
         // Carbon::now()->diffForHumans(Carbon::now()->addSecond(), false, true)
-        '1s atrás',
+        '1s antes',
         // Carbon::now()->addSecond()->diffForHumans(Carbon::now(), true)
-        'poucos segundos',
+        '1 segundo',
         // Carbon::now()->addSecond()->diffForHumans(Carbon::now(), true, true)
         '1s',
         // Carbon::now()->diffForHumans(Carbon::now()->addSecond()->addSecond(), true)
@@ -196,7 +197,7 @@ class PtBrTest extends LocalizationTestCase
         // Carbon::now()->addSecond()->diffForHumans(null, false, true, 1)
         'em 1s',
         // Carbon::now()->addMinute()->addSecond()->diffForHumans(null, true, false, 2)
-        'um minuto poucos segundos',
+        '1 minuto 1 segundo',
         // Carbon::now()->addYears(2)->addMonths(3)->addDay()->addSecond()->diffForHumans(null, true, true, 4)
         '2a 3m 1d 1s',
         // Carbon::now()->addYears(3)->diffForHumans(null, null, false, 4)
@@ -211,8 +212,12 @@ class PtBrTest extends LocalizationTestCase
         '1 semana 6 dias',
         // Carbon::now()->addWeek()->addDays(6)->diffForHumans(null, true, false, 2)
         '1 semana 6 dias',
+        // Carbon::now()->addWeek()->addDays(6)->diffForHumans(["join" => true, "parts" => 2])
+        'em 1 semana e 6 dias',
         // Carbon::now()->addWeeks(2)->addHour()->diffForHumans(null, true, false, 2)
-        '2 semanas uma hora',
+        '2 semanas 1 hora',
+        // Carbon::now()->addHour()->diffForHumans(["aUnit" => true])
+        'em uma hora',
         // CarbonInterval::days(2)->forHumans()
         '2 dias',
         // CarbonInterval::create('P1DT3H')->forHumans(true)

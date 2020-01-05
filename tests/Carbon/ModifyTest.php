@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 /**
  * This file is part of the Carbon package.
@@ -194,12 +195,43 @@ class ModifyTest extends AbstractTestCase
         $this->assertSame(-25, $b->diffInHours($a, false));
     }
 
-    /**
-     * @expectedException \InvalidArgumentException
-     * @expectedExceptionMessage Invalid unit for real timestamp add/sub: 'foobar'
-     */
     public function testAddRealUnitException()
     {
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage(
+            'Invalid unit for real timestamp add/sub: \'foobar\''
+        );
+
         (new Carbon('2014-03-30 00:00:00'))->addRealUnit('foobar');
+    }
+
+    public function testAddRealMicrosecondWithLowFloatPrecision()
+    {
+        $precision = ini_set('precision', '9');
+
+        $a = new Carbon('2014-03-30 00:59:59.999999', 'Europe/London');
+        $a->addRealMicrosecond();
+        $this->assertSame('02:00:00.000000', $a->format('H:i:s.u'));
+
+        ini_set('precision', $precision);
+    }
+
+    public function testNextAndPrevious()
+    {
+        Carbon::setTestNow('2019-06-02 13:27:09.816752');
+
+        $this->assertSame('2019-06-02 14:00:00', Carbon::now()->next('2pm')->format('Y-m-d H:i:s'));
+        $this->assertSame('2019-06-01 14:00:00', Carbon::now()->previous('2pm')->format('Y-m-d H:i:s'));
+        $this->assertSame('2019-06-02 14:00:00', Carbon::now()->next('14h')->format('Y-m-d H:i:s'));
+        $this->assertSame('2019-06-01 14:00:00', Carbon::now()->previous('14h')->format('Y-m-d H:i:s'));
+        $this->assertSame('2019-06-03 09:00:00', Carbon::now()->next('9am')->format('Y-m-d H:i:s'));
+        $this->assertSame('2019-06-02 09:00:00', Carbon::now()->previous('9am')->format('Y-m-d H:i:s'));
+
+        $this->assertSame('2019-06-02 14:00:00', Carbon::parse('next 2pm')->format('Y-m-d H:i:s'));
+        $this->assertSame('2019-06-01 14:00:00', Carbon::parse('previous 2pm')->format('Y-m-d H:i:s'));
+        $this->assertSame('2019-06-02 14:00:00', Carbon::parse('next 14h')->format('Y-m-d H:i:s'));
+        $this->assertSame('2019-06-01 14:00:00', Carbon::parse('previous 14h')->format('Y-m-d H:i:s'));
+        $this->assertSame('2019-06-03 09:00:00', Carbon::parse('next 9am')->format('Y-m-d H:i:s'));
+        $this->assertSame('2019-06-02 09:00:00', Carbon::parse('previous 9am')->format('Y-m-d H:i:s'));
     }
 }

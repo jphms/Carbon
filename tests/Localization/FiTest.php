@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 /**
  * This file is part of the Carbon package.
@@ -16,63 +17,63 @@ class FiTest extends LocalizationTestCase
 
     const CASES = [
         // Carbon::parse('2018-01-04 00:00:00')->addDays(1)->calendar(Carbon::parse('2018-01-04 00:00:00'))
-        'Tomorrow at 12:00 AM',
+        'Tomorrow at 00.00',
         // Carbon::parse('2018-01-04 00:00:00')->addDays(2)->calendar(Carbon::parse('2018-01-04 00:00:00'))
-        'Saturday at 12:00 AM',
+        'lauantai at 00.00',
         // Carbon::parse('2018-01-04 00:00:00')->addDays(3)->calendar(Carbon::parse('2018-01-04 00:00:00'))
-        'Sunday at 12:00 AM',
+        'sunnuntai at 00.00',
         // Carbon::parse('2018-01-04 00:00:00')->addDays(4)->calendar(Carbon::parse('2018-01-04 00:00:00'))
-        'Monday at 12:00 AM',
+        'maanantai at 00.00',
         // Carbon::parse('2018-01-04 00:00:00')->addDays(5)->calendar(Carbon::parse('2018-01-04 00:00:00'))
-        'Tuesday at 12:00 AM',
+        'tiistai at 00.00',
         // Carbon::parse('2018-01-04 00:00:00')->addDays(6)->calendar(Carbon::parse('2018-01-04 00:00:00'))
-        'Wednesday at 12:00 AM',
+        'keskiviikko at 00.00',
         // Carbon::parse('2018-01-05 00:00:00')->addDays(6)->calendar(Carbon::parse('2018-01-05 00:00:00'))
-        'Thursday at 12:00 AM',
+        'torstai at 00.00',
         // Carbon::parse('2018-01-06 00:00:00')->addDays(6)->calendar(Carbon::parse('2018-01-06 00:00:00'))
-        'Friday at 12:00 AM',
+        'perjantai at 00.00',
         // Carbon::parse('2018-01-07 00:00:00')->addDays(2)->calendar(Carbon::parse('2018-01-07 00:00:00'))
-        'Tuesday at 12:00 AM',
+        'tiistai at 00.00',
         // Carbon::parse('2018-01-07 00:00:00')->addDays(3)->calendar(Carbon::parse('2018-01-07 00:00:00'))
-        'Wednesday at 12:00 AM',
+        'keskiviikko at 00.00',
         // Carbon::parse('2018-01-07 00:00:00')->addDays(4)->calendar(Carbon::parse('2018-01-07 00:00:00'))
-        'Thursday at 12:00 AM',
+        'torstai at 00.00',
         // Carbon::parse('2018-01-07 00:00:00')->addDays(5)->calendar(Carbon::parse('2018-01-07 00:00:00'))
-        'Friday at 12:00 AM',
+        'perjantai at 00.00',
         // Carbon::parse('2018-01-07 00:00:00')->addDays(6)->calendar(Carbon::parse('2018-01-07 00:00:00'))
-        'Saturday at 12:00 AM',
+        'lauantai at 00.00',
         // Carbon::now()->subDays(2)->calendar()
-        'Last Sunday at 8:49 PM',
+        'Last sunnuntai at 20.49',
         // Carbon::parse('2018-01-04 00:00:00')->subHours(2)->calendar(Carbon::parse('2018-01-04 00:00:00'))
-        'Yesterday at 10:00 PM',
+        'Yesterday at 22.00',
         // Carbon::parse('2018-01-04 12:00:00')->subHours(2)->calendar(Carbon::parse('2018-01-04 12:00:00'))
-        'Today at 10:00 AM',
+        'Today at 10.00',
         // Carbon::parse('2018-01-04 00:00:00')->addHours(2)->calendar(Carbon::parse('2018-01-04 00:00:00'))
-        'Today at 2:00 AM',
+        'Today at 02.00',
         // Carbon::parse('2018-01-04 23:00:00')->addHours(2)->calendar(Carbon::parse('2018-01-04 23:00:00'))
-        'Tomorrow at 1:00 AM',
+        'Tomorrow at 01.00',
         // Carbon::parse('2018-01-07 00:00:00')->addDays(2)->calendar(Carbon::parse('2018-01-07 00:00:00'))
-        'Tuesday at 12:00 AM',
+        'tiistai at 00.00',
         // Carbon::parse('2018-01-08 00:00:00')->subDay()->calendar(Carbon::parse('2018-01-08 00:00:00'))
-        'Yesterday at 12:00 AM',
+        'Yesterday at 00.00',
         // Carbon::parse('2018-01-04 00:00:00')->subDays(1)->calendar(Carbon::parse('2018-01-04 00:00:00'))
-        'Yesterday at 12:00 AM',
+        'Yesterday at 00.00',
         // Carbon::parse('2018-01-04 00:00:00')->subDays(2)->calendar(Carbon::parse('2018-01-04 00:00:00'))
-        'Last Tuesday at 12:00 AM',
+        'Last tiistai at 00.00',
         // Carbon::parse('2018-01-04 00:00:00')->subDays(3)->calendar(Carbon::parse('2018-01-04 00:00:00'))
-        'Last Monday at 12:00 AM',
+        'Last maanantai at 00.00',
         // Carbon::parse('2018-01-04 00:00:00')->subDays(4)->calendar(Carbon::parse('2018-01-04 00:00:00'))
-        'Last Sunday at 12:00 AM',
+        'Last sunnuntai at 00.00',
         // Carbon::parse('2018-01-04 00:00:00')->subDays(5)->calendar(Carbon::parse('2018-01-04 00:00:00'))
-        'Last Saturday at 12:00 AM',
+        'Last lauantai at 00.00',
         // Carbon::parse('2018-01-04 00:00:00')->subDays(6)->calendar(Carbon::parse('2018-01-04 00:00:00'))
-        'Last Friday at 12:00 AM',
+        'Last perjantai at 00.00',
         // Carbon::parse('2018-01-03 00:00:00')->subDays(6)->calendar(Carbon::parse('2018-01-03 00:00:00'))
-        'Last Thursday at 12:00 AM',
+        'Last torstai at 00.00',
         // Carbon::parse('2018-01-02 00:00:00')->subDays(6)->calendar(Carbon::parse('2018-01-02 00:00:00'))
-        'Last Wednesday at 12:00 AM',
+        'Last keskiviikko at 00.00',
         // Carbon::parse('2018-01-07 00:00:00')->subDays(2)->calendar(Carbon::parse('2018-01-07 00:00:00'))
-        'Last Friday at 12:00 AM',
+        'Last perjantai at 00.00',
         // Carbon::parse('2018-01-01 00:00:00')->isoFormat('Qo Mo Do Wo wo')
         '1 1 1 1 1',
         // Carbon::parse('2018-01-02 00:00:00')->isoFormat('Do wo')
@@ -96,126 +97,130 @@ class FiTest extends LocalizationTestCase
         // Carbon::parse('2018-04-10 00:00:00')->isoFormat('DDDo')
         '100',
         // Carbon::parse('2018-02-10 00:00:00', 'Europe/Paris')->isoFormat('h:mm a z')
-        '12:00 am cet',
+        '12:00 aamupäivä CET',
         // Carbon::parse('2018-02-10 00:00:00')->isoFormat('h:mm A, h:mm a')
-        '12:00 AM, 12:00 am',
+        '12:00 aamupäivä, 12:00 aamupäivä',
         // Carbon::parse('2018-02-10 01:30:00')->isoFormat('h:mm A, h:mm a')
-        '1:30 AM, 1:30 am',
+        '1:30 aamupäivä, 1:30 aamupäivä',
         // Carbon::parse('2018-02-10 02:00:00')->isoFormat('h:mm A, h:mm a')
-        '2:00 AM, 2:00 am',
+        '2:00 aamupäivä, 2:00 aamupäivä',
         // Carbon::parse('2018-02-10 06:00:00')->isoFormat('h:mm A, h:mm a')
-        '6:00 AM, 6:00 am',
+        '6:00 aamupäivä, 6:00 aamupäivä',
         // Carbon::parse('2018-02-10 10:00:00')->isoFormat('h:mm A, h:mm a')
-        '10:00 AM, 10:00 am',
+        '10:00 aamupäivä, 10:00 aamupäivä',
         // Carbon::parse('2018-02-10 12:00:00')->isoFormat('h:mm A, h:mm a')
-        '12:00 PM, 12:00 pm',
+        '12:00 iltapäivä, 12:00 iltapäivä',
         // Carbon::parse('2018-02-10 17:00:00')->isoFormat('h:mm A, h:mm a')
-        '5:00 PM, 5:00 pm',
+        '5:00 iltapäivä, 5:00 iltapäivä',
         // Carbon::parse('2018-02-10 21:30:00')->isoFormat('h:mm A, h:mm a')
-        '9:30 PM, 9:30 pm',
+        '9:30 iltapäivä, 9:30 iltapäivä',
         // Carbon::parse('2018-02-10 23:00:00')->isoFormat('h:mm A, h:mm a')
-        '11:00 PM, 11:00 pm',
+        '11:00 iltapäivä, 11:00 iltapäivä',
         // Carbon::parse('2018-01-01 00:00:00')->ordinal('hour')
         '0',
         // Carbon::now()->subSeconds(1)->diffForHumans()
         '1 sekunti sitten',
         // Carbon::now()->subSeconds(1)->diffForHumans(null, false, true)
-        '1 sekunti sitten',
+        '1 s sitten',
         // Carbon::now()->subSeconds(2)->diffForHumans()
         '2 sekuntia sitten',
         // Carbon::now()->subSeconds(2)->diffForHumans(null, false, true)
-        '2 sekuntia sitten',
+        '2 s sitten',
         // Carbon::now()->subMinutes(1)->diffForHumans()
         '1 minuutti sitten',
         // Carbon::now()->subMinutes(1)->diffForHumans(null, false, true)
-        '1 minuutti sitten',
+        '1 min sitten',
         // Carbon::now()->subMinutes(2)->diffForHumans()
         '2 minuuttia sitten',
         // Carbon::now()->subMinutes(2)->diffForHumans(null, false, true)
-        '2 minuuttia sitten',
+        '2 min sitten',
         // Carbon::now()->subHours(1)->diffForHumans()
         '1 tunti sitten',
         // Carbon::now()->subHours(1)->diffForHumans(null, false, true)
-        '1 tunti sitten',
+        '1 t sitten',
         // Carbon::now()->subHours(2)->diffForHumans()
         '2 tuntia sitten',
         // Carbon::now()->subHours(2)->diffForHumans(null, false, true)
-        '2 tuntia sitten',
+        '2 t sitten',
         // Carbon::now()->subDays(1)->diffForHumans()
         '1 päivä sitten',
         // Carbon::now()->subDays(1)->diffForHumans(null, false, true)
-        '1 päivä sitten',
+        '1 pv sitten',
         // Carbon::now()->subDays(2)->diffForHumans()
         '2 päivää sitten',
         // Carbon::now()->subDays(2)->diffForHumans(null, false, true)
-        '2 päivää sitten',
+        '2 pv sitten',
         // Carbon::now()->subWeeks(1)->diffForHumans()
         '1 viikko sitten',
         // Carbon::now()->subWeeks(1)->diffForHumans(null, false, true)
-        '1 viikko sitten',
+        '1 vk sitten',
         // Carbon::now()->subWeeks(2)->diffForHumans()
         '2 viikkoa sitten',
         // Carbon::now()->subWeeks(2)->diffForHumans(null, false, true)
-        '2 viikkoa sitten',
+        '2 vk sitten',
         // Carbon::now()->subMonths(1)->diffForHumans()
         '1 kuukausi sitten',
         // Carbon::now()->subMonths(1)->diffForHumans(null, false, true)
-        '1 kuukausi sitten',
+        '1 kk sitten',
         // Carbon::now()->subMonths(2)->diffForHumans()
         '2 kuukautta sitten',
         // Carbon::now()->subMonths(2)->diffForHumans(null, false, true)
-        '2 kuukautta sitten',
+        '2 kk sitten',
         // Carbon::now()->subYears(1)->diffForHumans()
         '1 vuosi sitten',
         // Carbon::now()->subYears(1)->diffForHumans(null, false, true)
-        '1 vuosi sitten',
+        '1 v sitten',
         // Carbon::now()->subYears(2)->diffForHumans()
         '2 vuotta sitten',
         // Carbon::now()->subYears(2)->diffForHumans(null, false, true)
-        '2 vuotta sitten',
+        '2 v sitten',
         // Carbon::now()->addSecond()->diffForHumans()
-        '1 sekunti tästä hetkestä',
+        '1 sekunnin päästä',
         // Carbon::now()->addSecond()->diffForHumans(null, false, true)
-        '1 sekunti tästä hetkestä',
+        '1 s päästä',
         // Carbon::now()->addSecond()->diffForHumans(Carbon::now())
         '1 sekunti sen jälkeen',
         // Carbon::now()->addSecond()->diffForHumans(Carbon::now(), false, true)
-        '1 sekunti sen jälkeen',
+        '1 s sen jälkeen',
         // Carbon::now()->diffForHumans(Carbon::now()->addSecond())
         '1 sekunti ennen',
         // Carbon::now()->diffForHumans(Carbon::now()->addSecond(), false, true)
-        '1 sekunti ennen',
+        '1 s ennen',
         // Carbon::now()->addSecond()->diffForHumans(Carbon::now(), true)
         '1 sekunti',
         // Carbon::now()->addSecond()->diffForHumans(Carbon::now(), true, true)
-        '1 sekunti',
+        '1 s',
         // Carbon::now()->diffForHumans(Carbon::now()->addSecond()->addSecond(), true)
         '2 sekuntia',
         // Carbon::now()->diffForHumans(Carbon::now()->addSecond()->addSecond(), true, true)
-        '2 sekuntia',
+        '2 s',
         // Carbon::now()->addSecond()->diffForHumans(null, false, true, 1)
-        '1 sekunti tästä hetkestä',
+        '1 s päästä',
         // Carbon::now()->addMinute()->addSecond()->diffForHumans(null, true, false, 2)
         '1 minuutti 1 sekunti',
         // Carbon::now()->addYears(2)->addMonths(3)->addDay()->addSecond()->diffForHumans(null, true, true, 4)
-        '2 vuotta 3 kuukautta 1 päivä 1 sekunti',
+        '2 v 3 kk 1 pv 1 s',
         // Carbon::now()->addYears(3)->diffForHumans(null, null, false, 4)
-        '3 vuotta tästä hetkestä',
+        '3 vuotta päästä',
         // Carbon::now()->subMonths(5)->diffForHumans(null, null, true, 4)
-        '5 kuukautta sitten',
+        '5 kk sitten',
         // Carbon::now()->subYears(2)->subMonths(3)->subDay()->subSecond()->diffForHumans(null, null, true, 4)
-        '2 vuotta 3 kuukautta 1 päivä 1 sekunti sitten',
+        '2 v 3 kk 1 pv 1 s sitten',
         // Carbon::now()->addWeek()->addHours(10)->diffForHumans(null, true, false, 2)
         '1 viikko 10 tuntia',
         // Carbon::now()->addWeek()->addDays(6)->diffForHumans(null, true, false, 2)
         '1 viikko 6 päivää',
         // Carbon::now()->addWeek()->addDays(6)->diffForHumans(null, true, false, 2)
         '1 viikko 6 päivää',
+        // Carbon::now()->addWeek()->addDays(6)->diffForHumans(["join" => true, "parts" => 2])
+        '1 viikko ja 6 päivää päästä',
         // Carbon::now()->addWeeks(2)->addHour()->diffForHumans(null, true, false, 2)
         '2 viikkoa 1 tunti',
+        // Carbon::now()->addHour()->diffForHumans(["aUnit" => true])
+        '1 tunnin päästä',
         // CarbonInterval::days(2)->forHumans()
         '2 päivää',
         // CarbonInterval::create('P1DT3H')->forHumans(true)
-        '1 päivä 3 tuntia',
+        '1 pv 3 t',
     ];
 }

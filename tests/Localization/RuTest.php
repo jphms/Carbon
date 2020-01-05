@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 /**
  * This file is part of the Carbon package.
@@ -96,7 +97,7 @@ class RuTest extends LocalizationTestCase
         // Carbon::parse('2018-04-10 00:00:00')->isoFormat('DDDo')
         '100-й',
         // Carbon::parse('2018-02-10 00:00:00', 'Europe/Paris')->isoFormat('h:mm a z')
-        '12:00 ночи cet',
+        '12:00 ночи CET',
         // Carbon::parse('2018-02-10 00:00:00')->isoFormat('h:mm A, h:mm a')
         '12:00 ночи, 12:00 ночи',
         // Carbon::parse('2018-02-10 01:30:00')->isoFormat('h:mm A, h:mm a')
@@ -120,102 +121,106 @@ class RuTest extends LocalizationTestCase
         // Carbon::now()->subSeconds(1)->diffForHumans()
         '1 секунду назад',
         // Carbon::now()->subSeconds(1)->diffForHumans(null, false, true)
-        '1 с назад',
+        '1 сек. назад',
         // Carbon::now()->subSeconds(2)->diffForHumans()
         '2 секунды назад',
         // Carbon::now()->subSeconds(2)->diffForHumans(null, false, true)
-        '2 с назад',
+        '2 сек. назад',
         // Carbon::now()->subMinutes(1)->diffForHumans()
         '1 минуту назад',
         // Carbon::now()->subMinutes(1)->diffForHumans(null, false, true)
-        '1 мин назад',
+        '1 мин. назад',
         // Carbon::now()->subMinutes(2)->diffForHumans()
         '2 минуты назад',
         // Carbon::now()->subMinutes(2)->diffForHumans(null, false, true)
-        '2 мин назад',
+        '2 мин. назад',
         // Carbon::now()->subHours(1)->diffForHumans()
         '1 час назад',
         // Carbon::now()->subHours(1)->diffForHumans(null, false, true)
-        '1 ч назад',
+        '1 ч. назад',
         // Carbon::now()->subHours(2)->diffForHumans()
         '2 часа назад',
         // Carbon::now()->subHours(2)->diffForHumans(null, false, true)
-        '2 ч назад',
+        '2 ч. назад',
         // Carbon::now()->subDays(1)->diffForHumans()
         '1 день назад',
         // Carbon::now()->subDays(1)->diffForHumans(null, false, true)
-        '1 д назад',
+        '1 д. назад',
         // Carbon::now()->subDays(2)->diffForHumans()
         '2 дня назад',
         // Carbon::now()->subDays(2)->diffForHumans(null, false, true)
-        '2 д назад',
+        '2 д. назад',
         // Carbon::now()->subWeeks(1)->diffForHumans()
         '1 неделю назад',
         // Carbon::now()->subWeeks(1)->diffForHumans(null, false, true)
-        '1 н назад',
+        '1 нед. назад',
         // Carbon::now()->subWeeks(2)->diffForHumans()
         '2 недели назад',
         // Carbon::now()->subWeeks(2)->diffForHumans(null, false, true)
-        '2 н назад',
+        '2 нед. назад',
         // Carbon::now()->subMonths(1)->diffForHumans()
         '1 месяц назад',
         // Carbon::now()->subMonths(1)->diffForHumans(null, false, true)
-        '1 м назад',
+        '1 мес. назад',
         // Carbon::now()->subMonths(2)->diffForHumans()
         '2 месяца назад',
         // Carbon::now()->subMonths(2)->diffForHumans(null, false, true)
-        '2 м назад',
+        '2 мес. назад',
         // Carbon::now()->subYears(1)->diffForHumans()
         '1 год назад',
         // Carbon::now()->subYears(1)->diffForHumans(null, false, true)
-        '1 г назад',
+        '1 г. назад',
         // Carbon::now()->subYears(2)->diffForHumans()
         '2 года назад',
         // Carbon::now()->subYears(2)->diffForHumans(null, false, true)
-        '2 г назад',
+        '2 г. назад',
         // Carbon::now()->addSecond()->diffForHumans()
         'через 1 секунду',
         // Carbon::now()->addSecond()->diffForHumans(null, false, true)
-        'через 1 с',
+        'через 1 сек.',
         // Carbon::now()->addSecond()->diffForHumans(Carbon::now())
         '1 секунду после',
         // Carbon::now()->addSecond()->diffForHumans(Carbon::now(), false, true)
-        '1 с после',
+        '1 сек. после',
         // Carbon::now()->diffForHumans(Carbon::now()->addSecond())
         '1 секунду до',
         // Carbon::now()->diffForHumans(Carbon::now()->addSecond(), false, true)
-        '1 с до',
+        '1 сек. до',
         // Carbon::now()->addSecond()->diffForHumans(Carbon::now(), true)
-        '1 секунду',
+        '1 секунда',
         // Carbon::now()->addSecond()->diffForHumans(Carbon::now(), true, true)
-        '1 с',
+        '1 сек.',
         // Carbon::now()->diffForHumans(Carbon::now()->addSecond()->addSecond(), true)
         '2 секунды',
         // Carbon::now()->diffForHumans(Carbon::now()->addSecond()->addSecond(), true, true)
-        '2 с',
+        '2 сек.',
         // Carbon::now()->addSecond()->diffForHumans(null, false, true, 1)
-        'через 1 с',
+        'через 1 сек.',
         // Carbon::now()->addMinute()->addSecond()->diffForHumans(null, true, false, 2)
-        '1 минуту 1 секунду',
+        '1 минута 1 секунда',
         // Carbon::now()->addYears(2)->addMonths(3)->addDay()->addSecond()->diffForHumans(null, true, true, 4)
-        '2 г 3 м 1 д 1 с',
+        '2 г. 3 мес. 1 д. 1 сек.',
         // Carbon::now()->addYears(3)->diffForHumans(null, null, false, 4)
         'через 3 года',
         // Carbon::now()->subMonths(5)->diffForHumans(null, null, true, 4)
-        '5 м назад',
+        '5 мес. назад',
         // Carbon::now()->subYears(2)->subMonths(3)->subDay()->subSecond()->diffForHumans(null, null, true, 4)
-        '2 г 3 м 1 д 1 с назад',
+        '2 г. 3 мес. 1 д. 1 сек. назад',
         // Carbon::now()->addWeek()->addHours(10)->diffForHumans(null, true, false, 2)
-        '1 неделю 10 часов',
+        '1 неделя 10 часов',
         // Carbon::now()->addWeek()->addDays(6)->diffForHumans(null, true, false, 2)
-        '1 неделю 6 дней',
+        '1 неделя 6 дней',
         // Carbon::now()->addWeek()->addDays(6)->diffForHumans(null, true, false, 2)
-        '1 неделю 6 дней',
+        '1 неделя 6 дней',
+        // Carbon::now()->addWeek()->addDays(6)->diffForHumans(["join" => true, "parts" => 2])
+        'через 1 неделю и 6 дней',
         // Carbon::now()->addWeeks(2)->addHour()->diffForHumans(null, true, false, 2)
         '2 недели 1 час',
+        // Carbon::now()->addHour()->diffForHumans(["aUnit" => true])
+        'через час',
         // CarbonInterval::days(2)->forHumans()
         '2 дня',
         // CarbonInterval::create('P1DT3H')->forHumans(true)
-        '1 д 3 ч',
+        '1 д. 3 ч.',
     ];
 }

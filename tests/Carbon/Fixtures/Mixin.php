@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 /**
  * This file is part of the Carbon package.
@@ -15,6 +16,11 @@ use Carbon\CarbonInterface;
 class Mixin
 {
     public $timezone = null;
+
+    public function __construct($timezone)
+    {
+        $this->timezone = $timezone;
+    }
 
     public function setUserTimezone()
     {

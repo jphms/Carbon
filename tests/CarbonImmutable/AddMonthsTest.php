@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 /**
  * This file is part of the Carbon package.
@@ -20,7 +21,7 @@ class AddMonthsTest extends AbstractTestCase
      */
     private $carbon;
 
-    protected function setUp()
+    protected function setUp(): void
     {
         parent::setUp();
 

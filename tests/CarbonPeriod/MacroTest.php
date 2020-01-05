@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 /**
  * This file is part of the Carbon package.
@@ -18,7 +19,7 @@ use Tests\CarbonPeriod\Fixtures\Mixin;
 
 class MacroTest extends AbstractTestCase
 {
-    public function tearDown()
+    protected function tearDown(): void
     {
         $reflection = new ReflectionClass('Carbon\CarbonPeriod');
 
@@ -141,24 +142,26 @@ class MacroTest extends AbstractTestCase
         $this->assertSame('bar', CarbonPeriod::getFoo());
     }
 
-    /**
-     * @expectedException \BadMethodCallException
-     * @expectedExceptionMessage Method nonExistingMacro does not exist.
-     */
     public function testCallNonExistingMacro()
     {
+        $this->expectException(\BadMethodCallException::class);
+        $this->expectExceptionMessage(
+            'Method nonExistingMacro does not exist.'
+        );
+
         /** @var mixed $period */
         $period = CarbonPeriod::create();
 
         $period->nonExistingMacro();
     }
 
-    /**
-     * @expectedException \BadMethodCallException
-     * @expectedExceptionMessage Method nonExistingMacro does not exist.
-     */
     public function testCallNonExistingMacroStatically()
     {
+        $this->expectException(\BadMethodCallException::class);
+        $this->expectExceptionMessage(
+            'Method nonExistingMacro does not exist.'
+        );
+
         CarbonPeriod::nonExistingMacro();
     }
 

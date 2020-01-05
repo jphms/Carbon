@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 /**
  * This file is part of the Carbon package.
@@ -62,6 +63,55 @@ class TestingAidsTest extends AbstractTestCase
         Carbon::setTestNow($yesterday = Carbon::yesterday());
 
         $this->assertEquals($yesterday, Carbon::now());
+    }
+
+    public function testNowWithClosureValue()
+    {
+        $mockedNow = Carbon::parse('2019-09-21 12:34:56.123456');
+        $delta = 0;
+
+        Carbon::setTestNow(function (Carbon $now) use (&$mockedNow, &$delta) {
+            $this->assertInstanceOfCarbon($now);
+
+            return $mockedNow->copy()->tz($now->tz)->addMicroseconds($delta);
+        });
+
+        $this->assertSame('2019-09-21 12:34:56.123456', Carbon::now()->format('Y-m-d H:i:s.u'));
+        $this->assertSame('2019-09-21 00:00:00.000000', Carbon::today()->format('Y-m-d H:i:s.u'));
+        $this->assertSame('2019-09-22 00:00:00.000000', Carbon::create('tomorrow')->format('Y-m-d H:i:s.u'));
+        $this->assertSame('2018-06-15 12:34:00.000000', Carbon::create(2018, 6, 15, null, null)->format('Y-m-d H:i:s.u'));
+
+        $delta = 11111111;
+
+        $date = Carbon::now();
+        $this->assertSame('America/Toronto', $date->tzName);
+        $this->assertSame('2019-09-21 12:35:07.234567', $date->format('Y-m-d H:i:s.u'));
+        $date = Carbon::today();
+        $this->assertSame('America/Toronto', $date->tzName);
+        $this->assertSame('2019-09-21 00:00:00.000000', $date->format('Y-m-d H:i:s.u'));
+        $date = Carbon::create('tomorrow');
+        $this->assertSame('America/Toronto', $date->tzName);
+        $this->assertSame('2019-09-22 00:00:00.000000', $date->format('Y-m-d H:i:s.u'));
+        $date = Carbon::create(2018, 6, 15, null, null);
+        $this->assertSame('America/Toronto', $date->tzName);
+        $this->assertSame('2018-06-15 12:35:00.000000', $date->format('Y-m-d H:i:s.u'));
+
+        date_default_timezone_set('UTC');
+
+        $date = Carbon::now();
+        $this->assertSame('UTC', $date->tzName);
+        $this->assertSame('2019-09-21 16:35:07.234567', $date->format('Y-m-d H:i:s.u'));
+        $date = Carbon::today();
+        $this->assertSame('UTC', $date->tzName);
+        $this->assertSame('2019-09-21 00:00:00.000000', $date->format('Y-m-d H:i:s.u'));
+        $date = Carbon::create('tomorrow');
+        $this->assertSame('UTC', $date->tzName);
+        $this->assertSame('2019-09-22 00:00:00.000000', $date->format('Y-m-d H:i:s.u'));
+        $date = Carbon::create(2018, 6, 15, null, null);
+        $this->assertSame('UTC', $date->tzName);
+        $this->assertSame('2018-06-15 16:35:00.000000', $date->format('Y-m-d H:i:s.u'));
+
+        date_default_timezone_set('America/Toronto');
     }
 
     public function testParseWithTestValueSet()
@@ -202,7 +252,9 @@ class TestingAidsTest extends AbstractTestCase
     {
         Carbon::setTestNow($now = Carbon::parse('2013-09-01 05:10:15.123456', 'America/Vancouver'));
 
-        $this->assertSame('2018-05-06 05:10:15.123456', Carbon::createFromFormat('Y-m-d', '2018-05-06')->format('Y-m-d H:i:s.u'));
+        // Set microseconds to zero to match behavior of DateTime::createFromFormat()
+        // See https://bugs.php.net/bug.php?id=74332
+        $this->assertSame('2018-05-06 05:10:15.000000', Carbon::createFromFormat('Y-m-d', '2018-05-06')->format('Y-m-d H:i:s.u'));
         $this->assertSame('2013-09-01 10:20:30.654321', Carbon::createFromFormat('H:i:s.u', '10:20:30.654321')->format('Y-m-d H:i:s.u'));
     }
 }

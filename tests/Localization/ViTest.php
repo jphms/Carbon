@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 /**
  * This file is part of the Carbon package.
@@ -12,7 +13,7 @@ namespace Tests\Localization;
 
 class ViTest extends LocalizationTestCase
 {
-    const LOCALE = 'vi'; // VietNamese
+    const LOCALE = 'vi'; // Vietnamese
 
     const CASES = [
         // Carbon::parse('2018-01-04 00:00:00')->addDays(1)->calendar(Carbon::parse('2018-01-04 00:00:00'))
@@ -42,7 +43,7 @@ class ViTest extends LocalizationTestCase
         // Carbon::parse('2018-01-07 00:00:00')->addDays(6)->calendar(Carbon::parse('2018-01-07 00:00:00'))
         'thứ bảy tuần tới lúc 00:00',
         // Carbon::now()->subDays(2)->calendar()
-        'chủ nhật tuần rồi lúc 20:49',
+        'chủ nhật tuần trước lúc 20:49',
         // Carbon::parse('2018-01-04 00:00:00')->subHours(2)->calendar(Carbon::parse('2018-01-04 00:00:00'))
         'Hôm qua lúc 22:00',
         // Carbon::parse('2018-01-04 12:00:00')->subHours(2)->calendar(Carbon::parse('2018-01-04 12:00:00'))
@@ -58,21 +59,21 @@ class ViTest extends LocalizationTestCase
         // Carbon::parse('2018-01-04 00:00:00')->subDays(1)->calendar(Carbon::parse('2018-01-04 00:00:00'))
         'Hôm qua lúc 00:00',
         // Carbon::parse('2018-01-04 00:00:00')->subDays(2)->calendar(Carbon::parse('2018-01-04 00:00:00'))
-        'thứ ba tuần rồi lúc 00:00',
+        'thứ ba tuần trước lúc 00:00',
         // Carbon::parse('2018-01-04 00:00:00')->subDays(3)->calendar(Carbon::parse('2018-01-04 00:00:00'))
-        'thứ hai tuần rồi lúc 00:00',
+        'thứ hai tuần trước lúc 00:00',
         // Carbon::parse('2018-01-04 00:00:00')->subDays(4)->calendar(Carbon::parse('2018-01-04 00:00:00'))
-        'chủ nhật tuần rồi lúc 00:00',
+        'chủ nhật tuần trước lúc 00:00',
         // Carbon::parse('2018-01-04 00:00:00')->subDays(5)->calendar(Carbon::parse('2018-01-04 00:00:00'))
-        'thứ bảy tuần rồi lúc 00:00',
+        'thứ bảy tuần trước lúc 00:00',
         // Carbon::parse('2018-01-04 00:00:00')->subDays(6)->calendar(Carbon::parse('2018-01-04 00:00:00'))
-        'thứ sáu tuần rồi lúc 00:00',
+        'thứ sáu tuần trước lúc 00:00',
         // Carbon::parse('2018-01-03 00:00:00')->subDays(6)->calendar(Carbon::parse('2018-01-03 00:00:00'))
-        'thứ năm tuần rồi lúc 00:00',
+        'thứ năm tuần trước lúc 00:00',
         // Carbon::parse('2018-01-02 00:00:00')->subDays(6)->calendar(Carbon::parse('2018-01-02 00:00:00'))
-        'thứ tư tuần rồi lúc 00:00',
+        'thứ tư tuần trước lúc 00:00',
         // Carbon::parse('2018-01-07 00:00:00')->subDays(2)->calendar(Carbon::parse('2018-01-07 00:00:00'))
-        'thứ sáu tuần rồi lúc 00:00',
+        'thứ sáu tuần trước lúc 00:00',
         // Carbon::parse('2018-01-01 00:00:00')->isoFormat('Qo Mo Do Wo wo')
         '1 1 1 1 1',
         // Carbon::parse('2018-01-02 00:00:00')->isoFormat('Do wo')
@@ -96,7 +97,7 @@ class ViTest extends LocalizationTestCase
         // Carbon::parse('2018-04-10 00:00:00')->isoFormat('DDDo')
         '100',
         // Carbon::parse('2018-02-10 00:00:00', 'Europe/Paris')->isoFormat('h:mm a z')
-        '12:00 sa cet',
+        '12:00 sa CET',
         // Carbon::parse('2018-02-10 00:00:00')->isoFormat('h:mm A, h:mm a')
         '12:00 SA, 12:00 sa',
         // Carbon::parse('2018-02-10 01:30:00')->isoFormat('h:mm A, h:mm a')
@@ -118,7 +119,7 @@ class ViTest extends LocalizationTestCase
         // Carbon::parse('2018-01-01 00:00:00')->ordinal('hour')
         '0',
         // Carbon::now()->subSeconds(1)->diffForHumans()
-        'vài giây trước',
+        '1 giây trước',
         // Carbon::now()->subSeconds(1)->diffForHumans(null, false, true)
         '1 giây trước',
         // Carbon::now()->subSeconds(2)->diffForHumans()
@@ -126,7 +127,7 @@ class ViTest extends LocalizationTestCase
         // Carbon::now()->subSeconds(2)->diffForHumans(null, false, true)
         '2 giây trước',
         // Carbon::now()->subMinutes(1)->diffForHumans()
-        'một phút trước',
+        '1 phút trước',
         // Carbon::now()->subMinutes(1)->diffForHumans(null, false, true)
         '1 phút trước',
         // Carbon::now()->subMinutes(2)->diffForHumans()
@@ -134,7 +135,7 @@ class ViTest extends LocalizationTestCase
         // Carbon::now()->subMinutes(2)->diffForHumans(null, false, true)
         '2 phút trước',
         // Carbon::now()->subHours(1)->diffForHumans()
-        'một giờ trước',
+        '1 giờ trước',
         // Carbon::now()->subHours(1)->diffForHumans(null, false, true)
         '1 giờ trước',
         // Carbon::now()->subHours(2)->diffForHumans()
@@ -142,7 +143,7 @@ class ViTest extends LocalizationTestCase
         // Carbon::now()->subHours(2)->diffForHumans(null, false, true)
         '2 giờ trước',
         // Carbon::now()->subDays(1)->diffForHumans()
-        'một ngày trước',
+        '1 ngày trước',
         // Carbon::now()->subDays(1)->diffForHumans(null, false, true)
         '1 ngày trước',
         // Carbon::now()->subDays(2)->diffForHumans()
@@ -150,7 +151,7 @@ class ViTest extends LocalizationTestCase
         // Carbon::now()->subDays(2)->diffForHumans(null, false, true)
         '2 ngày trước',
         // Carbon::now()->subWeeks(1)->diffForHumans()
-        'một tuần trước',
+        '1 tuần trước',
         // Carbon::now()->subWeeks(1)->diffForHumans(null, false, true)
         '1 tuần trước',
         // Carbon::now()->subWeeks(2)->diffForHumans()
@@ -158,7 +159,7 @@ class ViTest extends LocalizationTestCase
         // Carbon::now()->subWeeks(2)->diffForHumans(null, false, true)
         '2 tuần trước',
         // Carbon::now()->subMonths(1)->diffForHumans()
-        'một tháng trước',
+        '1 tháng trước',
         // Carbon::now()->subMonths(1)->diffForHumans(null, false, true)
         '1 tháng trước',
         // Carbon::now()->subMonths(2)->diffForHumans()
@@ -166,7 +167,7 @@ class ViTest extends LocalizationTestCase
         // Carbon::now()->subMonths(2)->diffForHumans(null, false, true)
         '2 tháng trước',
         // Carbon::now()->subYears(1)->diffForHumans()
-        'một năm trước',
+        '1 năm trước',
         // Carbon::now()->subYears(1)->diffForHumans(null, false, true)
         '1 năm trước',
         // Carbon::now()->subYears(2)->diffForHumans()
@@ -174,19 +175,19 @@ class ViTest extends LocalizationTestCase
         // Carbon::now()->subYears(2)->diffForHumans(null, false, true)
         '2 năm trước',
         // Carbon::now()->addSecond()->diffForHumans()
-        'vài giây tới',
+        '1 giây tới',
         // Carbon::now()->addSecond()->diffForHumans(null, false, true)
         '1 giây tới',
         // Carbon::now()->addSecond()->diffForHumans(Carbon::now())
-        'vài giây sau',
+        '1 giây sau',
         // Carbon::now()->addSecond()->diffForHumans(Carbon::now(), false, true)
         '1 giây sau',
         // Carbon::now()->diffForHumans(Carbon::now()->addSecond())
-        'vài giây trước',
+        '1 giây trước',
         // Carbon::now()->diffForHumans(Carbon::now()->addSecond(), false, true)
         '1 giây trước',
         // Carbon::now()->addSecond()->diffForHumans(Carbon::now(), true)
-        'vài giây',
+        '1 giây',
         // Carbon::now()->addSecond()->diffForHumans(Carbon::now(), true, true)
         '1 giây',
         // Carbon::now()->diffForHumans(Carbon::now()->addSecond()->addSecond(), true)
@@ -196,7 +197,7 @@ class ViTest extends LocalizationTestCase
         // Carbon::now()->addSecond()->diffForHumans(null, false, true, 1)
         '1 giây tới',
         // Carbon::now()->addMinute()->addSecond()->diffForHumans(null, true, false, 2)
-        'một phút vài giây',
+        '1 phút 1 giây',
         // Carbon::now()->addYears(2)->addMonths(3)->addDay()->addSecond()->diffForHumans(null, true, true, 4)
         '2 năm 3 tháng 1 ngày 1 giây',
         // Carbon::now()->addYears(3)->diffForHumans(null, null, false, 4)
@@ -206,13 +207,17 @@ class ViTest extends LocalizationTestCase
         // Carbon::now()->subYears(2)->subMonths(3)->subDay()->subSecond()->diffForHumans(null, null, true, 4)
         '2 năm 3 tháng 1 ngày 1 giây trước',
         // Carbon::now()->addWeek()->addHours(10)->diffForHumans(null, true, false, 2)
-        'một tuần 10 giờ',
+        '1 tuần 10 giờ',
         // Carbon::now()->addWeek()->addDays(6)->diffForHumans(null, true, false, 2)
-        'một tuần 6 ngày',
+        '1 tuần 6 ngày',
         // Carbon::now()->addWeek()->addDays(6)->diffForHumans(null, true, false, 2)
-        'một tuần 6 ngày',
+        '1 tuần 6 ngày',
+        // Carbon::now()->addWeek()->addDays(6)->diffForHumans(["join" => true, "parts" => 2])
+        '1 tuần và 6 ngày tới',
         // Carbon::now()->addWeeks(2)->addHour()->diffForHumans(null, true, false, 2)
-        '2 tuần một giờ',
+        '2 tuần 1 giờ',
+        // Carbon::now()->addHour()->diffForHumans(["aUnit" => true])
+        'một giờ tới',
         // CarbonInterval::days(2)->forHumans()
         '2 ngày',
         // CarbonInterval::create('P1DT3H')->forHumans(true)

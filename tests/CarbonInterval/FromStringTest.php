@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace Tests\CarbonInterval;
 
@@ -98,19 +99,21 @@ class FromStringTest extends AbstractTestCase
 
     /**
      * @dataProvider provideInvalidStrings
-     * @expectedException \InvalidArgumentException
      *
      * @param string $string
      * @param string $part
      */
     public function testThrowsExceptionForUnknownValues($string, $part)
     {
+        $message = null;
+
         try {
             CarbonInterval::fromString($string);
         } catch (\InvalidArgumentException $exception) {
-            $this->assertContains($part, $exception->getMessage());
-            throw $exception;
+            $message = $exception->getMessage();
         }
+
+        $this->assertStringContainsString($part, $message);
     }
 
     public function provideInvalidStrings()

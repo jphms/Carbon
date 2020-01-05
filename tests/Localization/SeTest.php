@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 /**
  * This file is part of the Carbon package.
@@ -96,87 +97,87 @@ class SeTest extends LocalizationTestCase
         // Carbon::parse('2018-04-10 00:00:00')->isoFormat('DDDo')
         '100.',
         // Carbon::parse('2018-02-10 00:00:00', 'Europe/Paris')->isoFormat('h:mm a z')
-        '12:00 am cet',
+        '12:00 i.b. CET',
         // Carbon::parse('2018-02-10 00:00:00')->isoFormat('h:mm A, h:mm a')
-        '12:00 AM, 12:00 am',
+        '12:00 i.b., 12:00 i.b.',
         // Carbon::parse('2018-02-10 01:30:00')->isoFormat('h:mm A, h:mm a')
-        '1:30 AM, 1:30 am',
+        '1:30 i.b., 1:30 i.b.',
         // Carbon::parse('2018-02-10 02:00:00')->isoFormat('h:mm A, h:mm a')
-        '2:00 AM, 2:00 am',
+        '2:00 i.b., 2:00 i.b.',
         // Carbon::parse('2018-02-10 06:00:00')->isoFormat('h:mm A, h:mm a')
-        '6:00 AM, 6:00 am',
+        '6:00 i.b., 6:00 i.b.',
         // Carbon::parse('2018-02-10 10:00:00')->isoFormat('h:mm A, h:mm a')
-        '10:00 AM, 10:00 am',
+        '10:00 i.b., 10:00 i.b.',
         // Carbon::parse('2018-02-10 12:00:00')->isoFormat('h:mm A, h:mm a')
-        '12:00 PM, 12:00 pm',
+        '12:00 e.b., 12:00 e.b.',
         // Carbon::parse('2018-02-10 17:00:00')->isoFormat('h:mm A, h:mm a')
-        '5:00 PM, 5:00 pm',
+        '5:00 e.b., 5:00 e.b.',
         // Carbon::parse('2018-02-10 21:30:00')->isoFormat('h:mm A, h:mm a')
-        '9:30 PM, 9:30 pm',
+        '9:30 e.b., 9:30 e.b.',
         // Carbon::parse('2018-02-10 23:00:00')->isoFormat('h:mm A, h:mm a')
-        '11:00 PM, 11:00 pm',
+        '11:00 e.b., 11:00 e.b.',
         // Carbon::parse('2018-01-01 00:00:00')->ordinal('hour')
         '0.',
         // Carbon::now()->subSeconds(1)->diffForHumans()
-        'maŋit moadde sekunddat',
+        'maŋit 1 sekunddat',
         // Carbon::now()->subSeconds(1)->diffForHumans(null, false, true)
-        'maŋit moadde sekunddat',
+        'maŋit 1 s.',
         // Carbon::now()->subSeconds(2)->diffForHumans()
         'maŋit 2 sekunddat',
         // Carbon::now()->subSeconds(2)->diffForHumans(null, false, true)
-        'maŋit 2 sekunddat',
+        'maŋit 2 s.',
         // Carbon::now()->subMinutes(1)->diffForHumans()
-        'maŋit okta minuhta',
+        'maŋit 1 minuhta',
         // Carbon::now()->subMinutes(1)->diffForHumans(null, false, true)
-        'maŋit okta minuhta',
+        'maŋit 1 min.',
         // Carbon::now()->subMinutes(2)->diffForHumans()
         'maŋit 2 minuhtat',
         // Carbon::now()->subMinutes(2)->diffForHumans(null, false, true)
-        'maŋit 2 minuhtat',
+        'maŋit 2 min.',
         // Carbon::now()->subHours(1)->diffForHumans()
-        'maŋit okta diimmu',
+        'maŋit 1 diimmu',
         // Carbon::now()->subHours(1)->diffForHumans(null, false, true)
-        'maŋit okta diimmu',
+        'maŋit 1 d.',
         // Carbon::now()->subHours(2)->diffForHumans()
         'maŋit 2 diimmut',
         // Carbon::now()->subHours(2)->diffForHumans(null, false, true)
-        'maŋit 2 diimmut',
+        'maŋit 2 d.',
         // Carbon::now()->subDays(1)->diffForHumans()
-        'maŋit okta beaivi',
+        'maŋit 1 beaivi',
         // Carbon::now()->subDays(1)->diffForHumans(null, false, true)
-        'maŋit okta beaivi',
+        'maŋit 1 b.',
         // Carbon::now()->subDays(2)->diffForHumans()
         'maŋit 2 beaivvit',
         // Carbon::now()->subDays(2)->diffForHumans(null, false, true)
-        'maŋit 2 beaivvit',
+        'maŋit 2 b.',
         // Carbon::now()->subWeeks(1)->diffForHumans()
-        'maŋit okta vahkku',
+        'maŋit 1 vahkku',
         // Carbon::now()->subWeeks(1)->diffForHumans(null, false, true)
-        'maŋit okta vahkku',
+        'maŋit 1 v.',
         // Carbon::now()->subWeeks(2)->diffForHumans()
         'maŋit 2 vahkku',
         // Carbon::now()->subWeeks(2)->diffForHumans(null, false, true)
-        'maŋit 2 vahkku',
+        'maŋit 2 v.',
         // Carbon::now()->subMonths(1)->diffForHumans()
-        'maŋit okta mánnu',
+        'maŋit 1 mánnu',
         // Carbon::now()->subMonths(1)->diffForHumans(null, false, true)
-        'maŋit okta mánnu',
+        'maŋit 1 mán.',
         // Carbon::now()->subMonths(2)->diffForHumans()
         'maŋit 2 mánut',
         // Carbon::now()->subMonths(2)->diffForHumans(null, false, true)
-        'maŋit 2 mánut',
+        'maŋit 2 mán.',
         // Carbon::now()->subYears(1)->diffForHumans()
-        'maŋit okta jahki',
+        'maŋit 1 jahki',
         // Carbon::now()->subYears(1)->diffForHumans(null, false, true)
-        'maŋit okta jahki',
+        'maŋit 1 j.',
         // Carbon::now()->subYears(2)->diffForHumans()
         'maŋit 2 jagit',
         // Carbon::now()->subYears(2)->diffForHumans(null, false, true)
-        'maŋit 2 jagit',
+        'maŋit 2 j.',
         // Carbon::now()->addSecond()->diffForHumans()
-        'moadde sekunddat geažes',
+        '1 sekunddat geažes',
         // Carbon::now()->addSecond()->diffForHumans(null, false, true)
-        'moadde sekunddat geažes',
+        '1 s. geažes',
         // Carbon::now()->addSecond()->diffForHumans(Carbon::now())
         'after',
         // Carbon::now()->addSecond()->diffForHumans(Carbon::now(), false, true)
@@ -186,36 +187,40 @@ class SeTest extends LocalizationTestCase
         // Carbon::now()->diffForHumans(Carbon::now()->addSecond(), false, true)
         'before',
         // Carbon::now()->addSecond()->diffForHumans(Carbon::now(), true)
-        'moadde sekunddat',
+        '1 sekunddat',
         // Carbon::now()->addSecond()->diffForHumans(Carbon::now(), true, true)
-        'moadde sekunddat',
+        '1 s.',
         // Carbon::now()->diffForHumans(Carbon::now()->addSecond()->addSecond(), true)
         '2 sekunddat',
         // Carbon::now()->diffForHumans(Carbon::now()->addSecond()->addSecond(), true, true)
-        '2 sekunddat',
+        '2 s.',
         // Carbon::now()->addSecond()->diffForHumans(null, false, true, 1)
-        'moadde sekunddat geažes',
+        '1 s. geažes',
         // Carbon::now()->addMinute()->addSecond()->diffForHumans(null, true, false, 2)
-        'okta minuhta moadde sekunddat',
+        '1 minuhta 1 sekunddat',
         // Carbon::now()->addYears(2)->addMonths(3)->addDay()->addSecond()->diffForHumans(null, true, true, 4)
-        '2 jagit 3 mánut okta beaivi moadde sekunddat',
+        '2 j. 3 mán. 1 b. 1 s.',
         // Carbon::now()->addYears(3)->diffForHumans(null, null, false, 4)
         '3 jagit geažes',
         // Carbon::now()->subMonths(5)->diffForHumans(null, null, true, 4)
-        'maŋit 5 mánut',
+        'maŋit 5 mán.',
         // Carbon::now()->subYears(2)->subMonths(3)->subDay()->subSecond()->diffForHumans(null, null, true, 4)
-        'maŋit 2 jagit 3 mánut okta beaivi moadde sekunddat',
+        'maŋit 2 j. 3 mán. 1 b. 1 s.',
         // Carbon::now()->addWeek()->addHours(10)->diffForHumans(null, true, false, 2)
-        'okta vahkku 10 diimmut',
+        '1 vahkku 10 diimmut',
         // Carbon::now()->addWeek()->addDays(6)->diffForHumans(null, true, false, 2)
-        'okta vahkku 6 beaivvit',
+        '1 vahkku 6 beaivvit',
         // Carbon::now()->addWeek()->addDays(6)->diffForHumans(null, true, false, 2)
-        'okta vahkku 6 beaivvit',
+        '1 vahkku 6 beaivvit',
+        // Carbon::now()->addWeek()->addDays(6)->diffForHumans(["join" => true, "parts" => 2])
+        '1 vahkku ja 6 beaivvit geažes',
         // Carbon::now()->addWeeks(2)->addHour()->diffForHumans(null, true, false, 2)
-        '2 vahkku okta diimmu',
+        '2 vahkku 1 diimmu',
+        // Carbon::now()->addHour()->diffForHumans(["aUnit" => true])
+        'okta diimmu geažes',
         // CarbonInterval::days(2)->forHumans()
         '2 beaivvit',
         // CarbonInterval::create('P1DT3H')->forHumans(true)
-        'okta beaivi 3 diimmut',
+        '1 b. 3 d.',
     ];
 }

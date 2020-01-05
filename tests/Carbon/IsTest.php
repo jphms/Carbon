@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 /**
  * This file is part of the Carbon package.
@@ -12,6 +13,7 @@ namespace Tests\Carbon;
 
 use \DateTime;
 use Carbon\Carbon;
+use stdClass;
 use Tests\AbstractTestCase;
 
 class IsTest extends AbstractTestCase
@@ -101,22 +103,22 @@ class IsTest extends AbstractTestCase
 
     public function testIsNextQuarterTrue()
     {
-        $this->assertTrue(Carbon::now()->addQuarter()->isNextQuarter());
+        $this->assertTrue(Carbon::now()->addQuarterNoOverflow()->isNextQuarter());
     }
 
     public function testIsLastQuarterTrue()
     {
-        $this->assertTrue(Carbon::now()->subQuarter()->isLastQuarter());
+        $this->assertTrue(Carbon::now()->subQuarterNoOverflow()->isLastQuarter());
     }
 
     public function testIsNextQuarterFalse()
     {
-        $this->assertFalse(Carbon::now()->addQuarters(2)->isNextQuarter());
+        $this->assertFalse(Carbon::now()->addQuartersNoOverflow(2)->isNextQuarter());
     }
 
     public function testIsLastQuarterFalse()
     {
-        $this->assertFalse(Carbon::now()->subQuarters(2)->isLastQuarter());
+        $this->assertFalse(Carbon::now()->subQuartersNoOverflow(2)->isLastQuarter());
     }
 
     public function testIsNextMonthTrue()
@@ -261,7 +263,9 @@ class IsTest extends AbstractTestCase
 
     public function testIsCurrentQuarterFalse()
     {
+        Carbon::useMonthsOverflow(false);
         $this->assertFalse(Carbon::now()->subQuarter()->isCurrentQuarter());
+        Carbon::resetMonthsOverflow();
     }
 
     public function testIsSameQuarterTrue()
@@ -276,14 +280,22 @@ class IsTest extends AbstractTestCase
 
     public function testIsSameQuarterFalse()
     {
+        Carbon::useMonthsOverflow(false);
         $this->assertFalse(Carbon::now()->isSameQuarter(Carbon::now()->subQuarter()));
+        Carbon::resetMonthsOverflow();
     }
 
     public function testIsSameQuarterFalseWithDateTime()
     {
+        $now = Carbon::now();
         $dt = new DateTime();
         $dt->modify((Carbon::MONTHS_PER_QUARTER * -1).' month');
-        $this->assertFalse(Carbon::now()->isSameQuarter($dt));
+
+        if ($dt->format('d') !== $now->format('d')) {
+            $dt->modify('last day of previous month');
+        }
+
+        $this->assertFalse($now->isSameQuarter($dt));
     }
 
     public function testIsSameQuarterAndYearTrue()
@@ -416,6 +428,13 @@ class IsTest extends AbstractTestCase
         $current = Carbon::createFromDate(2012, 1, 2);
         $this->assertTrue($current->isSameDay(Carbon::createFromDate(2012, 1, 2)));
         $this->assertTrue($current->isSameDay(Carbon::create(2012, 1, 2, 23, 59, 59)));
+    }
+
+    public function testIsSameDayWithString()
+    {
+        $current = Carbon::createFromDate(2012, 1, 2);
+        $this->assertTrue($current->isSameDay('2012-01-02 15:00:25'));
+        $this->assertTrue($current->isSameDay('2012-01-02'));
     }
 
     public function testIsSameDayTrueWithDateTime()
@@ -639,13 +658,15 @@ class IsTest extends AbstractTestCase
         $this->assertTrue($current->isSameAs('c', $current));
     }
 
-    /**
-     * @expectedException \InvalidArgumentException
-     */
     public function testIsSameAsWithInvalidArgument()
     {
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage(
+            'Expected null, string, DateTime or DateTimeInterface, stdClass given'
+        );
+
         $current = Carbon::createFromDate(2012, 1, 2);
-        $current->isSameAs('Y-m-d', 'abc');
+        $current->isSameAs('Y-m-d', new stdClass());
     }
 
     public function testIsSunday()
@@ -654,6 +675,7 @@ class IsTest extends AbstractTestCase
         $this->assertTrue(Carbon::createFromDate(2015, 5, 31)->isSunday());
         $this->assertTrue(Carbon::createFromDate(2015, 6, 21)->isSunday());
         $this->assertTrue(Carbon::now()->subWeek()->previous(Carbon::SUNDAY)->isSunday());
+        $this->assertTrue(Carbon::now()->subWeek()->previous('Sunday')->isSunday());
 
         // True in the future
         $this->assertTrue(Carbon::now()->addWeek()->previous(Carbon::SUNDAY)->isSunday());
@@ -850,10 +872,17 @@ class IsTest extends AbstractTestCase
     public function testHasFormat()
     {
         $this->assertTrue(Carbon::hasFormat('1975-05-01', 'Y-m-d'));
+        $this->assertTrue(Carbon::hasFormat('12/30/2019', 'm/d/Y'));
+        $this->assertTrue(Carbon::hasFormat('30/12/2019', 'd/m/Y'));
         $this->assertTrue(Carbon::hasFormat('Sun 21st', 'D jS'));
 
         $this->assertTrue(Carbon::hasFormat('2000-07-01T00:00:00+00:00', Carbon::ATOM));
         $this->assertTrue(Carbon::hasFormat('Y-01-30\\', '\\Y-m-d\\\\'));
+
+        if (version_compare(PHP_VERSION, '7.3.0-dev', '>=')) {
+            // Due to https://bugs.php.net/bug.php?id=75577, proper "v" format support can only works from PHP 7.3.0.
+            $this->assertTrue(Carbon::hasFormat('2012-12-04 22:59.32130', 'Y-m-d H:s.vi'));
+        }
 
         // Format failure
         $this->assertFalse(Carbon::hasFormat('1975-05-01', 'd m Y'));
@@ -864,27 +893,70 @@ class IsTest extends AbstractTestCase
         // Regex failure
         $this->assertFalse(Carbon::hasFormat('1975-5-1', 'Y-m-d'));
         $this->assertFalse(Carbon::hasFormat('19-05-01', 'Y-m-d'));
+        $this->assertFalse(Carbon::hasFormat('30/12/2019', 'm/d/Y'));
+        $this->assertFalse(Carbon::hasFormat('12/30/2019', 'd/m/Y'));
     }
 
-    /**
-     * @expectedException \BadMethodCallException
-     * @expectedExceptionMessage Method isSameFoobar does not exist.
-     */
     public function testIsSameFoobar()
     {
+        $this->expectException(\BadMethodCallException::class);
+        $this->expectExceptionMessage(
+            'Method isSameFoobar does not exist.'
+        );
+
         /** @var mixed $date */
         $date = Carbon::parse('12:00:00');
         $date->isSameFoobar(Carbon::parse('15:30:45'));
     }
 
-    /**
-     * @expectedException \BadMethodCallException
-     * @expectedExceptionMessage Method isCurrentFoobar does not exist.
-     */
     public function testIsCurrentFoobar()
     {
+        $this->expectException(\BadMethodCallException::class);
+        $this->expectExceptionMessage(
+            'Method isCurrentFoobar does not exist.'
+        );
+
         /** @var mixed $date */
         $date = Carbon::parse('12:00:00');
         $date->isCurrentFoobar();
+    }
+
+    public function testIs()
+    {
+        $this->assertTrue(Carbon::parse('2019-06-02 12:23:45')->is('2019'));
+        $this->assertFalse(Carbon::parse('2019-06-02 12:23:45')->is('2018'));
+        $this->assertTrue(Carbon::parse('2019-06-02 12:23:45')->is('2019-06'));
+        $this->assertFalse(Carbon::parse('2019-06-02 12:23:45')->is('2018-06'));
+        $this->assertFalse(Carbon::parse('2019-06-02 12:23:45')->is('2019-07'));
+        $this->assertTrue(Carbon::parse('2019-06-02 12:23:45')->is('06-02'));
+        $this->assertFalse(Carbon::parse('2019-06-02 12:23:45')->is('06-03'));
+        $this->assertFalse(Carbon::parse('2019-06-02 12:23:45')->is('05-02'));
+        $this->assertTrue(Carbon::parse('2019-06-02 12:23:45')->is('2019-06-02'));
+        $this->assertFalse(Carbon::parse('2019-06-02 12:23:45')->is('2019-06-03'));
+        $this->assertFalse(Carbon::parse('2019-06-02 12:23:45')->is('2019-05-02'));
+        $this->assertFalse(Carbon::parse('2019-06-02 12:23:45')->is('2020-06-02'));
+        $this->assertTrue(Carbon::parse('2019-06-02 12:23:45')->is('Sunday'));
+        $this->assertFalse(Carbon::parse('2019-06-02 12:23:45')->is('Monday'));
+        $this->assertTrue(Carbon::parse('2019-06-02 12:23:45')->is('June'));
+        $this->assertFalse(Carbon::parse('2019-06-02 12:23:45')->is('May'));
+        $this->assertTrue(Carbon::parse('2019-06-02 12:23:45')->is('12:23'));
+        $this->assertFalse(Carbon::parse('2019-06-02 12:23:45')->is('12:26'));
+        $this->assertFalse(Carbon::parse('2019-06-02 12:23:45')->is('12:23:00'));
+        $this->assertTrue(Carbon::parse('2019-06-02 12:23:45')->is('12h'));
+        $this->assertFalse(Carbon::parse('2019-06-02 12:23:45')->is('15h'));
+        $this->assertFalse(Carbon::parse('2019-06-02 12:23:45')->is('12:00'));
+        $this->assertFalse(Carbon::parse('2019-06-02 12:23:45')->is('15:00'));
+        $this->assertTrue(Carbon::parse('2019-06-02 15:23:45')->is('3pm'));
+        $this->assertFalse(Carbon::parse('2019-06-02 15:23:45')->is('4pm'));
+        $this->assertFalse(Carbon::parse('2019-06-02 15:23:45')->is('3am'));
+        $this->assertTrue(Carbon::parse('2019-06-02 12:23:45')->is('2019-06-02 12:23'));
+        $this->assertFalse(Carbon::parse('2019-06-02 12:23:45')->is('2019-06-03 12:23'));
+        $this->assertFalse(Carbon::parse('2019-06-02 12:23:45')->is('2019-06-02 15:23'));
+        $this->assertFalse(Carbon::parse('2019-06-02 12:23:45')->is('2019-06-02 12:33'));
+        $this->assertTrue(Carbon::parse('2019-06-02 12:23:45')->is('2 June 2019'));
+        $this->assertFalse(Carbon::parse('2019-06-02 12:23:45')->is('1 June 2019'));
+        $this->assertTrue(Carbon::parse('2019-06-02 12:23:45')->is('June 2019'));
+        $this->assertFalse(Carbon::parse('2019-06-02 12:23:45')->is('August 2019'));
+        $this->assertFalse(Carbon::parse('2019-06-02 12:23:45')->is('June 2018'));
     }
 }

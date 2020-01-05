@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 /**
  * This file is part of the Carbon package.
@@ -111,6 +112,9 @@ class DayOfWeekModifiersTest extends AbstractTestCase
     public function testNextMonday()
     {
         $d = Carbon::createFromDate(1975, 5, 21)->next(Carbon::MONDAY);
+        $this->assertCarbon($d, 1975, 5, 26, 0, 0, 0);
+
+        $d = Carbon::createFromDate(1975, 5, 21)->next('Monday');
         $this->assertCarbon($d, 1975, 5, 26, 0, 0, 0);
     }
 

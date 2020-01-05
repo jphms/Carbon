@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 /**
  * This file is part of the Carbon package.
@@ -96,7 +97,7 @@ class TgTest extends LocalizationTestCase
         // Carbon::parse('2018-04-10 00:00:00')->isoFormat('DDDo')
         '100-ум',
         // Carbon::parse('2018-02-10 00:00:00', 'Europe/Paris')->isoFormat('h:mm a z')
-        '12:00 шаб cet',
+        '12:00 шаб CET',
         // Carbon::parse('2018-02-10 00:00:00')->isoFormat('h:mm A, h:mm a')
         '12:00 шаб, 12:00 шаб',
         // Carbon::parse('2018-02-10 01:30:00')->isoFormat('h:mm A, h:mm a')
@@ -211,8 +212,12 @@ class TgTest extends LocalizationTestCase
         'як ҳафта 6 рӯз',
         // Carbon::now()->addWeek()->addDays(6)->diffForHumans(null, true, false, 2)
         'як ҳафта 6 рӯз',
+        // Carbon::now()->addWeek()->addDays(6)->diffForHumans(["join" => true, "parts" => 2])
+        'баъди як ҳафта ва 6 рӯз',
         // Carbon::now()->addWeeks(2)->addHour()->diffForHumans(null, true, false, 2)
         '2 ҳафта як соат',
+        // Carbon::now()->addHour()->diffForHumans(["aUnit" => true])
+        'баъди як соат',
         // CarbonInterval::days(2)->forHumans()
         '2 рӯз',
         // CarbonInterval::create('P1DT3H')->forHumans(true)

@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 /**
  * This file is part of the Carbon package.
@@ -15,8 +16,12 @@ use Tests\AbstractTestCaseWithOldNow;
 
 class GenericMacroTest extends AbstractTestCaseWithOldNow
 {
-    public function testGenericMacro()
+    public function testGenericMacroBinding()
     {
+        if (version_compare(PHP_VERSION, '8.0.0-dev', '>=')) {
+            $this->markTestSkipped('Use of $this in macros is deprecated and may not work in PHP 8.');
+        }
+
         Carbon::genericMacro(function ($method) {
             $time = preg_replace('/[A-Z]/', ' $0', $method);
 
@@ -45,6 +50,7 @@ class GenericMacroTest extends AbstractTestCaseWithOldNow
         $this->assertSame('2017-06-26', Carbon::lastMonday()->format('Y-m-d'));
 
         $message = null;
+
         try {
             Carbon::fooBar();
         } catch (\BadMethodCallException $exception) {
@@ -54,6 +60,50 @@ class GenericMacroTest extends AbstractTestCaseWithOldNow
         $this->assertSame('Method '.Carbon::class.'::fooBar does not exist.', $message);
 
         $message = null;
+
+        try {
+            $now->barBiz();
+        } catch (\BadMethodCallException $exception) {
+            $message = $exception->getMessage();
+        }
+
+        $this->assertSame('Method barBiz does not exist.', $message);
+    }
+
+    public function testGenericMacro()
+    {
+        Carbon::genericMacro(function ($method) {
+            $time = preg_replace('/[A-Z]/', ' $0', $method);
+
+            try {
+                return self::this()->modify($time);
+            } catch (\Throwable $exception) {
+                if (stripos($exception->getMessage(), 'Failed to parse') !== false) {
+                    throw new \BadMethodCallException('Try next macro', 0, $exception);
+                }
+
+                throw $exception;
+            }
+        });
+
+        /** @var mixed $now */
+        $now = Carbon::now();
+
+        $this->assertSame('2017-07-02', $now->nextSunday()->format('Y-m-d'));
+        $this->assertSame('2017-06-26', Carbon::lastMonday()->format('Y-m-d'));
+
+        $message = null;
+
+        try {
+            Carbon::fooBar();
+        } catch (\BadMethodCallException $exception) {
+            $message = $exception->getMessage();
+        }
+
+        $this->assertSame('Method '.Carbon::class.'::fooBar does not exist.', $message);
+
+        $message = null;
+
         try {
             $now->barBiz();
         } catch (\BadMethodCallException $exception) {

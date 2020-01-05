@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 /**
  * This file is part of the Carbon package.
@@ -88,5 +89,30 @@ class CreateFromTimestampTest extends AbstractTestCase
         $d = Carbon::createFromTimestampUTC(0);
         $this->assertCarbon($d, 1970, 1, 1, 0, 0, 0);
         $this->assertSame(0, $d->offset);
+    }
+
+    /**
+     * Ensures DST php bug does not affect createFromTimestamp in DST change.
+     *
+     * @see https://github.com/briannesbitt/Carbon/issues/1951
+     */
+    public function testCreateFromTimestampInDstChange()
+    {
+        $this->assertSame(
+            '2019-11-03T01:00:00-04:00',
+            Carbon::createFromTimestamp(1572757200, 'America/New_York')->toIso8601String()
+        );
+        $this->assertSame(
+            '2019-11-03T01:00:00-05:00',
+            Carbon::createFromTimestamp(1572757200 + 3600, 'America/New_York')->toIso8601String()
+        );
+        $this->assertSame(
+            '2019-11-03T01:00:00-04:00',
+            Carbon::createFromTimestampMs(1572757200000, 'America/New_York')->toIso8601String()
+        );
+        $this->assertSame(
+            '2019-11-03T01:00:00-05:00',
+            Carbon::createFromTimestampMs(1572757200000 + 3600000, 'America/New_York')->toIso8601String()
+        );
     }
 }

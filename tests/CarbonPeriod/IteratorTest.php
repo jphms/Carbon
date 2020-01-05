@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 /**
  * This file is part of the Carbon package.
@@ -54,7 +55,7 @@ class IteratorTest extends AbstractTestCase
         $period = CarbonPeriodFactory::withEvenDaysFilter();
 
         foreach ($period as $key => $current) {
-            $this->assertInternalType('int', $keys[] = $key);
+            $this->assertIsInt($keys[] = $key);
             $this->assertSame($key, $period->key());
         }
 
@@ -521,10 +522,12 @@ class IteratorTest extends AbstractTestCase
         /** @var CarbonPeriod $period */
         $period = CarbonPeriodFactory::withStackFilter()->locale('de');
         $str = '';
+
         foreach ($period as $key => $date) {
             if ($key) {
                 $str .= ', ';
             }
+
             $str .= $date->isoFormat('MMMM dddd');
         }
 
@@ -536,8 +539,10 @@ class IteratorTest extends AbstractTestCase
         /** @var CarbonPeriod $period */
         $period = CarbonPeriodFactory::withStackFilter()->shiftTimezone('America/Toronto');
         $str = null;
+
         foreach ($period as $key => $date) {
             $str = $date->format('H e');
+
             break;
         }
 

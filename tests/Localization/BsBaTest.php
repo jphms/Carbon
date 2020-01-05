@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 /**
  * This file is part of the Carbon package.
@@ -96,25 +97,25 @@ class BsBaTest extends LocalizationTestCase
         // Carbon::parse('2018-04-10 00:00:00')->isoFormat('DDDo')
         '100.',
         // Carbon::parse('2018-02-10 00:00:00', 'Europe/Paris')->isoFormat('h:mm a z')
-        '12:00 am cet',
+        '12:00 prijepodne CET',
         // Carbon::parse('2018-02-10 00:00:00')->isoFormat('h:mm A, h:mm a')
-        '12:00 AM, 12:00 am',
+        '12:00 prijepodne, 12:00 prijepodne',
         // Carbon::parse('2018-02-10 01:30:00')->isoFormat('h:mm A, h:mm a')
-        '1:30 AM, 1:30 am',
+        '1:30 prijepodne, 1:30 prijepodne',
         // Carbon::parse('2018-02-10 02:00:00')->isoFormat('h:mm A, h:mm a')
-        '2:00 AM, 2:00 am',
+        '2:00 prijepodne, 2:00 prijepodne',
         // Carbon::parse('2018-02-10 06:00:00')->isoFormat('h:mm A, h:mm a')
-        '6:00 AM, 6:00 am',
+        '6:00 prijepodne, 6:00 prijepodne',
         // Carbon::parse('2018-02-10 10:00:00')->isoFormat('h:mm A, h:mm a')
-        '10:00 AM, 10:00 am',
+        '10:00 prijepodne, 10:00 prijepodne',
         // Carbon::parse('2018-02-10 12:00:00')->isoFormat('h:mm A, h:mm a')
-        '12:00 PM, 12:00 pm',
+        '12:00 popodne, 12:00 popodne',
         // Carbon::parse('2018-02-10 17:00:00')->isoFormat('h:mm A, h:mm a')
-        '5:00 PM, 5:00 pm',
+        '5:00 popodne, 5:00 popodne',
         // Carbon::parse('2018-02-10 21:30:00')->isoFormat('h:mm A, h:mm a')
-        '9:30 PM, 9:30 pm',
+        '9:30 popodne, 9:30 popodne',
         // Carbon::parse('2018-02-10 23:00:00')->isoFormat('h:mm A, h:mm a')
-        '11:00 PM, 11:00 pm',
+        '11:00 popodne, 11:00 popodne',
         // Carbon::parse('2018-01-01 00:00:00')->ordinal('hour')
         '0.',
         // Carbon::now()->subSeconds(1)->diffForHumans()
@@ -150,13 +151,13 @@ class BsBaTest extends LocalizationTestCase
         // Carbon::now()->subDays(2)->diffForHumans(null, false, true)
         'prije 2 dana',
         // Carbon::now()->subWeeks(1)->diffForHumans()
-        'prije 1 nedjelja',
+        'prije 1 sedmice',
         // Carbon::now()->subWeeks(1)->diffForHumans(null, false, true)
-        'prije 1 nedjelja',
+        'prije 1 sedmice',
         // Carbon::now()->subWeeks(2)->diffForHumans()
-        'prije 2 nedjelje',
+        'prije 2 sedmicu',
         // Carbon::now()->subWeeks(2)->diffForHumans(null, false, true)
-        'prije 2 nedjelje',
+        'prije 2 sedmicu',
         // Carbon::now()->subMonths(1)->diffForHumans()
         'prije 1 mjesec',
         // Carbon::now()->subMonths(1)->diffForHumans(null, false, true)
@@ -206,13 +207,17 @@ class BsBaTest extends LocalizationTestCase
         // Carbon::now()->subYears(2)->subMonths(3)->subDay()->subSecond()->diffForHumans(null, null, true, 4)
         'prije 2 godine 3 mjeseca 1 dan 1 sekund',
         // Carbon::now()->addWeek()->addHours(10)->diffForHumans(null, true, false, 2)
-        '1 nedjelja 10 sati',
+        '1 sedmice 10 sati',
         // Carbon::now()->addWeek()->addDays(6)->diffForHumans(null, true, false, 2)
-        '1 nedjelja 6 dana',
+        '1 sedmice 6 dana',
         // Carbon::now()->addWeek()->addDays(6)->diffForHumans(null, true, false, 2)
-        '1 nedjelja 6 dana',
+        '1 sedmice 6 dana',
+        // Carbon::now()->addWeek()->addDays(6)->diffForHumans(["join" => true, "parts" => 2])
+        'za 1 sedmice i 6 dana',
         // Carbon::now()->addWeeks(2)->addHour()->diffForHumans(null, true, false, 2)
-        '2 nedjelje 1 sat',
+        '2 sedmicu 1 sat',
+        // Carbon::now()->addHour()->diffForHumans(["aUnit" => true])
+        'za 1 sat',
         // CarbonInterval::days(2)->forHumans()
         '2 dana',
         // CarbonInterval::create('P1DT3H')->forHumans(true)

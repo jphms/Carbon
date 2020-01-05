@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 /**
  * This file is part of the Carbon package.
@@ -12,12 +13,17 @@ namespace Tests\CarbonImmutable;
 
 use Carbon\CarbonImmutable as Carbon;
 use Tests\AbstractTestCaseWithOldNow;
+use Tests\Carbon\Fixtures\FooBar;
 use Tests\CarbonImmutable\Fixtures\Mixin;
 
 class MacroTest extends AbstractTestCaseWithOldNow
 {
     public function testCarbonIsMacroableWhenNotCalledDynamically()
     {
+        if (!function_exists('easter_days')) {
+            $this->markTestSkipped('This test requires ext-calendar to be enabled.');
+        }
+
         Carbon::macro('easterDays', function ($year = 2019) {
             return easter_days($year);
         });
@@ -37,6 +43,10 @@ class MacroTest extends AbstractTestCaseWithOldNow
 
     public function testCarbonIsMacroableWhenNotCalledDynamicallyUsingThis()
     {
+        if (!function_exists('easter_days')) {
+            $this->markTestSkipped('This test requires ext-calendar to be enabled.');
+        }
+
         Carbon::macro('diffFromEaster', function ($year) {
             /** @var Carbon $date */
             $date = $this;
@@ -57,6 +67,10 @@ class MacroTest extends AbstractTestCaseWithOldNow
 
     public function testCarbonIsMacroableWhenCalledStatically()
     {
+        if (!function_exists('easter_days')) {
+            $this->markTestSkipped('This test requires ext-calendar to be enabled.');
+        }
+
         Carbon::macro('easterDate', function ($year) {
             return Carbon::create($year, 3, 21)->addDays(easter_days($year));
         });
@@ -88,23 +102,36 @@ class MacroTest extends AbstractTestCaseWithOldNow
         $this->assertSame('06:00 America/Belize', $date->userFormat('H:i e'));
     }
 
-    /**
-     * @expectedException \BadMethodCallException
-     * @expectedExceptionMessage Method Carbon\CarbonImmutable::nonExistingStaticMacro does not exist.
-     */
     public function testCarbonRaisesExceptionWhenStaticMacroIsNotFound()
     {
+        $this->expectException(\BadMethodCallException::class);
+        $this->expectExceptionMessage(
+            'Method Carbon\CarbonImmutable::nonExistingStaticMacro does not exist.'
+        );
+
         Carbon::nonExistingStaticMacro();
     }
 
-    /**
-     * @expectedException \BadMethodCallException
-     * @expectedExceptionMessage Method nonExistingMacro does not exist.
-     */
     public function testCarbonRaisesExceptionWhenMacroIsNotFound()
     {
+        $this->expectException(\BadMethodCallException::class);
+        $this->expectExceptionMessage(
+            'Method nonExistingMacro does not exist.'
+        );
+
         /** @var mixed $date */
         $date = Carbon::now();
         $date->nonExistingMacro();
+    }
+
+    public function testTraitMixin()
+    {
+        Carbon::mixin(FooBar::class);
+        Carbon::setTestNow('2019-07-19 00:00:00');
+
+        $this->assertSame('supergirl / Friday / immutable', Carbon::super('girl'));
+        $this->assertSame('superboy / Thursday / immutable', Carbon::parse('2019-07-18')->super('boy'));
+
+        $this->assertInstanceOf(Carbon::class, Carbon::me());
     }
 }

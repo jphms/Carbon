@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 /**
  * This file is part of the Carbon package.
@@ -11,6 +12,7 @@
 namespace Tests\CarbonPeriod;
 
 use Carbon\Carbon;
+use Carbon\CarbonInterval;
 use Carbon\CarbonPeriod;
 use Tests\AbstractTestCase;
 use Tests\CarbonPeriod\Fixtures\CarbonPeriodFactory;
@@ -21,7 +23,7 @@ class ToArrayTest extends AbstractTestCase
     {
         $result = CarbonPeriodFactory::withEvenDaysFilter()->toArray();
 
-        $this->assertInternalType('array', $result);
+        $this->assertIsArray($result);
         $this->assertNotEmpty($result);
     }
 
@@ -58,6 +60,13 @@ class ToArrayTest extends AbstractTestCase
         );
     }
 
+    public function testJsonSerialize()
+    {
+        $result = json_encode(CarbonPeriodFactory::withEvenDaysFilter());
+
+        $this->assertSame('["2012-07-04T04:00:00.000000Z","2012-07-10T04:00:00.000000Z","2012-07-16T04:00:00.000000Z"]', $result);
+    }
+
     public function testCountByMethod()
     {
         $period = CarbonPeriodFactory::withEvenDaysFilter();
@@ -90,7 +99,7 @@ class ToArrayTest extends AbstractTestCase
     {
         $result = CarbonPeriod::create(0)->toArray();
 
-        $this->assertInternalType('array', $result);
+        $this->assertIsArray($result);
         $this->assertEmpty($result);
     }
 
@@ -152,5 +161,25 @@ class ToArrayTest extends AbstractTestCase
         ];
 
         $this->assertSame($expected, $this->standardizeDates($period->toArray()));
+    }
+
+    public function testDebugInfo()
+    {
+        $period = CarbonPeriod::create('2018-05-13 12:00 Asia/Kabul', 'PT1H', 3);
+
+        $expected = [
+            'dateClass' => Carbon::class,
+            'dateInterval' => CarbonInterval::hour(),
+            'filters' => [
+                [
+                    'Carbon\CarbonPeriod::filterRecurrences',
+                    null,
+                ],
+            ],
+            'startDate' => Carbon::parse('2018-05-13 12:00 Asia/Kabul'),
+            'recurrences' => 3,
+        ];
+
+        $this->assertEquals($expected, $period->__debugInfo());
     }
 }

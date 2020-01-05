@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 /**
  * This file is part of the Carbon package.
@@ -10,11 +11,16 @@
  */
 namespace Tests\CarbonPeriod;
 
+use BadMethodCallException;
 use Carbon\Carbon;
+use Carbon\CarbonImmutable;
 use Carbon\CarbonInterval;
 use Carbon\CarbonPeriod;
+use Carbon\Exceptions\NotAPeriodException;
 use DateInterval;
+use DatePeriod;
 use DateTime;
+use InvalidArgumentException;
 use Tests\AbstractTestCase;
 
 class CreateTest extends AbstractTestCase
@@ -79,7 +85,7 @@ class CreateTest extends AbstractTestCase
 
         $this->assertSame(
             $this->standardizeDates([$from, $to]),
-            $this->standardizeDates([$period->getStartDate(),  $period->getEndDate()])
+            $this->standardizeDates([$period->getStartDate(), $period->getEndDate()])
         );
     }
 
@@ -93,11 +99,14 @@ class CreateTest extends AbstractTestCase
 
     /**
      * @dataProvider provideInvalidIso8601String
-     * @expectedException \InvalidArgumentException
-     * @expectedExceptionMessage Invalid ISO 8601 specification:
      */
     public function testCreateFromInvalidIso8601String($iso)
     {
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessageRegExp(
+            '/(Invalid ISO 8601 specification:|Unknown or bad format)/'
+        );
+
         CarbonPeriod::create($iso);
     }
 
@@ -108,7 +117,7 @@ class CreateTest extends AbstractTestCase
             ['2008-02-15/2008-02-16/2008-02-17'],
             ['P1D/2008-02-15/P2D'],
             ['2008-02-15/R5'],
-            ['P2D/R'],
+            ['P2D/R2'],
             ['/'],
         ];
     }
@@ -313,11 +322,14 @@ class CreateTest extends AbstractTestCase
 
     /**
      * @dataProvider provideInvalidParameters
-     * @expectedException \InvalidArgumentException
-     * @expectedExceptionMessage Invalid constructor parameters.
      */
     public function testCreateFromInvalidParameters()
     {
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage(
+            'Invalid constructor parameters.'
+        );
+
         call_user_func_array('Carbon\CarbonPeriod::create', func_get_args());
     }
 
@@ -371,9 +383,8 @@ class CreateTest extends AbstractTestCase
         $this->assertSame(
             [
                 '2018-10-28 01:30:00 +02:00',
-                // Note: it would be logical if the two following offsets were +02:00 as it is still DST.
-                '2018-10-28 02:00:00 +01:00',
-                '2018-10-28 02:30:00 +01:00',
+                '2018-10-28 02:00:00 +02:00',
+                '2018-10-28 02:30:00 +02:00',
                 '2018-10-28 02:00:00 +01:00',
                 '2018-10-28 02:30:00 +01:00',
                 '2018-10-28 03:00:00 +01:00',
@@ -493,5 +504,187 @@ class CreateTest extends AbstractTestCase
 
         $this->assertEquals(new Carbon($start), $period->getStartDate());
         $this->assertEquals(new Carbon($end), $period->getEndDate());
+    }
+
+    public function testCreateFromCarbonInstances()
+    {
+        $period = Carbon::create('2019-01-02')->toPeriod(7);
+
+        $this->assertSame(24, $period->getDateInterval()->totalHours);
+        $this->assertInstanceOf(Carbon::class, $period->getStartDate());
+        $this->assertSame('2019-01-02', $period->getStartDate()->format('Y-m-d'));
+        $this->assertNull($period->getEndDate());
+        $this->assertSame(7, $period->getRecurrences());
+        $end = $period->calculateEnd();
+        $this->assertInstanceOf(Carbon::class, $end);
+        $this->assertSame('2019-01-08', $end->format('Y-m-d'));
+
+        $period = Carbon::create('2019-01-02')->toPeriod('2019-02-05');
+
+        $this->assertNull($period->getRecurrences());
+        $this->assertSame(24, $period->getDateInterval()->totalHours);
+        $this->assertInstanceOf(Carbon::class, $period->getStartDate());
+        $this->assertSame('2019-01-02', $period->getStartDate()->format('Y-m-d'));
+        $this->assertInstanceOf(Carbon::class, $period->getEndDate());
+        $this->assertSame('2019-02-05', $period->getEndDate()->format('Y-m-d'));
+
+        $period = Carbon::create('2019-01-02')->range('2019-02-05');
+
+        $this->assertInstanceOf(Carbon::class, $period->getStartDate());
+        $this->assertSame('2019-01-02', $period->getStartDate()->format('Y-m-d'));
+        $this->assertInstanceOf(Carbon::class, $period->getEndDate());
+        $this->assertSame('2019-02-05', $period->getEndDate()->format('Y-m-d'));
+
+        $period = Carbon::create('2019-01-02')->daysUntil('2019-02-05');
+
+        $this->assertSame(24, $period->getDateInterval()->totalHours);
+        $this->assertInstanceOf(Carbon::class, $period->getStartDate());
+        $this->assertSame('2019-01-02', $period->getStartDate()->format('Y-m-d'));
+        $this->assertInstanceOf(Carbon::class, $period->getEndDate());
+        $this->assertSame('2019-02-05', $period->getEndDate()->format('Y-m-d'));
+
+        $period = CarbonImmutable::create('2019-01-02')->daysUntil('2019-02-05');
+
+        $this->assertInstanceOf(CarbonImmutable::class, $period->getStartDate());
+        $this->assertSame('2019-01-02', $period->getStartDate()->format('Y-m-d'));
+        $this->assertInstanceOf(CarbonImmutable::class, $period->getEndDate());
+        $this->assertSame('2019-02-05', $period->getEndDate()->format('Y-m-d'));
+
+        $period = CarbonImmutable::create('2019-01-02')->daysUntil(Carbon::parse('2019-02-05'));
+
+        $this->assertSame(CarbonImmutable::class, $period->getDateClass());
+        $this->assertInstanceOf(CarbonImmutable::class, $period->getStartDate());
+        $this->assertSame('2019-01-02', $period->getStartDate()->format('Y-m-d'));
+        $this->assertInstanceOf(CarbonImmutable::class, $period->getEndDate());
+        $this->assertSame('2019-02-05', $period->getEndDate()->format('Y-m-d'));
+
+        $period = Carbon::create('2019-01-02')->hoursUntil('2019-02-05');
+        $this->assertSame(1, $period->getDateInterval()->totalHours);
+
+        $this->assertSame('1 minute', Carbon::create('2019-01-02')->minutesUntil('2019-02-05')->getDateInterval()->forHumans());
+        $this->assertSame('3 minutes', Carbon::create('2019-01-02')->minutesUntil('2019-02-05', 3)->getDateInterval()->forHumans());
+        $this->assertSame('3 seconds', Carbon::create('2019-01-02')->range('2019-02-05', 3, 'seconds')->getDateInterval()->forHumans());
+        $this->assertSame('1 second', Carbon::create('2019-01-02')->secondsUntil('2019-02-05')->getDateInterval()->forHumans());
+        $this->assertSame(1, Carbon::create('2019-01-02')->millisecondsUntil('2019-02-05')->getDateInterval()->totalMilliseconds);
+        $this->assertSame(1, Carbon::create('2019-01-02')->microsecondsUntil('2019-02-05')->getDateInterval()->totalMicroseconds);
+        $this->assertSame('1 week', Carbon::create('2019-01-02')->weeksUntil('2019-02-05')->getDateInterval()->forHumans());
+        $this->assertSame('1 month', Carbon::create('2019-01-02')->monthsUntil('2019-02-05')->getDateInterval()->forHumans());
+        $this->assertSame('3 months', Carbon::create('2019-01-02')->quartersUntil('2019-02-05')->getDateInterval()->forHumans());
+        $this->assertSame('1 year', Carbon::create('2019-01-02')->yearsUntil('2019-02-05')->getDateInterval()->forHumans());
+        $this->assertSame('10 years', Carbon::create('2019-01-02')->decadesUntil('2019-02-05')->getDateInterval()->forHumans());
+        $this->assertSame('100 years', Carbon::create('2019-01-02')->centuriesUntil('2019-02-05')->getDateInterval()->forHumans());
+        $this->assertSame('1000 years', Carbon::create('2019-01-02')->millenniaUntil('2019-02-05')->getDateInterval()->forHumans());
+    }
+
+    public function testCreateFromCarbonInstanceInvalidMethod()
+    {
+        $this->expectException(BadMethodCallException::class);
+        $this->expectExceptionMessage('Method unknownUnitsUntil does not exist.');
+
+        /** @var object $date */
+        $date = Carbon::create('2019-01-02');
+        $date->unknownUnitsUntil('2019-02-05');
+    }
+
+    public function testInstance()
+    {
+        $period = CarbonPeriod::instance(new DatePeriod(
+            Carbon::parse('2012-07-01'),
+            CarbonInterval::days(2),
+            Carbon::parse('2012-07-07')
+        ));
+
+        $this->assertInstanceOf(CarbonPeriod::class, $period);
+        $this->assertSame('2012-07-01', $period->getStartDate()->format('Y-m-d'));
+        $this->assertSame(2, $period->getDateInterval()->d);
+        $this->assertSame('2012-07-07', $period->getEndDate()->format('Y-m-d'));
+
+        $period2 = CarbonPeriod::instance($period);
+
+        $this->assertInstanceOf(CarbonPeriod::class, $period2);
+        $this->assertSame('2012-07-01', $period2->getStartDate()->format('Y-m-d'));
+        $this->assertSame(2, $period2->getDateInterval()->d);
+        $this->assertSame('2012-07-07', $period2->getEndDate()->format('Y-m-d'));
+        $this->assertNotSame($period, $period2);
+    }
+
+    public function testCast()
+    {
+        $period = new class('2012-07-01', CarbonInterval::days(2), '2012-07-07') extends CarbonPeriod {
+            public function foo()
+            {
+                return $this->getStartDate()->format('j').' '.
+                    $this->getDateInterval()->format('%d').' '.
+                    $this->getEndDate()->format('j');
+            }
+        };
+        $subClass = get_class($period);
+
+        $this->assertInstanceOf(CarbonPeriod::class, $period);
+        $this->assertNotSame(CarbonPeriod::class, $subClass);
+        $this->assertSame('1 2 7', $period->foo());
+
+        /** @var object $period */
+        $period = CarbonPeriod::create('2010-08-24', CarbonInterval::weeks(2), '2012-07-19')
+            ->cast($subClass);
+
+        $this->assertInstanceOf($subClass, $period);
+        $this->assertSame('24 14 19', $period->foo());
+    }
+
+    public function testBadCast()
+    {
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('DateTime has not the instance() method needed to cast the date.');
+
+        CarbonPeriod::create('2010-08-24', CarbonInterval::weeks(2), '2012-07-19')
+            ->cast(DateTime::class);
+    }
+
+    public function testMake()
+    {
+        $period = CarbonPeriod::make(new DatePeriod(
+            Carbon::parse('2012-07-01'),
+            CarbonInterval::days(2),
+            Carbon::parse('2012-07-07')
+        ));
+
+        $this->assertInstanceOf(CarbonPeriod::class, $period);
+        $this->assertSame('2012-07-01', $period->getStartDate()->format('Y-m-d'));
+        $this->assertSame(2, $period->getDateInterval()->d);
+        $this->assertSame('2012-07-07', $period->getEndDate()->format('Y-m-d'));
+
+        $period2 = CarbonPeriod::make($period);
+
+        $this->assertInstanceOf(CarbonPeriod::class, $period2);
+        $this->assertSame('2012-07-01', $period2->getStartDate()->format('Y-m-d'));
+        $this->assertSame(2, $period2->getDateInterval()->d);
+        $this->assertSame('2012-07-07', $period2->getEndDate()->format('Y-m-d'));
+        $this->assertNotSame($period, $period2);
+
+        $period2 = CarbonPeriod::make('2012-07-01/P2D/2012-07-07');
+
+        $this->assertInstanceOf(CarbonPeriod::class, $period2);
+        $this->assertSame('2012-07-01', $period2->getStartDate()->format('Y-m-d'));
+        $this->assertSame(2, $period2->getDateInterval()->d);
+        $this->assertSame('2012-07-07', $period2->getEndDate()->format('Y-m-d'));
+    }
+
+    public function testInstanceInvalidType()
+    {
+        $this->expectException(NotAPeriodException::class);
+        $this->expectExceptionMessage('Argument 1 passed to Carbon\CarbonPeriod::Carbon\CarbonPeriod::instance() '.
+            'must be an instance of DatePeriod or Carbon\CarbonPeriod, string given.');
+
+        CarbonPeriod::instance('hello');
+    }
+
+    public function testInstanceInvalidInstance()
+    {
+        $this->expectException(NotAPeriodException::class);
+        $this->expectExceptionMessage('Argument 1 passed to Carbon\CarbonPeriod::Carbon\CarbonPeriod::instance() '.
+            'must be an instance of DatePeriod or Carbon\CarbonPeriod, instance of Carbon\Carbon given.');
+
+        CarbonPeriod::instance(Carbon::now());
     }
 }

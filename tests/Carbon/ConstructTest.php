@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 /**
  * This file is part of the Carbon package.
@@ -107,6 +108,15 @@ class ConstructTest extends AbstractTestCase
         $c = Carbon::parse('now', $timezone);
         $this->assertSame($timezone, $c->tzName);
         $this->assertSame(9 + $dayLightSavingTimeOffset, $c->offsetHours);
+    }
+
+    public function testSettingTimezoneWithInteger()
+    {
+        Carbon::useStrictMode(false);
+        $timezone = 5;
+        $c = new Carbon('2019-02-12 23:00:00', $timezone);
+        $this->assertSame('+05:00', $c->tzName);
+        Carbon::useStrictMode(true);
     }
 
     public function testMockingWithMicroseconds()

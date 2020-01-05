@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 /**
  * This file is part of the Carbon package.
@@ -25,7 +26,7 @@ abstract class AbstractTestCaseWithOldNow extends AbstractTestCase
      */
     protected $oldImmutableNow = true;
 
-    public function tearDown()
+    protected function tearDown(): void
     {
         Carbon::resetMacros();
         Carbon::setTestNow();

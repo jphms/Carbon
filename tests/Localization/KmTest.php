@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 /**
  * This file is part of the Carbon package.
@@ -96,7 +97,7 @@ class KmTest extends LocalizationTestCase
         // Carbon::parse('2018-04-10 00:00:00')->isoFormat('DDDo')
         'ទី100',
         // Carbon::parse('2018-02-10 00:00:00', 'Europe/Paris')->isoFormat('h:mm a z')
-        '12:00 ព្រឹក cet',
+        '12:00 ព្រឹក CET',
         // Carbon::parse('2018-02-10 00:00:00')->isoFormat('h:mm A, h:mm a')
         '12:00 ព្រឹក, 12:00 ព្រឹក',
         // Carbon::parse('2018-02-10 01:30:00')->isoFormat('h:mm A, h:mm a')
@@ -211,8 +212,12 @@ class KmTest extends LocalizationTestCase
         '1 សប្ដាហ៍ 6 ថ្ងៃ',
         // Carbon::now()->addWeek()->addDays(6)->diffForHumans(null, true, false, 2)
         '1 សប្ដាហ៍ 6 ថ្ងៃ',
+        // Carbon::now()->addWeek()->addDays(6)->diffForHumans(["join" => true, "parts" => 2])
+        '1 សប្ដាហ៍និង 6 ថ្ងៃទៀត',
         // Carbon::now()->addWeeks(2)->addHour()->diffForHumans(null, true, false, 2)
         '2 សប្ដាហ៍ មួយម៉ោង',
+        // Carbon::now()->addHour()->diffForHumans(["aUnit" => true])
+        'មួយម៉ោងទៀត',
         // CarbonInterval::days(2)->forHumans()
         '2 ថ្ងៃ',
         // CarbonInterval::create('P1DT3H')->forHumans(true)

@@ -1,10 +1,18 @@
 <?php
+declare(strict_types=1);
 
-use Illuminate\Events\EventDispatcher;
+namespace Tests\Laravel;
+
+use ArrayAccess;
 use Symfony\Component\Translation\Translator;
 
 class App implements ArrayAccess
 {
+    /**
+     * @var string
+     */
+    protected $locale;
+
     /**
      * @var string
      */
@@ -16,15 +24,20 @@ class App implements ArrayAccess
     public $translator;
 
     /**
-     * @var EventDispatcher
+     * @var \Illuminate\Events\EventDispatcher
      */
     public $events;
 
     public function register()
     {
         include_once __DIR__.'/EventDispatcher.php';
-        $this->translator = new Translator('de');
-        $this->events = new EventDispatcher();
+        $this->locale = 'de';
+        $this->translator = new Translator($this->locale);
+    }
+
+    public function setEventDispatcher($dispatcher)
+    {
+        $this->events = $dispatcher;
     }
 
     public static function version($version = null)
@@ -38,13 +51,19 @@ class App implements ArrayAccess
 
     public static function getLocaleChangeEventName()
     {
-        return version_compare(static::version(), '5.5') >= 0 ? 'Illuminate\Foundation\Events\LocaleUpdated' : 'locale.changed';
+        return version_compare((string) static::version(), '5.5') >= 0 ? 'Illuminate\Foundation\Events\LocaleUpdated' : 'locale.changed';
     }
 
     public function setLocale($locale)
     {
+        $this->locale = $locale;
         $this->translator->setLocale($locale);
         $this->events->dispatch(static::getLocaleChangeEventName());
+    }
+
+    public function getLocale()
+    {
+        return $this->locale;
     }
 
     public function bound($service)
@@ -70,5 +89,10 @@ class App implements ArrayAccess
     public function offsetUnset($offset)
     {
         // noop
+    }
+
+    public function removeService($offset)
+    {
+        $this->$offset = null;
     }
 }

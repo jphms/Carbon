@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 /**
  * This file is part of the Carbon package.
@@ -11,6 +12,7 @@
 namespace Tests\CarbonImmutable;
 
 use Carbon\CarbonImmutable as Carbon;
+use Carbon\Translator;
 use Tests\AbstractTestCase;
 
 class ArraysTest extends AbstractTestCase
@@ -20,7 +22,7 @@ class ArraysTest extends AbstractTestCase
         $dt = Carbon::now();
         $dtToArray = $dt->toArray();
 
-        $this->assertInternalType('array', $dtToArray);
+        $this->assertIsArray($dtToArray);
 
         $this->assertArrayHasKey('year', $dtToArray);
         $this->assertSame($dt->year, $dtToArray['year']);
@@ -57,5 +59,35 @@ class ArraysTest extends AbstractTestCase
 
         $this->assertArrayHasKey('formatted', $dtToArray);
         $this->assertSame($dt->format(Carbon::DEFAULT_TO_STRING_FORMAT), $dtToArray['formatted']);
+    }
+
+    public function testDebugInfo()
+    {
+        $dt = Carbon::parse('2019-04-09 11:10:10.667952');
+        $debug = $dt->__debugInfo();
+
+        // Ignored as not in PHP 8
+        if (isset($debug['timezone_type'])) {
+            unset($debug['timezone_type']);
+        }
+
+        $this->assertSame([
+            'date' => '2019-04-09 11:10:10.667952',
+            'timezone' => 'America/Toronto',
+        ], $debug);
+
+        $dt = Carbon::parse('2019-04-09 11:10:10.667952')->locale('fr_FR');
+        $debug = $dt->__debugInfo();
+
+        // Ignored as not in PHP 8
+        if (isset($debug['timezone_type'])) {
+            unset($debug['timezone_type']);
+        }
+
+        $this->assertSame([
+            'localTranslator' => Translator::get('fr_FR'),
+            'date' => '2019-04-09 11:10:10.667952',
+            'timezone' => 'America/Toronto',
+        ], $debug);
     }
 }

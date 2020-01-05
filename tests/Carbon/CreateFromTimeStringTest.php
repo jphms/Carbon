@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 /**
  * This file is part of the Carbon package.
@@ -16,7 +17,7 @@ use Tests\AbstractTestCase;
 
 class CreateFromTimeStringTest extends AbstractTestCase
 {
-    protected function setUp()
+    protected function setUp(): void
     {
         parent::setUp();
         Carbon::setTestNow();

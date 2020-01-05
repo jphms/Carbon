@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 /**
  * This file is part of the Carbon package.
@@ -12,7 +13,7 @@ namespace Tests\Localization;
 
 class SiTest extends LocalizationTestCase
 {
-    const LOCALE = 'si'; // Sinhalese
+    const LOCALE = 'si'; // Sinhala
 
     const CASES = [
         // Carbon::parse('2018-01-04 00:00:00')->addDays(1)->calendar(Carbon::parse('2018-01-04 00:00:00'))
@@ -86,7 +87,7 @@ class SiTest extends LocalizationTestCase
         // Carbon::parse('2018-01-06 00:00:00')->isoFormat('Do wo')
         '6 වැනි 1 වැනි',
         // Carbon::parse('2018-01-07 00:00:00')->isoFormat('Do wo')
-        '7 වැනි 2 වැනි',
+        '7 වැනි 1 වැනි',
         // Carbon::parse('2018-01-11 00:00:00')->isoFormat('Do wo')
         '11 වැනි 2 වැනි',
         // Carbon::parse('2018-02-09 00:00:00')->isoFormat('DDDo')
@@ -96,7 +97,7 @@ class SiTest extends LocalizationTestCase
         // Carbon::parse('2018-04-10 00:00:00')->isoFormat('DDDo')
         '100 වැනි',
         // Carbon::parse('2018-02-10 00:00:00', 'Europe/Paris')->isoFormat('h:mm a z')
-        '12:00 පෙ.ව. cet',
+        '12:00 පෙ.ව. CET',
         // Carbon::parse('2018-02-10 00:00:00')->isoFormat('h:mm A, h:mm a')
         '12:00 පෙර වරු, 12:00 පෙ.ව.',
         // Carbon::parse('2018-02-10 01:30:00')->isoFormat('h:mm A, h:mm a')
@@ -154,9 +155,9 @@ class SiTest extends LocalizationTestCase
         // Carbon::now()->subWeeks(1)->diffForHumans(null, false, true)
         'සතියක්කට පෙර',
         // Carbon::now()->subWeeks(2)->diffForHumans()
-        'සති 2 යිකට පෙර',
+        'සති 2කට පෙර',
         // Carbon::now()->subWeeks(2)->diffForHumans(null, false, true)
-        'සති 2 යිකට පෙර',
+        'සති 2කට පෙර',
         // Carbon::now()->subMonths(1)->diffForHumans()
         'මාසයකට පෙර',
         // Carbon::now()->subMonths(1)->diffForHumans(null, false, true)
@@ -211,8 +212,12 @@ class SiTest extends LocalizationTestCase
         'සතියක් දින 6',
         // Carbon::now()->addWeek()->addDays(6)->diffForHumans(null, true, false, 2)
         'සතියක් දින 6',
+        // Carbon::now()->addWeek()->addDays(6)->diffForHumans(["join" => true, "parts" => 2])
+        'සතියක් දින 6න්',
         // Carbon::now()->addWeeks(2)->addHour()->diffForHumans(null, true, false, 2)
-        'සති 2 යි පැය',
+        'සති 2 පැය',
+        // Carbon::now()->addHour()->diffForHumans(["aUnit" => true])
+        'පැයකින්',
         // CarbonInterval::days(2)->forHumans()
         'දින 2',
         // CarbonInterval::create('P1DT3H')->forHumans(true)

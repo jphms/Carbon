@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 /**
  * This file is part of the Carbon package.
@@ -84,7 +85,7 @@ class KuTest extends LocalizationTestCase
         // Carbon::parse('2018-01-05 00:00:00')->isoFormat('Do wo')
         '5 1',
         // Carbon::parse('2018-01-06 00:00:00')->isoFormat('Do wo')
-        '6 1',
+        '6 2',
         // Carbon::parse('2018-01-07 00:00:00')->isoFormat('Do wo')
         '7 2',
         // Carbon::parse('2018-01-11 00:00:00')->isoFormat('Do wo')
@@ -96,7 +97,7 @@ class KuTest extends LocalizationTestCase
         // Carbon::parse('2018-04-10 00:00:00')->isoFormat('DDDo')
         '100',
         // Carbon::parse('2018-02-10 00:00:00', 'Europe/Paris')->isoFormat('h:mm a z')
-        '12:00 am cet',
+        '12:00 am CET',
         // Carbon::parse('2018-02-10 00:00:00')->isoFormat('h:mm A, h:mm a')
         '12:00 AM, 12:00 am',
         // Carbon::parse('2018-02-10 01:30:00')->isoFormat('h:mm A, h:mm a')
@@ -211,8 +212,12 @@ class KuTest extends LocalizationTestCase
         'هەفتە 6 ڕۆژ',
         // Carbon::now()->addWeek()->addDays(6)->diffForHumans(null, true, false, 2)
         'هەفتە 6 ڕۆژ',
+        // Carbon::now()->addWeek()->addDays(6)->diffForHumans(["join" => true, "parts" => 2])
+        'هەفتە û 6 ڕۆژ لە ئێستاوە',
         // Carbon::now()->addWeeks(2)->addHour()->diffForHumans(null, true, false, 2)
         'هەفتە کاژێر',
+        // Carbon::now()->addHour()->diffForHumans(["aUnit" => true])
+        'کاژێر لە ئێستاوە',
         // CarbonInterval::days(2)->forHumans()
         'ڕۆژ',
         // CarbonInterval::create('P1DT3H')->forHumans(true)

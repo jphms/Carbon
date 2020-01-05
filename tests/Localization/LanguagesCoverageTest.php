@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 /**
  * This file is part of the Carbon package.
@@ -24,7 +25,7 @@ class LanguagesCoverageTest extends AbstractTestCase
         $missingLanguages = array_filter($languages, function ($language) use ($tester, $tests) {
             $file = basename($language);
             $covered = in_array(
-                str_replace(['_', '-'], '', strtolower(substr($file, 0, -4))),
+                str_replace(['_', '-', '@'], '', strtolower(substr($file, 0, -4))),
                 $tests
             );
             $tester->assertTrue($covered, "Expect $file language file to be covered.");

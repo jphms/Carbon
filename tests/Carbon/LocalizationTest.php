@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 /**
  * This file is part of the Carbon package.
@@ -11,18 +12,21 @@
 namespace Tests\Carbon;
 
 use Carbon\Carbon;
+use Carbon\Exceptions\NotLocaleAwareException;
 use Carbon\Language;
 use Carbon\Translator;
+use ReflectionMethod;
 use Symfony\Component\Translation\IdentityTranslator;
 use Symfony\Component\Translation\Loader\ArrayLoader;
 use Symfony\Component\Translation\MessageCatalogue;
 use Symfony\Component\Translation\MessageSelector;
+use Symfony\Component\Translation\TranslatorInterface;
 use Tests\AbstractTestCase;
 use Tests\Carbon\Fixtures\MyCarbon;
 
 class LocalizationTest extends AbstractTestCase
 {
-    protected function tearDown()
+    protected function tearDown(): void
     {
         parent::tearDown();
         Carbon::setLocale('en');
@@ -30,6 +34,7 @@ class LocalizationTest extends AbstractTestCase
 
     public function testGetTranslator()
     {
+        /** @var Translator $t */
         $t = Carbon::getTranslator();
         $this->assertNotNull($t);
         $this->assertSame('en', $t->getLocale());
@@ -37,6 +42,7 @@ class LocalizationTest extends AbstractTestCase
 
     public function testResetTranslator()
     {
+        /** @var Translator $t */
         $t = MyCarbon::getTranslator();
         $this->assertNotNull($t);
         $this->assertSame('en', $t->getLocale());
@@ -53,16 +59,18 @@ class LocalizationTest extends AbstractTestCase
         $diff = Carbon::now()->subSeconds(2)->diffForHumans();
         setlocale(LC_ALL, $currentLocale);
 
-        $this->assertSame('fr_FR', $locale);
+        $this->assertSame('fr', $locale === 'fr_FR' ? 'fr' : $locale);
         $this->assertSame('il y a 2 secondes', $diff);
 
         if (setlocale(LC_ALL, 'ar_AE.UTF-8', 'ar_AE.utf8', 'ar_AE', 'ar') === false) {
             $this->markTestSkipped('testSetLocaleToAuto test need ar_AE.UTF-8.');
         }
+        rename(__DIR__.'/../../src/Carbon/Lang/ar_AE.php', __DIR__.'/../../src/Carbon/Lang/disabled_ar_AE.php');
         Carbon::setLocale('auto');
         $locale = Carbon::getLocale();
         $diff = Carbon::now()->subSeconds(2)->diffForHumans();
         setlocale(LC_ALL, $currentLocale);
+        rename(__DIR__.'/../../src/Carbon/Lang/disabled_ar_AE.php', __DIR__.'/../../src/Carbon/Lang/ar_AE.php');
 
         $this->assertSame('ar', $locale);
         $this->assertSame('منذ ثانيتين', $diff);
@@ -75,8 +83,8 @@ class LocalizationTest extends AbstractTestCase
         $diff = Carbon::now()->subSeconds(2)->diffForHumans();
         setlocale(LC_ALL, $currentLocale);
 
-        $this->assertSame('sr_ME', $locale);
-        $this->assertSame('prije 2 sekunde', $diff);
+        $this->assertStringStartsWith('sr', $locale);
+        $this->assertSame('pre 2 sekunde', str_replace('prije', 'pre', $diff));
 
         if (setlocale(LC_ALL, 'zh_TW.UTF-8', 'zh_TW.utf8', 'zh_TW', 'zh') === false) {
             $this->markTestSkipped('testSetLocaleToAuto test need zh_TW.UTF-8.');
@@ -86,7 +94,7 @@ class LocalizationTest extends AbstractTestCase
         $diff = Carbon::now()->subSeconds(2)->diffForHumans();
         setlocale(LC_ALL, $currentLocale);
 
-        $this->assertSame('zh_TW', $locale);
+        $this->assertStringStartsWith('zh', $locale);
         $this->assertSame('2秒前', $diff);
 
         /** @var Translator $translator */
@@ -98,10 +106,16 @@ class LocalizationTest extends AbstractTestCase
         mkdir($directory);
         $translator->setDirectories([$directory]);
 
-        copy(__DIR__.'/../../src/Carbon/Lang/zh.php', "$directory/zh.php");
-        copy(__DIR__.'/../../src/Carbon/Lang/zh_TW.php', "$directory/zh_TW.php");
-        copy(__DIR__.'/../../src/Carbon/Lang/fr.php', "$directory/fr.php");
-        copy(__DIR__.'/../../src/Carbon/Lang/fr_CA.php', "$directory/fr_CA.php");
+        $files = [
+            'zh_Hans',
+            'zh',
+            'fr',
+            'fr_CA',
+        ];
+
+        foreach ($files as $file) {
+            copy(__DIR__."/../../src/Carbon/Lang/$file.php", "$directory/$file.php");
+        }
 
         $currentLocale = setlocale(LC_ALL, '0');
         if (setlocale(LC_ALL, 'fr_FR.UTF-8', 'fr_FR.utf8', 'fr_FR', 'fr') === false) {
@@ -139,10 +153,11 @@ class LocalizationTest extends AbstractTestCase
         $this->assertSame('2 seconds ago', $diff);
 
         $translator->setDirectories($directories);
-        unlink("$directory/zh.php");
-        unlink("$directory/zh_TW.php");
-        unlink("$directory/fr.php");
-        unlink("$directory/fr_CA.php");
+
+        foreach ($files as $file) {
+            unlink("$directory/$file.php");
+        }
+
         rmdir($directory);
     }
 
@@ -302,7 +317,7 @@ class LocalizationTest extends AbstractTestCase
     public function testSetLocale($locale)
     {
         $this->assertTrue(Carbon::setLocale($locale));
-        $this->assertSame($locale, Carbon::getLocale());
+        $this->assertTrue($this->areSameLocales($locale, Carbon::getLocale()));
     }
 
     /**
@@ -317,10 +332,11 @@ class LocalizationTest extends AbstractTestCase
         $t->addLoader('array', new ArrayLoader());
         Carbon::setTranslator($t);
 
+        /** @var Translator $t */
         $t = Carbon::getTranslator();
         $this->assertNotNull($t);
-        $this->assertSame($locale, $t->getLocale());
-        $this->assertSame($locale, Carbon::now()->locale());
+        $this->assertTrue($this->areSameLocales($locale, $t->getLocale()));
+        $this->assertTrue($this->areSameLocales($locale, Carbon::now()->locale()));
         Carbon::setTranslator($ori);
     }
 
@@ -659,6 +675,8 @@ class LocalizationTest extends AbstractTestCase
 
         $this->assertTrue(Carbon::localeHasPeriodSyntax($withPeriodSyntaxLocale));
         $this->assertFalse(Carbon::localeHasPeriodSyntax($withoutPeriodSyntaxLocale));
+
+        $this->assertTrue(Carbon::localeHasPeriodSyntax('nl'));
     }
 
     public function testGetAvailableLocales()
@@ -674,6 +692,37 @@ class LocalizationTest extends AbstractTestCase
         $this->assertSame(['en'], Carbon::getAvailableLocales());
     }
 
+    public function testNotLocaleAwareException()
+    {
+        if (method_exists(TranslatorInterface::class, 'getLocale')) {
+            $this->markTestSkipped('In Symfony < 4, NotLocaleAwareException will never been thrown.');
+        }
+
+        $parameters = (new ReflectionMethod(TranslatorInterface::class, 'trans'))->getParameters();
+
+        /** @var TranslatorInterface $translator */
+        $translator = $parameters[0]->getType()->getName() === 'string'
+            ? (new class implements TranslatorInterface {
+                public function trans(string $id, array $parameters = [], string $domain = null, string $locale = null)
+                {
+                    return 'x';
+                }
+            })
+            : (new class implements TranslatorInterface {
+                public function trans($id, array $parameters = [], $domain = null, $locale = null)
+                {
+                    return 'x';
+                }
+            });
+
+        Carbon::setTranslator($translator);
+
+        $this->expectException(NotLocaleAwareException::class);
+        $this->expectExceptionMessage(get_class($translator).' does neither implements Symfony\\Contracts\\Translation\\LocaleAwareInterface nor getLocale() method.');
+
+        Carbon::now()->locale();
+    }
+
     public function testGetAvailableLocalesInfo()
     {
         $infos = Carbon::getAvailableLocalesInfo();
@@ -687,7 +736,7 @@ class LocalizationTest extends AbstractTestCase
     {
         $diff = Carbon::now()->locale('ka')->addWeeks(3)->diffForHumans();
 
-        $this->assertSame('3 კვირაა', $diff);
+        $this->assertSame('3 კვირაში', $diff);
     }
 
     public function testWeekDayMultipleForms()
@@ -706,15 +755,117 @@ class LocalizationTest extends AbstractTestCase
         $this->assertSame('минулої середи', $date->isoFormat('[минулої] dddd'));
     }
 
-    /**
-     * @expectedException \InvalidArgumentException
-     * @expectedExceptionMessage Translator does not implement Symfony\Component\Translation\TranslatorInterface and Symfony\Component\Translation\TranslatorBagInterface.
-     */
     public function testTranslationCustomWithCustomTranslator()
     {
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage(
+            'Translator does not implement Symfony\Component\Translation\TranslatorInterface '.
+            'and Symfony\Component\Translation\TranslatorBagInterface.'
+        );
+
         $date = Carbon::create(2018, 1, 1, 0, 0, 0);
-        $date->setLocalTranslator(new IdentityTranslator(new MessageSelector()));
+        $date->setLocalTranslator(class_exists(MessageSelector::class)
+            ? new IdentityTranslator(new MessageSelector())
+            : new IdentityTranslator()
+        );
 
         $date->getTranslationMessage('foo');
+    }
+
+    public function testTranslateTimeStringTo()
+    {
+        $date = Carbon::parse('2019-07-05')->locale('de');
+        $baseString = $date->isoFormat('LLLL');
+
+        $this->assertSame('Freitag, 5. Juli 2019 00:00', $baseString);
+        $this->assertSame('Friday, 5. July 2019 00:00', $date->translateTimeStringTo($baseString));
+        $this->assertSame('vendredi, 5. juillet 2019 00:00', $date->translateTimeStringTo($baseString, 'fr'));
+    }
+
+    public function testFallbackLocales()
+    {
+        // /!\ Used for backward compatibility, please avoid this method
+        // @see testMultiLocales() as preferred method
+
+        $myDialect = 'xx_MY_Dialect';
+        $secondChoice = 'xy_MY_Dialect';
+        $thirdChoice = 'it_CH';
+
+        /** @var Translator $translator */
+        $translator = Carbon::getTranslator();
+
+        $translator->setMessages($myDialect, [
+            'day' => ':count yub yub',
+        ]);
+
+        $translator->setMessages($secondChoice, [
+            'day' => ':count buza',
+            'hour' => ':count ohto',
+        ]);
+
+        Carbon::setLocale($myDialect);
+
+        $this->assertNull(Carbon::getFallbackLocale());
+
+        Carbon::setFallbackLocale($thirdChoice);
+
+        $this->assertSame($thirdChoice, Carbon::getFallbackLocale());
+        $this->assertSame('3 yub yub e 5 ora fa', Carbon::now()->subDays(3)->subHours(5)->ago([
+            'parts' => 2,
+            'join' => true,
+        ]));
+
+        Carbon::setTranslator(new Translator('en'));
+
+        /** @var Translator $translator */
+        $translator = Carbon::getTranslator();
+
+        $translator->setMessages($myDialect, [
+            'day' => ':count yub yub',
+        ]);
+
+        $translator->setMessages($secondChoice, [
+            'day' => ':count buza',
+            'hour' => ':count ohto',
+        ]);
+
+        Carbon::setLocale($myDialect);
+        Carbon::setFallbackLocale($secondChoice);
+        Carbon::setFallbackLocale($thirdChoice);
+
+        $this->assertSame($thirdChoice, Carbon::getFallbackLocale());
+        $this->assertSame('3 yub yub e 5 ohto fa', Carbon::now()->subDays(3)->subHours(5)->ago([
+            'parts' => 2,
+            'join' => true,
+        ]));
+
+        Carbon::setTranslator(new \Symfony\Component\Translation\IdentityTranslator());
+
+        $this->assertNull(Carbon::getFallbackLocale());
+
+        Carbon::setTranslator(new Translator('en'));
+    }
+
+    public function testMultiLocales()
+    {
+        $myDialect = 'xx_MY_Dialect';
+        $secondChoice = 'xy_MY_Dialect';
+        $thirdChoice = 'it_CH';
+
+        Translator::get($myDialect)->setTranslations([
+            'day' => ':count yub yub',
+        ]);
+
+        Translator::get($secondChoice)->setTranslations([
+            'day' => ':count buza',
+            'hour' => ':count ohto',
+        ]);
+
+        $date = Carbon::now()->subDays(3)->subHours(5)->locale($myDialect, $secondChoice, $thirdChoice);
+
+        $this->assertSame('3 yub yub e 5 ohto fa', $date->ago([
+            'parts' => 2,
+            'join' => true,
+        ]));
     }
 }

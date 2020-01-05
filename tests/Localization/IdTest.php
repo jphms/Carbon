@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 /**
  * This file is part of the Carbon package.
@@ -96,7 +97,7 @@ class IdTest extends LocalizationTestCase
         // Carbon::parse('2018-04-10 00:00:00')->isoFormat('DDDo')
         '100',
         // Carbon::parse('2018-02-10 00:00:00', 'Europe/Paris')->isoFormat('h:mm a z')
-        '12:00 pagi cet',
+        '12:00 pagi CET',
         // Carbon::parse('2018-02-10 00:00:00')->isoFormat('h:mm A, h:mm a')
         '12:00 pagi, 12:00 pagi',
         // Carbon::parse('2018-02-10 01:30:00')->isoFormat('h:mm A, h:mm a')
@@ -118,7 +119,7 @@ class IdTest extends LocalizationTestCase
         // Carbon::parse('2018-01-01 00:00:00')->ordinal('hour')
         '0',
         // Carbon::now()->subSeconds(1)->diffForHumans()
-        'beberapa detik yang lalu',
+        '1 detik yang lalu',
         // Carbon::now()->subSeconds(1)->diffForHumans(null, false, true)
         '1dt yang lalu',
         // Carbon::now()->subSeconds(2)->diffForHumans()
@@ -126,7 +127,7 @@ class IdTest extends LocalizationTestCase
         // Carbon::now()->subSeconds(2)->diffForHumans(null, false, true)
         '2dt yang lalu',
         // Carbon::now()->subMinutes(1)->diffForHumans()
-        'semenit yang lalu',
+        '1 menit yang lalu',
         // Carbon::now()->subMinutes(1)->diffForHumans(null, false, true)
         '1mnt yang lalu',
         // Carbon::now()->subMinutes(2)->diffForHumans()
@@ -134,7 +135,7 @@ class IdTest extends LocalizationTestCase
         // Carbon::now()->subMinutes(2)->diffForHumans(null, false, true)
         '2mnt yang lalu',
         // Carbon::now()->subHours(1)->diffForHumans()
-        'sejam yang lalu',
+        '1 jam yang lalu',
         // Carbon::now()->subHours(1)->diffForHumans(null, false, true)
         '1j yang lalu',
         // Carbon::now()->subHours(2)->diffForHumans()
@@ -142,7 +143,7 @@ class IdTest extends LocalizationTestCase
         // Carbon::now()->subHours(2)->diffForHumans(null, false, true)
         '2j yang lalu',
         // Carbon::now()->subDays(1)->diffForHumans()
-        'sehari yang lalu',
+        '1 hari yang lalu',
         // Carbon::now()->subDays(1)->diffForHumans(null, false, true)
         '1hr yang lalu',
         // Carbon::now()->subDays(2)->diffForHumans()
@@ -158,7 +159,7 @@ class IdTest extends LocalizationTestCase
         // Carbon::now()->subWeeks(2)->diffForHumans(null, false, true)
         '2mgg yang lalu',
         // Carbon::now()->subMonths(1)->diffForHumans()
-        'sebulan yang lalu',
+        '1 bulan yang lalu',
         // Carbon::now()->subMonths(1)->diffForHumans(null, false, true)
         '1bln yang lalu',
         // Carbon::now()->subMonths(2)->diffForHumans()
@@ -166,7 +167,7 @@ class IdTest extends LocalizationTestCase
         // Carbon::now()->subMonths(2)->diffForHumans(null, false, true)
         '2bln yang lalu',
         // Carbon::now()->subYears(1)->diffForHumans()
-        'setahun yang lalu',
+        '1 tahun yang lalu',
         // Carbon::now()->subYears(1)->diffForHumans(null, false, true)
         '1thn yang lalu',
         // Carbon::now()->subYears(2)->diffForHumans()
@@ -174,19 +175,19 @@ class IdTest extends LocalizationTestCase
         // Carbon::now()->subYears(2)->diffForHumans(null, false, true)
         '2thn yang lalu',
         // Carbon::now()->addSecond()->diffForHumans()
-        'dalam beberapa detik',
+        '1 detik dari sekarang',
         // Carbon::now()->addSecond()->diffForHumans(null, false, true)
-        'dalam 1dt',
+        '1dt dari sekarang',
         // Carbon::now()->addSecond()->diffForHumans(Carbon::now())
-        'beberapa detik setelah',
+        '1 detik setelahnya',
         // Carbon::now()->addSecond()->diffForHumans(Carbon::now(), false, true)
-        '1dt setelah',
+        '1dt setelahnya',
         // Carbon::now()->diffForHumans(Carbon::now()->addSecond())
-        'beberapa detik sebelum',
+        '1 detik sebelumnya',
         // Carbon::now()->diffForHumans(Carbon::now()->addSecond(), false, true)
-        '1dt sebelum',
+        '1dt sebelumnya',
         // Carbon::now()->addSecond()->diffForHumans(Carbon::now(), true)
-        'beberapa detik',
+        '1 detik',
         // Carbon::now()->addSecond()->diffForHumans(Carbon::now(), true, true)
         '1dt',
         // Carbon::now()->diffForHumans(Carbon::now()->addSecond()->addSecond(), true)
@@ -194,13 +195,13 @@ class IdTest extends LocalizationTestCase
         // Carbon::now()->diffForHumans(Carbon::now()->addSecond()->addSecond(), true, true)
         '2dt',
         // Carbon::now()->addSecond()->diffForHumans(null, false, true, 1)
-        'dalam 1dt',
+        '1dt dari sekarang',
         // Carbon::now()->addMinute()->addSecond()->diffForHumans(null, true, false, 2)
-        'semenit beberapa detik',
+        '1 menit 1 detik',
         // Carbon::now()->addYears(2)->addMonths(3)->addDay()->addSecond()->diffForHumans(null, true, true, 4)
         '2thn 3bln 1hr 1dt',
         // Carbon::now()->addYears(3)->diffForHumans(null, null, false, 4)
-        'dalam 3 tahun',
+        '3 tahun dari sekarang',
         // Carbon::now()->subMonths(5)->diffForHumans(null, null, true, 4)
         '5bln yang lalu',
         // Carbon::now()->subYears(2)->subMonths(3)->subDay()->subSecond()->diffForHumans(null, null, true, 4)
@@ -211,8 +212,12 @@ class IdTest extends LocalizationTestCase
         '1 minggu 6 hari',
         // Carbon::now()->addWeek()->addDays(6)->diffForHumans(null, true, false, 2)
         '1 minggu 6 hari',
+        // Carbon::now()->addWeek()->addDays(6)->diffForHumans(["join" => true, "parts" => 2])
+        '1 minggu dan 6 hari dari sekarang',
         // Carbon::now()->addWeeks(2)->addHour()->diffForHumans(null, true, false, 2)
-        '2 minggu sejam',
+        '2 minggu 1 jam',
+        // Carbon::now()->addHour()->diffForHumans(["aUnit" => true])
+        'sejam dari sekarang',
         // CarbonInterval::days(2)->forHumans()
         '2 hari',
         // CarbonInterval::create('P1DT3H')->forHumans(true)

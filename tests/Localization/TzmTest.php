@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 /**
  * This file is part of the Carbon package.
@@ -12,7 +13,7 @@ namespace Tests\Localization;
 
 class TzmTest extends LocalizationTestCase
 {
-    const LOCALE = 'tzm';
+    const LOCALE = 'tzm'; // Tamazight
 
     const CASES = [
         // Carbon::parse('2018-01-04 00:00:00')->addDays(1)->calendar(Carbon::parse('2018-01-04 00:00:00'))
@@ -96,7 +97,7 @@ class TzmTest extends LocalizationTestCase
         // Carbon::parse('2018-04-10 00:00:00')->isoFormat('DDDo')
         '100',
         // Carbon::parse('2018-02-10 00:00:00', 'Europe/Paris')->isoFormat('h:mm a z')
-        '12:00 am cet',
+        '12:00 am CET',
         // Carbon::parse('2018-02-10 00:00:00')->isoFormat('h:mm A, h:mm a')
         '12:00 AM, 12:00 am',
         // Carbon::parse('2018-02-10 01:30:00')->isoFormat('h:mm A, h:mm a')
@@ -211,8 +212,12 @@ class TzmTest extends LocalizationTestCase
         '1 ⵉⵎⴰⵍⴰⵙⵙ 6 oⵙⵙⴰⵏ',
         // Carbon::now()->addWeek()->addDays(6)->diffForHumans(null, true, false, 2)
         '1 ⵉⵎⴰⵍⴰⵙⵙ 6 oⵙⵙⴰⵏ',
+        // Carbon::now()->addWeek()->addDays(6)->diffForHumans(["join" => true, "parts" => 2])
+        'ⴷⴰⴷⵅ ⵙ ⵢⴰⵏ 1 ⵉⵎⴰⵍⴰⵙⵙ 6 oⵙⵙⴰⵏ',
         // Carbon::now()->addWeeks(2)->addHour()->diffForHumans(null, true, false, 2)
         '2 ⵉⵎⴰⵍⴰⵙⵙ ⵙⴰⵄⴰ',
+        // Carbon::now()->addHour()->diffForHumans(["aUnit" => true])
+        'ⴷⴰⴷⵅ ⵙ ⵢⴰⵏ ⵙⴰⵄⴰ',
         // CarbonInterval::days(2)->forHumans()
         '2 oⵙⵙⴰⵏ',
         // CarbonInterval::create('P1DT3H')->forHumans(true)

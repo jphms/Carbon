@@ -19,6 +19,7 @@
     <testsuites>
         <testsuite name="carbon">
             <directory>tests/Carbon</directory>
+            <directory>tests/CommonTraits</directory>
         </testsuite>
         <testsuite name="immutable">
             <directory>tests/CarbonImmutable</directory>
@@ -43,6 +44,12 @@
         </testsuite>
         <testsuite name="language">
             <directory>tests/Language</directory>
+        </testsuite>
+        <testsuite name="jenssegers">
+            <directory>tests/Jenssegers</directory>
+        </testsuite>
+        <testsuite name="cli">
+            <directory>tests/Cli</directory>
         </testsuite>
     </testsuites>
 </phpunit>

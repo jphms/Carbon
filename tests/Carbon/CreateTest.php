@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 /**
  * This file is part of the Carbon package.
@@ -64,12 +65,11 @@ class CreateTest extends AbstractTestCase
         $this->assertSame(3, $d->month);
     }
 
-    /**
-     * @expectedException \InvalidArgumentException
-     * @expectedExceptionMessage Unexpected data found.
-     */
     public function testCreateWithInvalidMonth()
     {
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage('month must be between 0 and 99, -5 given');
+
         Carbon::create(null, -5);
     }
 
@@ -94,11 +94,10 @@ class CreateTest extends AbstractTestCase
         $this->assertSame(21, $d->day);
     }
 
-    /**
-     * @expectedException \InvalidArgumentException
-     */
     public function testCreateWithInvalidDay()
     {
+        $this->expectException(\InvalidArgumentException::class);
+
         Carbon::create(null, null, -4);
     }
 
@@ -116,11 +115,10 @@ class CreateTest extends AbstractTestCase
         $this->assertSame(0, $d->second);
     }
 
-    /**
-     * @expectedException \InvalidArgumentException
-     */
     public function testCreateWithInvalidHour()
     {
+        $this->expectException(\InvalidArgumentException::class);
+
         Carbon::create(null, null, null, -1);
     }
 
@@ -136,11 +134,10 @@ class CreateTest extends AbstractTestCase
         $this->assertSame(58, $d->minute);
     }
 
-    /**
-     * @expectedException \InvalidArgumentException
-     */
     public function testCreateWithInvalidMinute()
     {
+        $this->expectException(\InvalidArgumentException::class);
+
         Carbon::create(2011, 1, 1, 0, -2, 0);
     }
 
@@ -156,11 +153,10 @@ class CreateTest extends AbstractTestCase
         $this->assertSame(59, $d->second);
     }
 
-    /**
-     * @expectedException \InvalidArgumentException
-     */
     public function testCreateWithInvalidSecond()
     {
+        $this->expectException(\InvalidArgumentException::class);
+
         Carbon::create(null, null, null, null, null, -2);
     }
 
@@ -192,11 +188,10 @@ class CreateTest extends AbstractTestCase
         $this->assertNull(Carbon::make(3));
     }
 
-    /**
-     * @expectedException \InvalidArgumentException
-     */
     public function testCreateWithInvalidTimezoneOffset()
     {
+        $this->expectException(\InvalidArgumentException::class);
+
         Carbon::createFromDate(2000, 1, 1, -28236);
     }
 
@@ -207,5 +202,67 @@ class CreateTest extends AbstractTestCase
 
         $dt = Carbon::createFromDate(2000, 1, 1, '-4');
         $this->assertSame('-04:00', $dt->tzName);
+    }
+
+    public function testParseFromLocale()
+    {
+        $date = Carbon::parseFromLocale('23 Okt 2019', 'de');
+
+        $this->assertSame('Wednesday, October 23, 2019 12:00 AM America/Toronto', $date->isoFormat('LLLL zz'));
+
+        $date = Carbon::parseFromLocale('23 Okt 2019', 'de', 'Europe/Berlin')->locale('de');
+
+        $this->assertSame('Mittwoch, 23. Oktober 2019 00:00 Europe/Berlin', $date->isoFormat('LLLL zz'));
+
+        $date = Carbon::parseFromLocale('23 červenec 2019', 'cs');
+
+        $this->assertSame('2019-07-23', $date->format('Y-m-d'));
+
+        $date = Carbon::parseFromLocale('23 červen 2019', 'cs');
+
+        $this->assertSame('2019-06-23', $date->format('Y-m-d'));
+    }
+
+    public function testCreateFromLocaleFormat()
+    {
+        $date = Carbon::createFromLocaleFormat('Y M d H,i,s', 'zh_CN', '2019 四月 4 12,04,21');
+
+        $this->assertSame('Thursday, April 4, 2019 12:04 PM America/Toronto', $date->isoFormat('LLLL zz'));
+
+        $date = Carbon::createFromLocaleFormat('Y M d H,i,s', 'zh_TW', '2019 四月 4 12,04,21', 'Asia/Shanghai')->locale('zh');
+
+        $this->assertSame('2019年4月4日星期四 中午 12点04分 Asia/Shanghai', $date->isoFormat('LLLL zz'));
+    }
+
+    public function testCreateFromIsoFormat()
+    {
+        $date = Carbon::createFromIsoFormat('!YYYYY MMMM D', '2019 April 4');
+
+        $this->assertSame('Thursday, April 4, 2019 12:00 AM America/Toronto', $date->isoFormat('LLLL zz'));
+    }
+
+    public function testCreateFromIsoFormatException()
+    {
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage('Format wo not supported for creation.');
+
+        Carbon::createFromIsoFormat('YY D wo', '2019 April 4');
+    }
+
+    public function testCreateFromLocaleIsoFormat()
+    {
+        $date = Carbon::createFromLocaleIsoFormat('YYYY MMMM D HH,mm,ss', 'zh_TW', '2019 四月 4 12,04,21');
+
+        $this->assertSame('Thursday, April 4, 2019 12:04 PM America/Toronto', $date->isoFormat('LLLL zz'));
+
+        $date = Carbon::createFromLocaleIsoFormat('LLL zz', 'zh', '2019年4月4日 下午 2点04分 Asia/Shanghai');
+
+        $this->assertSame('Thursday, April 4, 2019 2:04 PM Asia/Shanghai', $date->isoFormat('LLLL zz'));
+
+        $this->assertSame('2019年4月4日星期四 下午 2点04分 Asia/Shanghai', $date->locale('zh')->isoFormat('LLLL zz'));
+
+        $date = Carbon::createFromLocaleIsoFormat('llll', 'fr_CA', 'mar. 24 juil. 2018 08:34');
+
+        $this->assertSame('2018-07-24 08:34', $date->format('Y-m-d H:i'));
     }
 }

@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 /**
  * This file is part of the Carbon package.
@@ -11,6 +12,8 @@
 namespace Tests\Carbon;
 
 use Carbon\Carbon;
+use DateTime;
+use DateTimeImmutable;
 use Tests\AbstractTestCase;
 
 class ObjectsTest extends AbstractTestCase
@@ -64,13 +67,23 @@ class ObjectsTest extends AbstractTestCase
         $dt = Carbon::create(2000, 3, 26);
         $date = $dt->toDateTime();
 
-        $this->assertInstanceOf(\DateTime::class, $date);
+        $this->assertInstanceOf(DateTime::class, $date);
 
         $this->assertSame('2000-03-26', $date->format('Y-m-d'));
 
         $date = $dt->toDate();
 
-        $this->assertInstanceOf(\DateTime::class, $date);
+        $this->assertInstanceOf(DateTime::class, $date);
+
+        $this->assertSame('2000-03-26', $date->format('Y-m-d'));
+    }
+
+    public function testToDateTimeImmutable()
+    {
+        $dt = Carbon::create(2000, 3, 26);
+        $date = $dt->toDateTimeImmutable();
+
+        $this->assertInstanceOf(DateTimeImmutable::class, $date);
 
         $this->assertSame('2000-03-26', $date->format('Y-m-d'));
     }

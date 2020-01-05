@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 /**
  * This file is part of the Carbon package.
@@ -18,6 +19,7 @@ use Carbon\Translator;
 use Closure;
 use DateTime;
 use PHPUnit\Framework\TestCase;
+use ReflectionProperty;
 
 abstract class AbstractTestCase extends TestCase
 {
@@ -51,7 +53,7 @@ abstract class AbstractTestCase extends TestCase
         return (new DateTime())->getTimestamp();
     }
 
-    protected function setUp()
+    protected function setUp(): void
     {
         //save current timezone
         $this->saveTz = date_default_timezone_get();
@@ -70,11 +72,15 @@ abstract class AbstractTestCase extends TestCase
 
         Carbon::setTestNow($this->now = $now);
         CarbonImmutable::setTestNow($this->immutableNow = $immutableNow);
+
+        Carbon::useStrictMode(true);
+        CarbonImmutable::useStrictMode(true);
     }
 
-    protected function tearDown()
+    protected function tearDown(): void
     {
         date_default_timezone_set($this->saveTz);
+
         Carbon::setTestNow();
         Carbon::resetToStringFormat();
         Carbon::resetMonthsOverflow();
@@ -83,11 +89,12 @@ abstract class AbstractTestCase extends TestCase
         /** @var Translator $translator */
         $translator = Carbon::getTranslator();
         $translator->resetMessages();
+
         CarbonImmutable::setTestNow();
         CarbonImmutable::resetToStringFormat();
         CarbonImmutable::resetMonthsOverflow();
         CarbonImmutable::setTranslator(new Translator('en'));
-        Carbon::setLocale('en');
+        CarbonImmutable::setLocale('en');
         /** @var Translator $translator */
         $translator = CarbonImmutable::getTranslator();
         $translator->resetMessages();
@@ -233,18 +240,23 @@ abstract class AbstractTestCase extends TestCase
             'fr_FR' => 'French_France',
         ];
         $windowsLocale = $mapping[$locale] ?? null;
+
         if ($windowsLocale) {
             $locales[] = "$windowsLocale.UTF8";
         }
+
         if (setlocale(LC_TIME, ...$locales) === false) {
             $this->markTestSkipped("UTF-8 test need $locale.UTF-8 (a locale with accents).");
         }
+
         $exception = null;
+
         try {
             $func();
         } catch (\Throwable $e) {
             $exception = $e;
         }
+
         setlocale(LC_TIME, $currentLocale);
 
         if ($exception) {
@@ -274,5 +286,21 @@ abstract class AbstractTestCase extends TestCase
         }
 
         return $result;
+    }
+
+    protected function areSameLocales($a, $b)
+    {
+        static $aliases = null;
+
+        if ($aliases === null) {
+            $property = new ReflectionProperty(Translator::class, 'aliases');
+            $property->setAccessible(true);
+            $aliases = $property->getValue(Translator::get());
+        }
+
+        $a = $aliases[$a] ?? $a;
+        $b = $aliases[$b] ?? $b;
+
+        return $a === $b;
     }
 }

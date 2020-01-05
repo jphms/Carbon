@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 /**
  * This file is part of the Carbon package.
@@ -150,34 +151,37 @@ class SettersTest extends AbstractTestCase
         $this->assertSame(0, $ci->invert);
     }
 
-    /**
-     * @expectedException \InvalidArgumentException
-     * @expectedExceptionMessage Unknown setter 'doesNotExit'
-     */
     public function testInvalidSetter()
     {
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage(
+            'Unknown setter \'doesNotExit\''
+        );
+
         /** @var mixed $ci */
         $ci = new CarbonInterval;
         $ci->doesNotExit = 123;
     }
 
-    /**
-     * @expectedException \BadMethodCallException
-     * @expectedExceptionMessage Unknown fluent setter 'doesNotExit'
-     */
     public function testInvalidFluentSetter()
     {
+        $this->expectException(\BadMethodCallException::class);
+        $this->expectExceptionMessage(
+            'Unknown fluent setter \'doesNotExit\''
+        );
+
         /** @var mixed $ci */
         $ci = new CarbonInterval;
         $ci->doesNotExit(123);
     }
 
-    /**
-     * @expectedException \BadMethodCallException
-     * @expectedExceptionMessage Unknown fluent constructor 'doesNotExit'
-     */
     public function testInvalidStaticFluentSetter()
     {
+        $this->expectException(\BadMethodCallException::class);
+        $this->expectExceptionMessage(
+            'Unknown fluent constructor \'doesNotExit\''
+        );
+
         CarbonInterval::doesNotExit(123);
     }
 

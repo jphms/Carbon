@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 /**
  * This file is part of the Carbon package.
@@ -96,7 +97,7 @@ class KnTest extends LocalizationTestCase
         // Carbon::parse('2018-04-10 00:00:00')->isoFormat('DDDo')
         '100ನೇ',
         // Carbon::parse('2018-02-10 00:00:00', 'Europe/Paris')->isoFormat('h:mm a z')
-        '12:00 ರಾತ್ರಿ cet',
+        '12:00 ರಾತ್ರಿ CET',
         // Carbon::parse('2018-02-10 00:00:00')->isoFormat('h:mm A, h:mm a')
         '12:00 ರಾತ್ರಿ, 12:00 ರಾತ್ರಿ',
         // Carbon::parse('2018-02-10 01:30:00')->isoFormat('h:mm A, h:mm a')
@@ -211,8 +212,12 @@ class KnTest extends LocalizationTestCase
         'ಒಂದು ವಾರ 6 ದಿನ',
         // Carbon::now()->addWeek()->addDays(6)->diffForHumans(null, true, false, 2)
         'ಒಂದು ವಾರ 6 ದಿನ',
+        // Carbon::now()->addWeek()->addDays(6)->diffForHumans(["join" => true, "parts" => 2])
+        'ಒಂದು ವಾರ, 6 ದಿನ ನಂತರ',
         // Carbon::now()->addWeeks(2)->addHour()->diffForHumans(null, true, false, 2)
         '2 ವಾರಗಳು ಒಂದು ಗಂಟೆ',
+        // Carbon::now()->addHour()->diffForHumans(["aUnit" => true])
+        'ಒಂದು ಗಂಟೆ ನಂತರ',
         // CarbonInterval::days(2)->forHumans()
         '2 ದಿನ',
         // CarbonInterval::create('P1DT3H')->forHumans(true)

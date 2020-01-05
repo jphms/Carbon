@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace Tests\CarbonInterval;
 
@@ -39,11 +40,13 @@ class TotalTest extends AbstractTestCase
         ];
     }
 
-    /**
-     * @expectedException \InvalidArgumentException
-     */
     public function testThrowsExceptionForInvalidUnits()
     {
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage(
+            'Unknown unit \'foo\'.'
+        );
+
         CarbonInterval::create()->total('foo');
     }
 
@@ -83,17 +86,21 @@ class TotalTest extends AbstractTestCase
         $totalDays = $interval->totalDays;
         $totalWeeks = $interval->totalWeeks;
         $monthsError = null;
+
         try {
             $interval->totalMonths;
         } catch (\InvalidArgumentException $exception) {
             $monthsError = $exception->getMessage();
         }
+
         $yearsError = null;
+
         try {
             $interval->totalYears;
         } catch (\InvalidArgumentException $exception) {
             $yearsError = $exception->getMessage();
         }
+
         CarbonInterval::setCascadeFactors($cascades);
 
         $this->assertSame(150 * 60 * 60, $totalSeconds);
@@ -130,5 +137,22 @@ class TotalTest extends AbstractTestCase
         $this->assertSame(1146, $totalDays);
         $this->assertSame(1146 / 30, $totalMonths);
         $this->assertSame(1146 / 30 / 12, $totalYears);
+    }
+
+    public function testMicrosecondsInterval()
+    {
+        $interval = CarbonInterval::milliseconds(500);
+
+        $this->assertSame(0.5, $interval->totalSeconds);
+        $this->assertSame(1 / 2 / 60, $interval->totalMinutes);
+        $this->assertSame(1 / 2 / 3600, $interval->totalHours);
+
+        $interval = CarbonInterval::milliseconds(600000)->cascade();
+
+        $this->assertSame(600000000, $interval->totalMicroseconds);
+        $this->assertSame(600000, $interval->totalMilliseconds);
+        $this->assertSame(600, $interval->totalSeconds);
+        $this->assertSame(10, $interval->totalMinutes);
+        $this->assertSame(1 / 6, $interval->totalHours);
     }
 }

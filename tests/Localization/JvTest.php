@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 /**
  * This file is part of the Carbon package.
@@ -96,7 +97,7 @@ class JvTest extends LocalizationTestCase
         // Carbon::parse('2018-04-10 00:00:00')->isoFormat('DDDo')
         '100',
         // Carbon::parse('2018-02-10 00:00:00', 'Europe/Paris')->isoFormat('h:mm a z')
-        '12:00 enjing cet',
+        '12:00 enjing CET',
         // Carbon::parse('2018-02-10 00:00:00')->isoFormat('h:mm A, h:mm a')
         '12:00 enjing, 12:00 enjing',
         // Carbon::parse('2018-02-10 01:30:00')->isoFormat('h:mm A, h:mm a')
@@ -211,8 +212,12 @@ class JvTest extends LocalizationTestCase
         'sakminggu 6 dinten',
         // Carbon::now()->addWeek()->addDays(6)->diffForHumans(null, true, false, 2)
         'sakminggu 6 dinten',
+        // Carbon::now()->addWeek()->addDays(6)->diffForHumans(["join" => true, "parts" => 2])
+        'wonten ing sakminggu lan 6 dinten',
         // Carbon::now()->addWeeks(2)->addHour()->diffForHumans(null, true, false, 2)
         '2 minggu setunggal jam',
+        // Carbon::now()->addHour()->diffForHumans(["aUnit" => true])
+        'wonten ing setunggal jam',
         // CarbonInterval::days(2)->forHumans()
         '2 dinten',
         // CarbonInterval::create('P1DT3H')->forHumans(true)

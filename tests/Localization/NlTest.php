@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 /**
  * This file is part of the Carbon package.
@@ -100,29 +101,29 @@ class NlTest extends LocalizationTestCase
         // Carbon::parse('2018-04-10 00:00:00')->isoFormat('DDDo')
         '100ste',
         // Carbon::parse('2018-02-10 00:00:00', 'Europe/Paris')->isoFormat('h:mm a z')
-        '12:00 am cet',
+        '12:00 \'s ochtends CET',
         // Carbon::parse('2018-02-10 00:00:00')->isoFormat('h:mm A, h:mm a')
-        '12:00 AM, 12:00 am',
+        '12:00 \'s ochtends, 12:00 \'s ochtends',
         // Carbon::parse('2018-02-10 01:30:00')->isoFormat('h:mm A, h:mm a')
-        '1:30 AM, 1:30 am',
+        '1:30 \'s ochtends, 1:30 \'s ochtends',
         // Carbon::parse('2018-02-10 02:00:00')->isoFormat('h:mm A, h:mm a')
-        '2:00 AM, 2:00 am',
+        '2:00 \'s ochtends, 2:00 \'s ochtends',
         // Carbon::parse('2018-02-10 06:00:00')->isoFormat('h:mm A, h:mm a')
-        '6:00 AM, 6:00 am',
+        '6:00 \'s ochtends, 6:00 \'s ochtends',
         // Carbon::parse('2018-02-10 10:00:00')->isoFormat('h:mm A, h:mm a')
-        '10:00 AM, 10:00 am',
+        '10:00 \'s ochtends, 10:00 \'s ochtends',
         // Carbon::parse('2018-02-10 12:00:00')->isoFormat('h:mm A, h:mm a')
-        '12:00 PM, 12:00 pm',
+        '12:00 \'s middags, 12:00 \'s middags',
         // Carbon::parse('2018-02-10 17:00:00')->isoFormat('h:mm A, h:mm a')
-        '5:00 PM, 5:00 pm',
+        '5:00 \'s middags, 5:00 \'s middags',
         // Carbon::parse('2018-02-10 21:30:00')->isoFormat('h:mm A, h:mm a')
-        '9:30 PM, 9:30 pm',
+        '9:30 \'s middags, 9:30 \'s middags',
         // Carbon::parse('2018-02-10 23:00:00')->isoFormat('h:mm A, h:mm a')
-        '11:00 PM, 11:00 pm',
+        '11:00 \'s middags, 11:00 \'s middags',
         // Carbon::parse('2018-01-01 00:00:00')->ordinal('hour')
         '0de',
         // Carbon::now()->subSeconds(1)->diffForHumans()
-        'een paar seconden geleden',
+        '1 seconde geleden',
         // Carbon::now()->subSeconds(1)->diffForHumans(null, false, true)
         '1s geleden',
         // Carbon::now()->subSeconds(2)->diffForHumans()
@@ -130,15 +131,15 @@ class NlTest extends LocalizationTestCase
         // Carbon::now()->subSeconds(2)->diffForHumans(null, false, true)
         '2s geleden',
         // Carbon::now()->subMinutes(1)->diffForHumans()
-        'één minuut geleden',
+        '1 minuut geleden',
         // Carbon::now()->subMinutes(1)->diffForHumans(null, false, true)
-        '1mi geleden',
+        '1min geleden',
         // Carbon::now()->subMinutes(2)->diffForHumans()
         '2 minuten geleden',
         // Carbon::now()->subMinutes(2)->diffForHumans(null, false, true)
-        '2mi geleden',
+        '2min geleden',
         // Carbon::now()->subHours(1)->diffForHumans()
-        'één uur geleden',
+        '1 uur geleden',
         // Carbon::now()->subHours(1)->diffForHumans(null, false, true)
         '1u geleden',
         // Carbon::now()->subHours(2)->diffForHumans()
@@ -146,7 +147,7 @@ class NlTest extends LocalizationTestCase
         // Carbon::now()->subHours(2)->diffForHumans(null, false, true)
         '2u geleden',
         // Carbon::now()->subDays(1)->diffForHumans()
-        'één dag geleden',
+        '1 dag geleden',
         // Carbon::now()->subDays(1)->diffForHumans(null, false, true)
         '1d geleden',
         // Carbon::now()->subDays(2)->diffForHumans()
@@ -162,15 +163,15 @@ class NlTest extends LocalizationTestCase
         // Carbon::now()->subWeeks(2)->diffForHumans(null, false, true)
         '2w geleden',
         // Carbon::now()->subMonths(1)->diffForHumans()
-        'één maand geleden',
+        '1 maand geleden',
         // Carbon::now()->subMonths(1)->diffForHumans(null, false, true)
-        '1ma geleden',
+        '1mnd geleden',
         // Carbon::now()->subMonths(2)->diffForHumans()
         '2 maanden geleden',
         // Carbon::now()->subMonths(2)->diffForHumans(null, false, true)
-        '2ma geleden',
+        '2mnd geleden',
         // Carbon::now()->subYears(1)->diffForHumans()
-        'één jaar geleden',
+        '1 jaar geleden',
         // Carbon::now()->subYears(1)->diffForHumans(null, false, true)
         '1j geleden',
         // Carbon::now()->subYears(2)->diffForHumans()
@@ -178,19 +179,19 @@ class NlTest extends LocalizationTestCase
         // Carbon::now()->subYears(2)->diffForHumans(null, false, true)
         '2j geleden',
         // Carbon::now()->addSecond()->diffForHumans()
-        'over een paar seconden',
+        'over 1 seconde',
         // Carbon::now()->addSecond()->diffForHumans(null, false, true)
         'over 1s',
         // Carbon::now()->addSecond()->diffForHumans(Carbon::now())
-        'een paar seconden later',
+        '1 seconde later',
         // Carbon::now()->addSecond()->diffForHumans(Carbon::now(), false, true)
         '1s later',
         // Carbon::now()->diffForHumans(Carbon::now()->addSecond())
-        'een paar seconden eerder',
+        '1 seconde eerder',
         // Carbon::now()->diffForHumans(Carbon::now()->addSecond(), false, true)
         '1s eerder',
         // Carbon::now()->addSecond()->diffForHumans(Carbon::now(), true)
-        'een paar seconden',
+        '1 seconde',
         // Carbon::now()->addSecond()->diffForHumans(Carbon::now(), true, true)
         '1s',
         // Carbon::now()->diffForHumans(Carbon::now()->addSecond()->addSecond(), true)
@@ -200,23 +201,27 @@ class NlTest extends LocalizationTestCase
         // Carbon::now()->addSecond()->diffForHumans(null, false, true, 1)
         'over 1s',
         // Carbon::now()->addMinute()->addSecond()->diffForHumans(null, true, false, 2)
-        'één minuut een paar seconden',
+        '1 minuut 1 seconde',
         // Carbon::now()->addYears(2)->addMonths(3)->addDay()->addSecond()->diffForHumans(null, true, true, 4)
-        '2j 3ma 1d 1s',
+        '2j 3mnd 1d 1s',
         // Carbon::now()->addYears(3)->diffForHumans(null, null, false, 4)
         'over 3 jaar',
         // Carbon::now()->subMonths(5)->diffForHumans(null, null, true, 4)
-        '5ma geleden',
+        '5mnd geleden',
         // Carbon::now()->subYears(2)->subMonths(3)->subDay()->subSecond()->diffForHumans(null, null, true, 4)
-        '2j 3ma 1d 1s geleden',
+        '2j 3mnd 1d 1s geleden',
         // Carbon::now()->addWeek()->addHours(10)->diffForHumans(null, true, false, 2)
         '1 week 10 uur',
         // Carbon::now()->addWeek()->addDays(6)->diffForHumans(null, true, false, 2)
         '1 week 6 dagen',
         // Carbon::now()->addWeek()->addDays(6)->diffForHumans(null, true, false, 2)
         '1 week 6 dagen',
+        // Carbon::now()->addWeek()->addDays(6)->diffForHumans(["join" => true, "parts" => 2])
+        'over 1 week en 6 dagen',
         // Carbon::now()->addWeeks(2)->addHour()->diffForHumans(null, true, false, 2)
-        '2 weken één uur',
+        '2 weken 1 uur',
+        // Carbon::now()->addHour()->diffForHumans(["aUnit" => true])
+        'over een uur',
         // CarbonInterval::days(2)->forHumans()
         '2 dagen',
         // CarbonInterval::create('P1DT3H')->forHumans(true)
@@ -225,7 +230,6 @@ class NlTest extends LocalizationTestCase
 
     public function testPeriod()
     {
-        Carbon::setLocale(static::LOCALE);
         $this->assertSame('4 keer elke week van 2012-07-01 12:00:00', strval(CarbonPeriod::create('R4/2012-07-01T12:00:00/P7D')));
         $this->assertSame('4 keer elk jaar van 2012-07-01 12:00:00', strval(CarbonPeriod::create('R4/2012-07-01T12:00:00/P1Y')));
         $this->assertSame('4 keer elke 2 jaar van 2012-07-01 12:00:00', strval(CarbonPeriod::create('R4/2012-07-01T12:00:00/P2Y')));

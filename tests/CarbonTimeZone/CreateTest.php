@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 /**
  * This file is part of the Carbon package.
@@ -41,12 +42,13 @@ class CreateTest extends AbstractTestCase
         $this->assertSame('unknown', $tz->getAbbreviatedName());
     }
 
-    /**
-     * @expectedException \InvalidArgumentException
-     * @expectedExceptionMessage Absolute timezone offset cannot be greater than 100.
-     */
     public function testSafeCreateDateTimeZoneWithoutStrictMode()
     {
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage(
+            'Absolute timezone offset cannot be greater than 100.'
+        );
+
         new CarbonTimeZone(-15e15);
     }
 }

@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 /**
  * This file is part of the Carbon package.
@@ -22,7 +23,7 @@ class ArShaklTest extends LocalizationTestCase
         // Carbon::parse('2018-01-04 00:00:00')->addDays(3)->calendar(Carbon::parse('2018-01-04 00:00:00'))
         'الأحد عند الساعة 00:00',
         // Carbon::parse('2018-01-04 00:00:00')->addDays(4)->calendar(Carbon::parse('2018-01-04 00:00:00'))
-        'الإثنين عند الساعة 00:00',
+        'الاثنين عند الساعة 00:00',
         // Carbon::parse('2018-01-04 00:00:00')->addDays(5)->calendar(Carbon::parse('2018-01-04 00:00:00'))
         'الثلاثاء عند الساعة 00:00',
         // Carbon::parse('2018-01-04 00:00:00')->addDays(6)->calendar(Carbon::parse('2018-01-04 00:00:00'))
@@ -60,7 +61,7 @@ class ArShaklTest extends LocalizationTestCase
         // Carbon::parse('2018-01-04 00:00:00')->subDays(2)->calendar(Carbon::parse('2018-01-04 00:00:00'))
         'الثلاثاء عند الساعة 00:00',
         // Carbon::parse('2018-01-04 00:00:00')->subDays(3)->calendar(Carbon::parse('2018-01-04 00:00:00'))
-        'الإثنين عند الساعة 00:00',
+        'الاثنين عند الساعة 00:00',
         // Carbon::parse('2018-01-04 00:00:00')->subDays(4)->calendar(Carbon::parse('2018-01-04 00:00:00'))
         'الأحد عند الساعة 00:00',
         // Carbon::parse('2018-01-04 00:00:00')->subDays(5)->calendar(Carbon::parse('2018-01-04 00:00:00'))
@@ -96,7 +97,7 @@ class ArShaklTest extends LocalizationTestCase
         // Carbon::parse('2018-04-10 00:00:00')->isoFormat('DDDo')
         '100',
         // Carbon::parse('2018-02-10 00:00:00', 'Europe/Paris')->isoFormat('h:mm a z')
-        '12:00 ص cet',
+        '12:00 ص CET',
         // Carbon::parse('2018-02-10 00:00:00')->isoFormat('h:mm A, h:mm a')
         '12:00 ص, 12:00 ص',
         // Carbon::parse('2018-02-10 01:30:00')->isoFormat('h:mm A, h:mm a')
@@ -198,24 +199,28 @@ class ArShaklTest extends LocalizationTestCase
         // Carbon::now()->addMinute()->addSecond()->diffForHumans(null, true, false, 2)
         'دَقِيقَة ثَانِيَة',
         // Carbon::now()->addYears(2)->addMonths(3)->addDay()->addSecond()->diffForHumans(null, true, true, 4)
-        'سَنَتَيْن أَشْهُر 3 يَوْم ثَانِيَة',
+        'سَنَتَيْن 3 أَشْهُر يَوْم ثَانِيَة',
         // Carbon::now()->addYears(3)->diffForHumans(null, null, false, 4)
-        'مِنَ الْآن سَنَوَات 3',
+        'مِنَ الْآن 3 سَنَوَات',
         // Carbon::now()->subMonths(5)->diffForHumans(null, null, true, 4)
-        'مُنْذُ أَشْهُر 5',
+        'مُنْذُ 5 أَشْهُر',
         // Carbon::now()->subYears(2)->subMonths(3)->subDay()->subSecond()->diffForHumans(null, null, true, 4)
-        'مُنْذُ سَنَتَيْن أَشْهُر 3 يَوْم ثَانِيَة',
+        'مُنْذُ سَنَتَيْن 3 أَشْهُر يَوْم ثَانِيَة',
         // Carbon::now()->addWeek()->addHours(10)->diffForHumans(null, true, false, 2)
-        'أُسْبُوع سَاعَات 10',
+        'أُسْبُوع 10 سَاعَات',
         // Carbon::now()->addWeek()->addDays(6)->diffForHumans(null, true, false, 2)
-        'أُسْبُوع أَيَّام 6',
+        'أُسْبُوع 6 أَيَّام',
         // Carbon::now()->addWeek()->addDays(6)->diffForHumans(null, true, false, 2)
-        'أُسْبُوع أَيَّام 6',
+        'أُسْبُوع 6 أَيَّام',
+        // Carbon::now()->addWeek()->addDays(6)->diffForHumans(["join" => true, "parts" => 2])
+        'مِنَ الْآن أُسْبُوع و 6 أَيَّام',
         // Carbon::now()->addWeeks(2)->addHour()->diffForHumans(null, true, false, 2)
         'أُسْبُوعَيْن سَاعَة',
+        // Carbon::now()->addHour()->diffForHumans(["aUnit" => true])
+        'مِنَ الْآن سَاعَة',
         // CarbonInterval::days(2)->forHumans()
         'يَوْمَيْن',
         // CarbonInterval::create('P1DT3H')->forHumans(true)
-        'يَوْم سَاعَات 3',
+        'يَوْم 3 سَاعَات',
     ];
 }

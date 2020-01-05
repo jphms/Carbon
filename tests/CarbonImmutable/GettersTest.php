@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 /**
  * This file is part of the Carbon package.
@@ -15,11 +16,10 @@ use Tests\AbstractTestCase;
 
 class GettersTest extends AbstractTestCase
 {
-    /**
-     * @expectedException \InvalidArgumentException
-     */
     public function testGettersThrowExceptionOnUnknownGetter()
     {
+        $this->expectException(\InvalidArgumentException::class);
+
         /** @var mixed $d */
         $d = Carbon::create(1234, 5, 6, 7, 8, 9);
         $d->doesNotExit;
@@ -156,7 +156,7 @@ class GettersTest extends AbstractTestCase
     public function testGetAgeWithRealAge()
     {
         $d = Carbon::createFromDate(1975, 5, 21);
-        $age = intval(substr(intval(date('Ymd')) - intval(date('Ymd', $d->timestamp)), 0, -4));
+        $age = intval(substr((string) (intval(date('Ymd')) - intval(date('Ymd', $d->timestamp))), 0, -4));
 
         $this->assertSame($age, $d->age);
     }

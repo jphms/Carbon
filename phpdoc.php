@@ -15,26 +15,8 @@ $tags = [
     ['call', 'diffForHumans'],
 ];
 $nativeMethods = [
-    'format' => 'string',
-    'modify' => 'static',
     'getOffset' => 'int',
     'getTimestamp' => 'int',
-    'setTime' => 'static',
-    'setISODate' => 'static',
-    'setTimestamp' => 'static',
-    'diff' => '\DateInterval',
-];
-$defaultValues = [
-    'diff' => [
-        'absolute' => true,
-    ],
-    'setTime' => [
-        'second' => 0,
-        'microseconds' => 0,
-    ],
-    'setISODate' => [
-        'day' => 1,
-    ],
 ];
 $modes = [];
 $autoDocLines = [];
@@ -42,9 +24,22 @@ $carbon = __DIR__.'/src/Carbon/Carbon.php';
 $immutable = __DIR__.'/src/Carbon/CarbonImmutable.php';
 $interface = __DIR__.'/src/Carbon/CarbonInterface.php';
 file_put_contents($interface, preg_replace('/(\/\/ <methods[\s\S]*>)([\s\S]+)(<\/methods>)/mU', "$1\n\n    // $3", file_get_contents($interface), 1));
-include_once __DIR__.'/vendor/autoload.php';
+require_once __DIR__.'/vendor/autoload.php';
 $trait = __DIR__.'/src/Carbon/Traits/Date.php';
 $code = '';
+$overrideTyping = [
+    $carbon => [
+        'createFromImmutable' => ['static Carbon', '\DateTimeImmutable $dateTime', 'Create a new Carbon object from an immutable date.'],
+        'createFromFormat' => ['static Carbon', 'string $format, string $time, string|\DateTimeZone $timezone = null', 'Parse a string into a new Carbon object according to the specified format.'],
+        '__set_state' => ['static Carbon', 'array $array', 'https://php.net/manual/en/datetime.set-state.php'],
+    ],
+    $immutable => [
+        'createFromMutable' => ['static CarbonImmutable', '\DateTime $dateTime', 'Create a new CarbonImmutable object from an immutable date.'],
+        'createFromFormat' => ['static CarbonImmutable', 'string $format, string $time, string|\DateTimeZone $timezone = null', 'Parse a string into a new CarbonImmutable object according to the specified format.'],
+        '__set_state' => ['static CarbonImmutable', 'array $array', 'https://php.net/manual/en/datetime.set-state.php'],
+    ],
+];
+
 foreach (glob(__DIR__.'/src/Carbon/Traits/*.php') as $file) {
     $code .= file_get_contents($file);
 }
@@ -88,17 +83,22 @@ function dumpParameter($method, ReflectionParameter $parameter)
 
     $name = $parameter->getName();
     $output = '$'.$name;
+
     if ($parameter->isVariadic()) {
         $output = "...$output";
     }
+
     if ($parameter->getType()) {
         $name = $parameter->getType()->getName();
+
         if (preg_match('/^[A-Z]/', $name)) {
             $name = "\\$name";
         }
+
         $name = preg_replace('/^\\\\Carbon\\\\/', '', $name);
         $output = "$name $output";
     }
+
     if (isset($defaultValues[$method])) {
         if (isset($defaultValues[$method][$name])) {
             $output .= ' = '.dumpValue($defaultValues[$method][$name]);
@@ -106,6 +106,7 @@ function dumpParameter($method, ReflectionParameter $parameter)
 
         return $output;
     }
+
     try {
         if ($parameter->isDefaultValueAvailable()) {
             $output .= ' = '.dumpValue($parameter->getDefaultValue());
@@ -120,7 +121,9 @@ foreach ($tags as $tag) {
     if (is_array($tag)) {
         [$tag, $pattern] = $tag;
     }
+
     $pattern = isset($pattern) ? $pattern : '\S+';
+
     if ($tag === PHP_EOL) {
         $autoDocLines[] = '';
 
@@ -133,14 +136,17 @@ foreach ($tags as $tag) {
         $vars = (object) $match;
         $vars->name = $vars->name ?: $vars->name2;
         $vars->description = $vars->description ?: $vars->description2;
+
         if ($tag === 'mode') {
             if (!isset($modes[$vars->type])) {
                 $modes[$vars->type] = [];
             }
+
             $modes[$vars->type][] = $vars->name;
 
             continue;
         }
+
         if ($tag === 'call') {
             switch ($vars->type) {
                 case 'diffForHumans':
@@ -152,7 +158,9 @@ foreach ($tags as $tag) {
                             "Get the difference ($mode format, '{$vars->name}' mode) in a human readable format in the current locale. (\$other and \$parts parameters can be swapped.)",
                         ];
                     }
+
                     break;
+
                 case 'isDayOfWeek':
                     $autoDocLines[] = [
                         '@method',
@@ -160,7 +168,9 @@ foreach ($tags as $tag) {
                         'is'.ucFirst($vars->name).'()',
                         'Checks if the instance day is '.unitName(strtolower($vars->name)).'.',
                     ];
+
                     break;
+
                 case 'is':
                     $autoDocLines[] = [
                         '@method',
@@ -168,19 +178,23 @@ foreach ($tags as $tag) {
                         'is'.ucFirst($vars->name).'()',
                         $vars->description,
                     ];
+
                     break;
+
                 case 'isSameUnit':
                     $unit = $vars->name;
                     $unitName = unitName($unit);
                     $method = 'isSame'.ucFirst($unit);
+
                     if (!method_exists(\Carbon\Carbon::class, $method)) {
                         $autoDocLines[] = [
                             '@method',
                             'bool',
-                            $method.'(\DateTimeInterface $date = null)',
+                            $method.'(\Carbon\Carbon|\DateTimeInterface|string|null $date = null)',
                             "Checks if the given date is in the same $unitName as the instance. If null passed, compare to now (with the same timezone).",
                         ];
                     }
+
                     $autoDocLines[] = [
                         '@method',
                         'bool',
@@ -199,36 +213,40 @@ foreach ($tags as $tag) {
                         'isLast'.ucFirst($unit).'()',
                         "Checks if the instance is in the same $unitName as the current moment last $unitName.",
                     ];
+
                     break;
+
                 case 'setUnit':
                     $unit = $vars->name;
                     $unitName = unitName($unit);
                     $plUnit = pluralize($unit);
                     $autoDocLines[] = [
                         '@method',
-                        '$this',
+                        'self',
                         "$plUnit(int \$value)",
                         "Set current instance $unitName to the given value.",
                     ];
                     $autoDocLines[] = [
                         '@method',
-                        '$this',
+                        'self',
                         "$unit(int \$value)",
                         "Set current instance $unitName to the given value.",
                     ];
                     $autoDocLines[] = [
                         '@method',
-                        '$this',
+                        'self',
                         'set'.ucfirst($plUnit).'(int $value)',
                         "Set current instance $unitName to the given value.",
                     ];
                     $autoDocLines[] = [
                         '@method',
-                        '$this',
+                        'self',
                         'set'.ucfirst($unit).'(int $value)',
                         "Set current instance $unitName to the given value.",
                     ];
+
                     break;
+
                 case 'addUnit':
                     $unit = $vars->name;
                     $unitName = unitName($unit);
@@ -236,28 +254,29 @@ foreach ($tags as $tag) {
                     $plUnitName = pluralize($unitName);
                     $autoDocLines[] = [
                         '@method',
-                        '$this',
+                        'self',
                         'add'.ucFirst($plUnit).'(int $value = 1)',
                         "Add $plUnitName (the \$value count passed in) to the instance (using date interval).",
                     ];
                     $autoDocLines[] = [
                         '@method',
-                        '$this',
+                        'self',
                         'add'.ucFirst($unit).'()',
                         "Add one $unitName to the instance (using date interval).",
                     ];
                     $autoDocLines[] = [
                         '@method',
-                        '$this',
+                        'self',
                         'sub'.ucFirst($plUnit).'(int $value = 1)',
                         "Sub $plUnitName (the \$value count passed in) to the instance (using date interval).",
                     ];
                     $autoDocLines[] = [
                         '@method',
-                        '$this',
+                        'self',
                         'sub'.ucFirst($unit).'()',
                         "Sub one $unitName to the instance (using date interval).",
                     ];
+
                     if (in_array($unit, [
                         'month',
                         'quarter',
@@ -268,57 +287,61 @@ foreach ($tags as $tag) {
                     ])) {
                         $autoDocLines[] = [
                             '@method',
-                            '$this',
+                            'self',
                             'add'.ucFirst($plUnit).'WithOverflow(int $value = 1)',
                             "Add $plUnitName (the \$value count passed in) to the instance (using date interval) with overflow explicitly allowed.",
                         ];
                         $autoDocLines[] = [
                             '@method',
-                            '$this',
+                            'self',
                             'add'.ucFirst($unit).'WithOverflow()',
                             "Add one $unitName to the instance (using date interval) with overflow explicitly allowed.",
                         ];
                         $autoDocLines[] = [
                             '@method',
-                            '$this',
+                            'self',
                             'sub'.ucFirst($plUnit).'WithOverflow(int $value = 1)',
                             "Sub $plUnitName (the \$value count passed in) to the instance (using date interval) with overflow explicitly allowed.",
                         ];
                         $autoDocLines[] = [
                             '@method',
-                            '$this',
+                            'self',
                             'sub'.ucFirst($unit).'WithOverflow()',
                             "Sub one $unitName to the instance (using date interval) with overflow explicitly allowed.",
                         ];
+
                         foreach (['WithoutOverflow', 'WithNoOverflow', 'NoOverflow'] as $alias) {
                             $autoDocLines[] = [
                                 '@method',
-                                '$this',
+                                'self',
                                 'add'.ucFirst($plUnit)."$alias(int \$value = 1)",
                                 "Add $plUnitName (the \$value count passed in) to the instance (using date interval) with overflow explicitly forbidden.",
                             ];
                             $autoDocLines[] = [
                                 '@method',
-                                '$this',
+                                'self',
                                 'add'.ucFirst($unit)."$alias()",
                                 "Add one $unitName to the instance (using date interval) with overflow explicitly forbidden.",
                             ];
                             $autoDocLines[] = [
                                 '@method',
-                                '$this',
+                                'self',
                                 'sub'.ucFirst($plUnit)."$alias(int \$value = 1)",
                                 "Sub $plUnitName (the \$value count passed in) to the instance (using date interval) with overflow explicitly forbidden.",
                             ];
                             $autoDocLines[] = [
                                 '@method',
-                                '$this',
+                                'self',
                                 'sub'.ucFirst($unit)."$alias()",
                                 "Sub one $unitName to the instance (using date interval) with overflow explicitly forbidden.",
                             ];
                         }
+
                         break;
                     }
+
                     break;
+
                 case 'addRealUnit':
                     $unit = $vars->name;
                     $unitName = unitName($unit);
@@ -326,69 +349,78 @@ foreach ($tags as $tag) {
                     $plUnitName = pluralize($unitName);
                     $autoDocLines[] = [
                         '@method',
-                        '$this',
+                        'self',
                         'addReal'.ucFirst($plUnit).'(int $value = 1)',
                         "Add $plUnitName (the \$value count passed in) to the instance (using timestamp).",
                     ];
                     $autoDocLines[] = [
                         '@method',
-                        '$this',
+                        'self',
                         'addReal'.ucFirst($unit).'()',
                         "Add one $unitName to the instance (using timestamp).",
                     ];
                     $autoDocLines[] = [
                         '@method',
-                        '$this',
+                        'self',
                         'subReal'.ucFirst($plUnit).'(int $value = 1)',
                         "Sub $plUnitName (the \$value count passed in) to the instance (using timestamp).",
                     ];
                     $autoDocLines[] = [
                         '@method',
-                        '$this',
+                        'self',
                         'subReal'.ucFirst($unit).'()',
                         "Sub one $unitName to the instance (using timestamp).",
                     ];
+                    $autoDocLines[] = [
+                        '@method',
+                        'CarbonPeriod',
+                        $plUnit.'Until($endDate = null, int $factor = 1)',
+                        "Return an iterable period from current date to given end (string, DateTime or Carbon instance) for each $unitName or every X $plUnitName if a factor is given.",
+                    ];
+
                     break;
+
                 case 'roundUnit':
                     $unit = $vars->name;
                     $unitName = unitName($unit);
                     $plUnit = pluralize($unit);
                     $autoDocLines[] = [
                         '@method',
-                        '$this',
+                        'self',
                         'round'.ucFirst($unit).'(float $precision = 1, string $function = "round")',
                         "Round the current instance $unitName with given precision using the given function.",
                     ];
                     $autoDocLines[] = [
                         '@method',
-                        '$this',
+                        'self',
                         'round'.ucFirst($plUnit).'(float $precision = 1, string $function = "round")',
                         "Round the current instance $unitName with given precision using the given function.",
                     ];
                     $autoDocLines[] = [
                         '@method',
-                        '$this',
+                        'self',
                         'floor'.ucFirst($unit).'(float $precision = 1)',
                         "Truncate the current instance $unitName with given precision.",
                     ];
                     $autoDocLines[] = [
                         '@method',
-                        '$this',
+                        'self',
                         'floor'.ucFirst($plUnit).'(float $precision = 1)',
                         "Truncate the current instance $unitName with given precision.",
                     ];
                     $autoDocLines[] = [
                         '@method',
-                        '$this',
+                        'self',
                         'ceil'.ucFirst($unit).'(float $precision = 1)',
                         "Ceil the current instance $unitName with given precision.",
                     ];
                     $autoDocLines[] = [
                         '@method',
-                        '$this',
+                        'self',
                         'ceil'.ucFirst($plUnit).'(float $precision = 1)',
                         "Ceil the current instance $unitName with given precision.",
                     ];
+
                     break;
             }
 
@@ -411,15 +443,26 @@ foreach ($tags as $tag) {
     }
 }
 
-function compileDoc($autoDocLines)
+function compileDoc($autoDocLines, $file)
 {
+    $class = 'CarbonInterface';
+
+    if (preg_match('`[\\\\/](Carbon\w*)\.php$`', $file, $match)) {
+        $class = $match[1];
+    }
+
     $autoDoc = '';
     $columnsMaxLengths = [];
-    foreach ($autoDocLines as $line) {
-        if (is_array($line)) {
-            foreach ($line as $column => $text) {
+    foreach ($autoDocLines as &$editableLine) {
+        if (is_array($editableLine)) {
+            if (($editableLine[1] ?? '') === 'self') {
+                $editableLine[1] = $class;
+            }
+
+            foreach ($editableLine as $column => $text) {
                 $length = strlen($text);
                 $max = $columnsMaxLengths[$column] ?? 0;
+
                 if ($length > $max) {
                     $columnsMaxLengths[$column] = $length;
                 }
@@ -448,13 +491,19 @@ function compileDoc($autoDocLines)
     return $autoDoc;
 }
 
-$autoDoc = compileDoc($autoDocLines);
-
 $files = new stdClass();
 
 foreach ([$trait, $carbon, $immutable, $interface] as $file) {
     $content = file_get_contents($file);
-    $files->$file = preg_replace_callback('/(<autodoc[\s\S]*>)([\s\S]+)(<\/autodoc>)/mU', function ($matches) use ($file, $autoDoc) {
+    $files->$file = preg_replace_callback('/(<autodoc[\s\S]*>)([\s\S]+)(<\/autodoc>)/mU', function ($matches) use ($file, $autoDocLines, $overrideTyping) {
+        foreach (($overrideTyping[$file] ?? []) as $method => $line) {
+            $line[1] = $method.'('.$line[1].')';
+            array_unshift($line, '@method');
+            $autoDocLines[] = $line;
+        }
+
+        $autoDoc = compileDoc($autoDocLines, $file);
+
         return $matches[1]."\n *$autoDoc\n *\n * ".$matches[3];
     }, $content, 1);
 }
@@ -472,15 +521,18 @@ foreach ($carbonMethods as $method) {
             return dumpParameter($method, $parameter);
         }, $function->getParameters()));
         $methodDocBlock = $function->getDocComment() ?: '';
+
         if (substr($method, 0, 2) !== '__' && $function->isStatic()) {
             $doc = preg_replace('/^\/\*+\n([\s\S]+)\s*\*\//', '$1', $methodDocBlock);
             $doc = preg_replace('/^\s*\*\s?/m', '', $doc);
             $doc = explode("\n@", $doc, 2);
             $doc = preg_split('/(\r\n|\r|\n)/', trim($doc[0]));
             $returnType = $function->getReturnType();
+
             if (!$returnType && preg_match('/\*\s*@returns?\s+(\S+)/', $methodDocBlock, $match)) {
                 $returnType = $match[1];
             }
+
             $returnType = str_replace('static|CarbonInterface', 'static', $returnType ?: 'static');
             $staticMethods[] = [
                 '@method',
@@ -494,22 +546,26 @@ foreach ($carbonMethods as $method) {
                 "$method($parameters)",
                 $doc[0],
             ];
+
             for ($i = 1; $i < count($doc); $i++) {
                 $staticMethods[] = ['', '', '', $doc[$i]];
                 $staticImmutableMethods[] = ['', '', '', $doc[$i]];
             }
         }
+
         $return = $function->getReturnType() ? ': '.$function->getReturnType()->getName() : '';
+
         if (!empty($methodDocBlock)) {
             $methodDocBlock = "\n    $methodDocBlock";
         } elseif (isset($nativeMethods[$method])) {
             $link = strtolower($method);
             $methodDocBlock = "\n    /**\n".
-                "     * call \DateTime::$method if mutable or \DateTimeImmutable::$method else.\n".
+                "     * Calls \DateTime::$method if mutable or \DateTimeImmutable::$method else.\n".
                 "     *\n".
-                "     * @see http://php.net/manual/en/datetime.$link.php\n".
+                "     * @see https://php.net/manual/en/datetime.$link.php\n".
                 '     */';
         }
+
         $methods .= "\n$methodDocBlock\n    public$static function $method($parameters)$return;";
     }
 }
@@ -524,7 +580,7 @@ $factories = [
 ];
 
 foreach ($factories as $file => $methods) {
-    $autoDoc = compileDoc($methods);
+    $autoDoc = compileDoc($methods, $file);
     $content = file_get_contents($file);
     $files->$file = preg_replace_callback('/(<autodoc[\s\S]*>)([\s\S]+)(<\/autodoc>)/mU', function ($matches) use ($file, $autoDoc) {
         return $matches[1]."\n *$autoDoc\n *\n * ".$matches[3];

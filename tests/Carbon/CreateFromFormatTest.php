@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 /**
  * This file is part of the Carbon package.
@@ -28,7 +29,7 @@ class CreateFromFormatTest extends AbstractTestCase
      */
     protected $noErrors;
 
-    public function setUp()
+    protected function setUp(): void
     {
         parent::setUp();
 
@@ -54,6 +55,24 @@ class CreateFromFormatTest extends AbstractTestCase
         $this->assertInstanceOfCarbon($d);
     }
 
+    public function testCreateFromFormatWithMillisecondsAlone()
+    {
+        $d = Carbon::createFromFormat('Y-m-d H:i:s.v', '1975-05-21 22:32:11.321');
+        $this->assertCarbon($d, 1975, 5, 21, 22, 32, 11, 321000);
+        $this->assertInstanceOfCarbon($d);
+    }
+
+    public function testCreateFromFormatWithMillisecondsMerged()
+    {
+        if (version_compare(PHP_VERSION, '7.3.0-dev', '<')) {
+            $this->markTestSkipped('Due to https://bugs.php.net/bug.php?id=75577, proper "v" format support can only works from PHP 7.3.0.');
+        }
+
+        $d = Carbon::createFromFormat('Y-m-d H:s.vi', '1975-05-21 22:11.32132');
+        $this->assertCarbon($d, 1975, 5, 21, 22, 32, 11, 321000);
+        $this->assertInstanceOfCarbon($d);
+    }
+
     public function testCreateFromFormatWithTimezoneString()
     {
         $d = Carbon::createFromFormat('Y-m-d H:i:s', '1975-05-21 22:32:11', 'Europe/London');
@@ -72,6 +91,16 @@ class CreateFromFormatTest extends AbstractTestCase
     {
         $d = Carbon::createFromFormat('Y-m-d H:i:s.u', '1975-05-21 22:32:11.254687');
         $this->assertSame(254687, $d->micro);
+    }
+
+    public function testCreateFromFormatWithTestNow()
+    {
+        Carbon::setTestNow();
+        $nativeDate = Carbon::createFromFormat('Y-m-d H:i:s', '1975-05-21 22:32:11');
+        Carbon::setTestNow(Carbon::now());
+        $mockedDate = Carbon::createFromFormat('Y-m-d H:i:s', '1975-05-21 22:32:11');
+
+        $this->assertSame($mockedDate->micro === 0, $nativeDate->micro === 0);
     }
 
     public function testCreateLastErrorsCanBeAccessedByExtendingClass()

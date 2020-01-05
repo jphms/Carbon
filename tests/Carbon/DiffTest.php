@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 /**
  * This file is part of the Carbon package.
@@ -1287,7 +1288,7 @@ class DiffTest extends AbstractTestCase
         $this->assertSame('0 seconds before', $date->diffForHumans($date));
 
         Carbon::setLocale('fr');
-        $this->assertSame('quelques secondes avant', $date->diffForHumans($date));
+        $this->assertSame('0 seconde avant', $date->diffForHumans($date));
 
         Carbon::setLocale('en');
         Carbon::setHumanDiffOptions(Carbon::JUST_NOW);
@@ -1385,13 +1386,22 @@ class DiffTest extends AbstractTestCase
     public function testFromNow()
     {
         Carbon::setLocale('en');
-        $this->assertSame('2 days from now', Carbon::now()->addDays(2)->fromNow());
+        $this->assertSame('2 days from now', Carbon::now('UTC')->addDays(2)->fromNow());
         Carbon::setLocale('fr');
-        $this->assertSame('dans 2 jours', Carbon::now()->addDays(2)->fromNow());
+        $this->assertSame('dans 2 jours', Carbon::now('UTC')->addDays(2)->fromNow());
         Carbon::setLocale('en');
-        $this->assertSame('2 days after', Carbon::now()->addDays(2)->fromNow(CarbonInterface::DIFF_RELATIVE_TO_OTHER));
-        $this->assertSame('2d from now', Carbon::now()->addDays(2)->addHours(5)->fromNow(null, true));
-        $this->assertSame('2 days 5 hours', Carbon::now()->addDays(2)->addHours(5)->fromNow(true, false, 2));
+        $this->assertSame('2 days after', Carbon::now('UTC')->addDays(2)->fromNow(CarbonInterface::DIFF_RELATIVE_TO_OTHER));
+        $this->assertSame('2d from now', Carbon::now('UTC')->addDays(2)->addHours(5)->fromNow(null, true));
+        $this->assertSame('2 days 5 hours', Carbon::now('UTC')->addDays(2)->addHours(5)->fromNow(true, false, 2));
+    }
+
+    public function testFromNowBackwardCompatibleSyntax()
+    {
+        $date = Carbon::parse('-5 days');
+        $this->assertSame('5 days', $date->fromNow(Carbon::now(), true));
+
+        $date = Carbon::parse('+5 days');
+        $this->assertSame('5 days', $date->fromNow(Carbon::now(), true));
     }
 
     public function testFrom()
@@ -1425,13 +1435,13 @@ class DiffTest extends AbstractTestCase
     public function testToNow()
     {
         Carbon::setLocale('en');
-        $this->assertSame('2 days ago', Carbon::now()->addDays(2)->toNow());
+        $this->assertSame('2 days ago', Carbon::now('UTC')->addDays(2)->toNow());
         Carbon::setLocale('fr');
-        $this->assertSame('il y a 2 jours', Carbon::now()->addDays(2)->toNow());
+        $this->assertSame('il y a 2 jours', Carbon::now('UTC')->addDays(2)->toNow());
         Carbon::setLocale('en');
-        $this->assertSame('2 days before', Carbon::now()->addDays(2)->toNow(CarbonInterface::DIFF_RELATIVE_TO_OTHER));
-        $this->assertSame('2d ago', Carbon::now()->addDays(2)->addHours(5)->toNow(null, true));
-        $this->assertSame('2 days 5 hours', Carbon::now()->addDays(2)->addHours(5)->toNow(true, false, 2));
+        $this->assertSame('2 days before', Carbon::now('UTC')->addDays(2)->toNow(CarbonInterface::DIFF_RELATIVE_TO_OTHER));
+        $this->assertSame('2d ago', Carbon::now('UTC')->addDays(2)->addHours(5)->toNow(null, true));
+        $this->assertSame('2 days 5 hours', Carbon::now('UTC')->addDays(2)->addHours(5)->toNow(true, false, 2));
     }
 
     public function testTo()
@@ -1462,30 +1472,33 @@ class DiffTest extends AbstractTestCase
         $this->assertSame('2 days 5 hours', Carbon::now()->addDay()->addHours(5)->until(Carbon::now()->subDay(), true, false, 2));
     }
 
-    /**
-     * @expectedException \InvalidArgumentException
-     * @expectedExceptionMessage Expected null, string, DateTime or DateTimeInterface, integer given
-     */
     public function testDiffWithInvalidType()
     {
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage(
+            'Expected null, string, DateTime or DateTimeInterface, integer given'
+        );
+
         Carbon::createFromDate(2000, 1, 25)->diffInHours(10);
     }
 
-    /**
-     * @expectedException \InvalidArgumentException
-     * @expectedExceptionMessage Expected null, string, DateTime or DateTimeInterface, Carbon\CarbonInterval given
-     */
     public function testDiffWithInvalidObject()
     {
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage(
+            'Expected null, string, DateTime or DateTimeInterface, Carbon\CarbonInterval given'
+        );
+
         Carbon::createFromDate(2000, 1, 25)->diffInHours(new CarbonInterval());
     }
 
-    /**
-     * @expectedException \Exception
-     * @expectedExceptionMessage Failed to parse time string (2018-04-13-08:00:00) at position 16
-     */
     public function testDiffForHumansWithIncorrectDateTimeStringWhichIsNotACarbonInstance()
     {
+        $this->expectException(\Exception::class);
+        $this->expectExceptionMessage(
+            'Failed to parse time string (2018-04-13-08:00:00) at position 16'
+        );
+
         $mar13 = Carbon::parse('2018-03-13');
         $mar13->diffForHumans('2018-04-13-08:00:00');
     }
@@ -1499,34 +1512,36 @@ class DiffTest extends AbstractTestCase
 
         $this->assertSame(8986.665965, Carbon::parse('2018-03-31 23:55:12.321456')->floatDiffInSeconds(Carbon::parse('2018-04-01 02:24:58.987421')));
 
-        $this->assertSame(0.9707885304659498, Carbon::parse('2018-03-13 20:55:12.321456')->floatDiffInMonths(Carbon::parse('2018-04-12 14:24:58.987421')));
+        $this->assertSame(1.0006944444444443, Carbon::parse('2018-12-01 00:00')->floatDiffInDays(Carbon::parse('2018-12-02 00:01')));
+
+        $this->assertSame(0.9714742503779745, Carbon::parse('2018-03-13 20:55:12.321456')->floatDiffInMonths(Carbon::parse('2018-04-12 14:24:58.987421')));
         $this->assertSame(1.1724137931034484, Carbon::parse('2000-01-15 00:00')->floatDiffInMonths(Carbon::parse('2000-02-20 00:00')));
         $this->assertSame(1.1724137931034484, Carbon::parse('2000-01-15 00:00')->floatDiffInMonths('2000-02-20 00:00'));
         $this->assertSame(11.951612903225806, Carbon::parse('2018-12-16 00:00')->floatDiffInMonths('2019-12-15 00:00'));
-        $this->assertSame(0.9707885304659498, Carbon::parse('2018-04-12 14:24:58.987421')->floatDiffInMonths(Carbon::parse('2018-03-13 20:55:12.321456')));
-        $this->assertSame(0.9707885304659498, Carbon::parse('2018-03-13 20:55:12.321456')->floatDiffInMonths(Carbon::parse('2018-04-12 14:24:58.987421'), false));
-        $this->assertSame(-0.9707885304659498, Carbon::parse('2018-04-12 14:24:58.987421')->floatDiffInMonths(Carbon::parse('2018-03-13 20:55:12.321456'), false));
+        $this->assertSame(0.9714742503779745, Carbon::parse('2018-04-12 14:24:58.987421')->floatDiffInMonths(Carbon::parse('2018-03-13 20:55:12.321456')));
+        $this->assertSame(0.9714742503779745, Carbon::parse('2018-03-13 20:55:12.321456')->floatDiffInMonths(Carbon::parse('2018-04-12 14:24:58.987421'), false));
+        $this->assertSame(-0.9714742503779745, Carbon::parse('2018-04-12 14:24:58.987421')->floatDiffInMonths(Carbon::parse('2018-03-13 20:55:12.321456'), false));
 
-        $this->assertSame(16.556944444444444, Carbon::parse('2018-02-13 20:55:12.321456')->floatDiffInMonths(Carbon::parse('2019-06-30 14:24:58.987421')));
+        $this->assertSame(16.557633744585264, Carbon::parse('2018-02-13 20:55:12.321456')->floatDiffInMonths(Carbon::parse('2019-06-30 14:24:58.987421')));
 
-        $this->assertSame(15.97078853046595, Carbon::parse('2018-02-13 20:55:12.321456')->floatDiffInMonths(Carbon::parse('2019-06-12 14:24:58.987421')));
-        $this->assertSame(15.97078853046595, Carbon::parse('2019-06-12 14:24:58.987421')->floatDiffInMonths(Carbon::parse('2018-02-13 20:55:12.321456')));
-        $this->assertSame(15.97078853046595, Carbon::parse('2018-02-13 20:55:12.321456')->floatDiffInMonths(Carbon::parse('2019-06-12 14:24:58.987421'), false));
-        $this->assertSame(-15.97078853046595, Carbon::parse('2019-06-12 14:24:58.987421')->floatDiffInMonths(Carbon::parse('2018-02-13 20:55:12.321456'), false));
+        $this->assertSame(15.971474250377973, Carbon::parse('2018-02-13 20:55:12.321456')->floatDiffInMonths(Carbon::parse('2019-06-12 14:24:58.987421')));
+        $this->assertSame(15.971474250377973, Carbon::parse('2019-06-12 14:24:58.987421')->floatDiffInMonths(Carbon::parse('2018-02-13 20:55:12.321456')));
+        $this->assertSame(15.971474250377973, Carbon::parse('2018-02-13 20:55:12.321456')->floatDiffInMonths(Carbon::parse('2019-06-12 14:24:58.987421'), false));
+        $this->assertSame(-15.971474250377973, Carbon::parse('2019-06-12 14:24:58.987421')->floatDiffInMonths(Carbon::parse('2018-02-13 20:55:12.321456'), false));
 
         $this->assertSame(1, Carbon::parse('2018-02-13 20:55:12.321456')->floatDiffInYears(Carbon::parse('2019-02-13 20:55:12.321456')));
-        $this->assertSame(1.3745433789954338, Carbon::parse('2018-02-13 20:55:12.321456')->floatDiffInYears(Carbon::parse('2019-06-30 14:24:58.987421')));
-        $this->assertSame(0.9608447488584474, Carbon::parse('2018-02-13 20:55:12.321456')->floatDiffInYears(Carbon::parse('2019-01-30 14:24:58.987421')));
+        $this->assertSame(1.3746000338015283, Carbon::parse('2018-02-13 20:55:12.321456')->floatDiffInYears(Carbon::parse('2019-06-30 14:24:58.987421')));
+        $this->assertSame(0.9609014036645421, Carbon::parse('2018-02-13 20:55:12.321456')->floatDiffInYears(Carbon::parse('2019-01-30 14:24:58.987421')));
 
-        $this->assertSame(1.325228310502283, Carbon::parse('2018-02-13 20:55:12.321456')->floatDiffInYears(Carbon::parse('2019-06-12 14:24:58.987421')));
-        $this->assertSame(1.325228310502283, Carbon::parse('2019-06-12 14:24:58.987421')->floatDiffInYears(Carbon::parse('2018-02-13 20:55:12.321456')));
-        $this->assertSame(1.325228310502283, Carbon::parse('2018-02-13 20:55:12.321456')->floatDiffInYears(Carbon::parse('2019-06-12 14:24:58.987421'), false));
-        $this->assertSame(-1.325228310502283, Carbon::parse('2019-06-12 14:24:58.987421')->floatDiffInYears(Carbon::parse('2018-02-13 20:55:12.321456'), false));
+        $this->assertSame(1.3252849653083778, Carbon::parse('2018-02-13 20:55:12.321456')->floatDiffInYears(Carbon::parse('2019-06-12 14:24:58.987421')));
+        $this->assertSame(1.3252849653083778, Carbon::parse('2019-06-12 14:24:58.987421')->floatDiffInYears(Carbon::parse('2018-02-13 20:55:12.321456')));
+        $this->assertSame(1.3252849653083778, Carbon::parse('2018-02-13 20:55:12.321456')->floatDiffInYears(Carbon::parse('2019-06-12 14:24:58.987421'), false));
+        $this->assertSame(-1.3252849653083778, Carbon::parse('2019-06-12 14:24:58.987421')->floatDiffInYears(Carbon::parse('2018-02-13 20:55:12.321456'), false));
 
-        $this->assertSame(5.325228310502283, Carbon::parse('2018-02-13 20:55:12.321456')->floatDiffInYears(Carbon::parse('2023-06-12 14:24:58.987421')));
-        $this->assertSame(5.325228310502283, Carbon::parse('2023-06-12 14:24:58.987421')->floatDiffInYears(Carbon::parse('2018-02-13 20:55:12.321456')));
-        $this->assertSame(5.325228310502283, Carbon::parse('2018-02-13 20:55:12.321456')->floatDiffInYears(Carbon::parse('2023-06-12 14:24:58.987421'), false));
-        $this->assertSame(-5.325228310502283, Carbon::parse('2023-06-12 14:24:58.987421')->floatDiffInYears(Carbon::parse('2018-02-13 20:55:12.321456'), false));
+        $this->assertSame(5.325284965308378, Carbon::parse('2018-02-13 20:55:12.321456')->floatDiffInYears(Carbon::parse('2023-06-12 14:24:58.987421')));
+        $this->assertSame(5.325284965308378, Carbon::parse('2023-06-12 14:24:58.987421')->floatDiffInYears(Carbon::parse('2018-02-13 20:55:12.321456')));
+        $this->assertSame(5.325284965308378, Carbon::parse('2018-02-13 20:55:12.321456')->floatDiffInYears(Carbon::parse('2023-06-12 14:24:58.987421'), false));
+        $this->assertSame(-5.325284965308378, Carbon::parse('2023-06-12 14:24:58.987421')->floatDiffInYears(Carbon::parse('2018-02-13 20:55:12.321456'), false));
 
         $this->assertSame(1, Carbon::parse('2018-10-01 00:00:00', 'Europe/Paris')->floatDiffInMonths(Carbon::parse('2018-11-01 00:00:00', 'Europe/Paris')));
         $this->assertSame(1, Carbon::parse('2018-10-28 00:00:00')->floatDiffInMonths(Carbon::parse('2018-11-28 00:00:00')));
@@ -1541,31 +1556,33 @@ class DiffTest extends AbstractTestCase
     {
         date_default_timezone_set('UTC');
 
-        $this->assertSame(0.9707885304659498, Carbon::parse('2018-03-13 20:55:12.321456')->floatDiffInRealMonths(Carbon::parse('2018-04-12 14:24:58.987421')));
-        $this->assertSame(0.9707885304659498, Carbon::parse('2018-04-12 14:24:58.987421')->floatDiffInRealMonths(Carbon::parse('2018-03-13 20:55:12.321456')));
-        $this->assertSame(0.9707885304659498, Carbon::parse('2018-03-13 20:55:12.321456')->floatDiffInRealMonths(Carbon::parse('2018-04-12 14:24:58.987421'), false));
-        $this->assertSame(-0.9707885304659498, Carbon::parse('2018-04-12 14:24:58.987421')->floatDiffInRealMonths(Carbon::parse('2018-03-13 20:55:12.321456'), false));
+        $this->assertSame(1.0006944444444443, Carbon::parse('2018-12-01 00:00')->floatDiffInRealDays(Carbon::parse('2018-12-02 00:01')));
 
-        $this->assertSame(16.556944444444444, Carbon::parse('2018-02-13 20:55:12.321456')->floatDiffInRealMonths(Carbon::parse('2019-06-30 14:24:58.987421')));
+        $this->assertSame(0.9714742503779745, Carbon::parse('2018-03-13 20:55:12.321456')->floatDiffInRealMonths(Carbon::parse('2018-04-12 14:24:58.987421')));
+        $this->assertSame(0.9714742503779745, Carbon::parse('2018-04-12 14:24:58.987421')->floatDiffInRealMonths(Carbon::parse('2018-03-13 20:55:12.321456')));
+        $this->assertSame(0.9714742503779745, Carbon::parse('2018-03-13 20:55:12.321456')->floatDiffInRealMonths(Carbon::parse('2018-04-12 14:24:58.987421'), false));
+        $this->assertSame(-0.9714742503779745, Carbon::parse('2018-04-12 14:24:58.987421')->floatDiffInRealMonths(Carbon::parse('2018-03-13 20:55:12.321456'), false));
 
-        $this->assertSame(15.97078853046595, Carbon::parse('2018-02-13 20:55:12.321456')->floatDiffInRealMonths(Carbon::parse('2019-06-12 14:24:58.987421')));
-        $this->assertSame(15.97078853046595, Carbon::parse('2019-06-12 14:24:58.987421')->floatDiffInRealMonths(Carbon::parse('2018-02-13 20:55:12.321456')));
-        $this->assertSame(15.97078853046595, Carbon::parse('2018-02-13 20:55:12.321456')->floatDiffInRealMonths(Carbon::parse('2019-06-12 14:24:58.987421'), false));
-        $this->assertSame(-15.97078853046595, Carbon::parse('2019-06-12 14:24:58.987421')->floatDiffInRealMonths(Carbon::parse('2018-02-13 20:55:12.321456'), false));
+        $this->assertSame(16.557633744585264, Carbon::parse('2018-02-13 20:55:12.321456')->floatDiffInRealMonths(Carbon::parse('2019-06-30 14:24:58.987421')));
+
+        $this->assertSame(15.971474250377973, Carbon::parse('2018-02-13 20:55:12.321456')->floatDiffInRealMonths(Carbon::parse('2019-06-12 14:24:58.987421')));
+        $this->assertSame(15.971474250377973, Carbon::parse('2019-06-12 14:24:58.987421')->floatDiffInRealMonths(Carbon::parse('2018-02-13 20:55:12.321456')));
+        $this->assertSame(15.971474250377973, Carbon::parse('2018-02-13 20:55:12.321456')->floatDiffInRealMonths(Carbon::parse('2019-06-12 14:24:58.987421'), false));
+        $this->assertSame(-15.971474250377973, Carbon::parse('2019-06-12 14:24:58.987421')->floatDiffInRealMonths(Carbon::parse('2018-02-13 20:55:12.321456'), false));
 
         $this->assertSame(1, Carbon::parse('2018-02-13 20:55:12.321456')->floatDiffInRealYears(Carbon::parse('2019-02-13 20:55:12.321456')));
-        $this->assertSame(1.3745433789954338, Carbon::parse('2018-02-13 20:55:12.321456')->floatDiffInRealYears(Carbon::parse('2019-06-30 14:24:58.987421')));
-        $this->assertSame(0.9608447488584474, Carbon::parse('2018-02-13 20:55:12.321456')->floatDiffInRealYears(Carbon::parse('2019-01-30 14:24:58.987421')));
+        $this->assertSame(1.3746000338015283, Carbon::parse('2018-02-13 20:55:12.321456')->floatDiffInRealYears(Carbon::parse('2019-06-30 14:24:58.987421')));
+        $this->assertSame(0.9609014036645421, Carbon::parse('2018-02-13 20:55:12.321456')->floatDiffInRealYears(Carbon::parse('2019-01-30 14:24:58.987421')));
 
-        $this->assertSame(1.325228310502283, Carbon::parse('2018-02-13 20:55:12.321456')->floatDiffInRealYears(Carbon::parse('2019-06-12 14:24:58.987421')));
-        $this->assertSame(1.325228310502283, Carbon::parse('2019-06-12 14:24:58.987421')->floatDiffInRealYears(Carbon::parse('2018-02-13 20:55:12.321456')));
-        $this->assertSame(1.325228310502283, Carbon::parse('2018-02-13 20:55:12.321456')->floatDiffInRealYears(Carbon::parse('2019-06-12 14:24:58.987421'), false));
-        $this->assertSame(-1.325228310502283, Carbon::parse('2019-06-12 14:24:58.987421')->floatDiffInRealYears(Carbon::parse('2018-02-13 20:55:12.321456'), false));
+        $this->assertSame(1.3252849653083778, Carbon::parse('2018-02-13 20:55:12.321456')->floatDiffInRealYears(Carbon::parse('2019-06-12 14:24:58.987421')));
+        $this->assertSame(1.3252849653083778, Carbon::parse('2019-06-12 14:24:58.987421')->floatDiffInRealYears(Carbon::parse('2018-02-13 20:55:12.321456')));
+        $this->assertSame(1.3252849653083778, Carbon::parse('2018-02-13 20:55:12.321456')->floatDiffInRealYears(Carbon::parse('2019-06-12 14:24:58.987421'), false));
+        $this->assertSame(-1.3252849653083778, Carbon::parse('2019-06-12 14:24:58.987421')->floatDiffInRealYears(Carbon::parse('2018-02-13 20:55:12.321456'), false));
 
-        $this->assertSame(5.325228310502283, Carbon::parse('2018-02-13 20:55:12.321456')->floatDiffInRealYears(Carbon::parse('2023-06-12 14:24:58.987421')));
-        $this->assertSame(5.325228310502283, Carbon::parse('2023-06-12 14:24:58.987421')->floatDiffInRealYears(Carbon::parse('2018-02-13 20:55:12.321456')));
-        $this->assertSame(5.325228310502283, Carbon::parse('2018-02-13 20:55:12.321456')->floatDiffInRealYears(Carbon::parse('2023-06-12 14:24:58.987421'), false));
-        $this->assertSame(-5.325228310502283, Carbon::parse('2023-06-12 14:24:58.987421')->floatDiffInRealYears(Carbon::parse('2018-02-13 20:55:12.321456'), false));
+        $this->assertSame(5.325284965308378, Carbon::parse('2018-02-13 20:55:12.321456')->floatDiffInRealYears(Carbon::parse('2023-06-12 14:24:58.987421')));
+        $this->assertSame(5.325284965308378, Carbon::parse('2023-06-12 14:24:58.987421')->floatDiffInRealYears(Carbon::parse('2018-02-13 20:55:12.321456')));
+        $this->assertSame(5.325284965308378, Carbon::parse('2018-02-13 20:55:12.321456')->floatDiffInRealYears(Carbon::parse('2023-06-12 14:24:58.987421'), false));
+        $this->assertSame(-5.325284965308378, Carbon::parse('2023-06-12 14:24:58.987421')->floatDiffInRealYears(Carbon::parse('2018-02-13 20:55:12.321456'), false));
 
         $this->assertSame(1, Carbon::parse('2018-10-01 00:00:00', 'Europe/Paris')->floatDiffInRealMonths(Carbon::parse('2018-11-01 00:00:00', 'Europe/Paris')));
         $this->assertSame(1, Carbon::parse('2018-10-28 00:00:00')->floatDiffInRealMonths(Carbon::parse('2018-11-28 00:00:00')));
@@ -1631,5 +1648,34 @@ class DiffTest extends AbstractTestCase
         $serverTime = new Carbon('2019-02-10 18:23:12.307628 +00:00');
 
         $this->assertSame(0, $serverTime->diffInSeconds($requestTime));
+    }
+
+    public function testNearlyFullDayDiffInSeconds()
+    {
+        $d1 = Carbon::parse('2019-06-15 12:34:56.123456');
+        $d2 = Carbon::parse('2019-06-16 12:34:56.123455');
+
+        // Due to https://bugs.php.net/bug.php?id=77007, this changed in 7.2.12:
+        $expected = version_compare(PHP_VERSION, '7.2.12-dev', '<')
+            ? 86400 // Bad rounding before PHP 7.2.12
+            : 86399; // Exact result since PHP 7.2.12
+
+        $this->assertSame($expected, $d2->diffInSeconds($d1));
+    }
+
+    public function testNearlyFullDayDiffInMicroseconds()
+    {
+        $d1 = Carbon::parse('2019-06-15 12:34:56.123456');
+        $d2 = Carbon::parse('2019-06-16 12:34:56.123455');
+
+        $this->assertSame(86399999999, $d2->diffInMicroseconds($d1));
+    }
+
+    public function testExactMonthDiffInSeconds()
+    {
+        $d1 = Carbon::make('2019-01-23 12:00:00');
+        $d2 = Carbon::make('2019-02-23 12:00:00');
+
+        $this->assertSame(2678400, $d2->diffInSeconds($d1));
     }
 }

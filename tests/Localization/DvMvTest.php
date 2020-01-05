@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 /**
  * This file is part of the Carbon package.
@@ -96,7 +97,7 @@ class DvMvTest extends LocalizationTestCase
         // Carbon::parse('2018-04-10 00:00:00')->isoFormat('DDDo')
         '100',
         // Carbon::parse('2018-02-10 00:00:00', 'Europe/Paris')->isoFormat('h:mm a z')
-        '12:00 މކ cet',
+        '12:00 މކ CET',
         // Carbon::parse('2018-02-10 00:00:00')->isoFormat('h:mm A, h:mm a')
         '12:00 މކ, 12:00 މކ',
         // Carbon::parse('2018-02-10 01:30:00')->isoFormat('h:mm A, h:mm a')
@@ -211,8 +212,12 @@ class DvMvTest extends LocalizationTestCase
         '1 ހަފްތާ 6 ދުވަސް',
         // Carbon::now()->addWeek()->addDays(6)->diffForHumans(null, true, false, 2)
         '1 ހަފްތާ 6 ދުވަސް',
+        // Carbon::now()->addWeek()->addDays(6)->diffForHumans(["join" => true, "parts" => 2])
+        '1 ހަފްތާ އަދި 6 ދުވަސް ފަހުން',
         // Carbon::now()->addWeeks(2)->addHour()->diffForHumans(null, true, false, 2)
         '2 ހަފްތާ 1 ގަޑި',
+        // Carbon::now()->addHour()->diffForHumans(["aUnit" => true])
+        'ގަޑިއިރެއް ފަހުން',
         // CarbonInterval::days(2)->forHumans()
         '2 ދުވަސް',
         // CarbonInterval::create('P1DT3H')->forHumans(true)
